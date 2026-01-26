@@ -8,12 +8,13 @@ interface AuthModalProps {
 
 export const AuthModal = ({ onClose }: AuthModalProps) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login, register } = useAuthStore();
+  const { login: loginAction, register } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,9 +23,9 @@ export const AuthModal = ({ onClose }: AuthModalProps) => {
 
     try {
       if (isLogin) {
-        await login(email, password);
+        await loginAction(login, password);
       } else {
-        await register(email, password);
+        await register(name, login, password);
       }
       onClose();
     } catch (err) {
@@ -44,14 +45,29 @@ export const AuthModal = ({ onClose }: AuthModalProps) => {
         </h2>
 
         <form className="auth-form" onSubmit={handleSubmit}>
+          {!isLogin && (
+            <div className="auth-form-group">
+              <label htmlFor="name">Имя</label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ваше имя"
+                required={!isLogin}
+                disabled={isLoading}
+              />
+            </div>
+          )}
+
           <div className="auth-form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="login">Логин</label>
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              id="login"
+              type="text"
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+              placeholder="Ваш логин"
               required
               disabled={isLoading}
             />

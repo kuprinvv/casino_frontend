@@ -1,9 +1,11 @@
 import { create } from 'zustand';
+import { AuthAPI } from '@shared/api/auth';
+import { apiClient } from '@shared/api/client';
 
-// Упрощенный тип User (так как бекенд не поддерживает авторизацию)
+// Тип User согласно API
 export interface User {
-  id: string;
-  email: string;
+  login: string;
+  name?: string;
 }
 
 interface AuthState {
@@ -12,9 +14,9 @@ interface AuthState {
   isLoading: boolean;
   
   // Actions
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  login: (login: string, password: string) => Promise<void>;
+  register: (name: string, login: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
   setUser: (user: User | null) => void;
   checkAuth: () => void;
 }
@@ -43,19 +45,17 @@ const saveUserToStorage = (user: User | null) => {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: getUserFromStorage(),
-  isAuthenticated: !!getUserFromStorage(),
+  isAuthenticated: apiClient.isAuthenticated() && !!getUserFromStorage(),
   isLoading: false,
 
-  // Упрощенная авторизация без бекенда
-  login: async (email: string, _password: string) => {
+  // Вход через API
+  login: async (login: string, password: string) => {
     set({ isLoading: true });
     try {
-      // Имитация задержки сети
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await AuthAPI.login({ login, password });
       
       const user: User = {
-        id: Date.now().toString(),
-        email,
+        login,
       };
       
       saveUserToStorage(user);
@@ -71,16 +71,15 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  // Упрощенная регистрация без бекенда
-  register: async (email: string, _password: string) => {
+  // Регистрация через API
+  register: async (name: string, login: string, password: string) => {
     set({ isLoading: true });
     try {
-      // Имитация задержки сети
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await AuthAPI.register({ name, login, password });
       
       const user: User = {
-        id: Date.now().toString(),
-        email,
+        login,
+        name,
       };
       
       saveUserToStorage(user);
@@ -96,21 +95,30 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  logout: () => {
-    saveUserToStorage(null);
-    set({ user: null, isAuthenticated: false });
+  // Выход через API
+  logout: async () => {
+    try {
+      await AuthAPI.logout();
+    } catch (error) {
+      // Даже если запрос не удался, очищаем состояние на клиенте
+      console.error('Logout error:', error);
+    } finally {
+      saveUserToStorage(null);
+      set({ user: null, isAuthenticated: false });
+    }
   },
 
   setUser: (user: User | null) => {
     saveUserToStorage(user);
-    set({ user, isAuthenticated: user !== null });
+    set({ user, isAuthenticated: user !== null && apiClient.isAuthenticated() });
   },
 
   checkAuth: () => {
     const user = getUserFromStorage();
+    const isAuth = apiClient.isAuthenticated() && !!user;
     set({ 
       user,
-      isAuthenticated: !!user 
+      isAuthenticated: isAuth 
     });
   },
 }));

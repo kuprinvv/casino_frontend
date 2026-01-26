@@ -58,11 +58,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!state.useOnlineMode) return;
 
     try {
-      const userData = await UserAPI.getUserData();
+      const balance = await UserAPI.getBalance();
       set({ 
-        balance: userData.balance,
-        freeSpinsLeft: userData.freeSpinCount,
-        isBonusGame: userData.freeSpinCount > 0,
+        balance,
+        // Фриспины обновляются только после спина, так как нет отдельного эндпоинта для их получения
       });
     } catch (error) {
       console.error('Failed to sync balance:', error);
@@ -75,12 +74,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (state.useOnlineMode) {
       try {
         await UserAPI.deposit(amount);
-        // После депозита получаем обновленные данные
-        const userData = await UserAPI.getUserData();
-        set({ 
-          balance: userData.balance,
-          freeSpinsLeft: userData.freeSpinCount,
-        });
+        // После депозита синхронизируем баланс
+        await get().syncBalance();
       } catch (error) {
         alert(error instanceof Error ? error.message : 'Ошибка при пополнении баланса');
         throw error;
@@ -182,13 +177,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Всегда используем бекенд для покупки бонуса
     try {
       await GameAPI.buyBonus(bonusCost);
-      // После покупки бонуса получаем обновленные данные
-      const userData = await UserAPI.getUserData();
+      // После покупки бонуса синхронизируем баланс
+      // Фриспины будут обновлены после следующего спина
+      await get().syncBalance();
       set({ 
-        balance: userData.balance,
-        freeSpinsLeft: userData.freeSpinCount,
-        isBonusGame: userData.freeSpinCount > 0,
         isSpinning: false,
+        // Фриспины обновятся после следующего спина, так как нет отдельного эндпоинта для их получения
       });
     } catch (error) {
       set({ isSpinning: false });

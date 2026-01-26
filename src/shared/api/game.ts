@@ -7,6 +7,7 @@ import { PAYLINES } from '@shared/config/lines';
 export class GameAPI {
   /**
    * Выполнить спин (вращение барабанов)
+   * Согласно Swagger: POST /line/spin
    */
   static async spin(bet: number): Promise<{
     reels: Symbol[][];
@@ -21,8 +22,7 @@ export class GameAPI {
   }> {
     try {
       const data: SpinRequest = { bet };
-      // Исправлен маршрут: /spin вместо /game/line/spin
-      const response = await apiClient.getClient().post<SpinResult>('/spin', data);
+      const response = await apiClient.getClient().post<SpinResult>('/line/spin', data);
       
       // Конвертируем результат API в формат приложения
       const reels = this.convertBoardToReels(response.data.board);
@@ -79,12 +79,12 @@ export class GameAPI {
 
   /**
    * Купить бонус (фриспины)
+   * Согласно Swagger: POST /line/buy-bonus
    */
   static async buyBonus(amount: number): Promise<void> {
     try {
       const data: BuyBonusRequest = { amount };
-      // Маршрут: /buy-bonus
-      await apiClient.getClient().post<SimpleResponse>('/buy-bonus', data);
+      await apiClient.getClient().post('/line/buy-bonus', data);
     } catch (error) {
       throw this.handleError(error);
     }

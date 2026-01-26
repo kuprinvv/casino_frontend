@@ -1,38 +1,39 @@
-// ПРИМЕЧАНИЕ: Авторизация не реализована на бекенде
-// Этот файл оставлен для будущей реализации авторизации
-// В текущей версии используется упрощенная авторизация через localStorage
-// См. features/auth/model/store.ts
-
-/*
 import { apiClient } from './client';
-import {
-  RegisterRequest,
-  LoginRequest,
-  LoginResponse,
-  User,
-  ErrorResponse,
-} from './types';
 import { AxiosError } from 'axios';
 
-export class AuthAPI {
-  // Регистрация нового пользователя
-  static async register(data: RegisterRequest): Promise<User> {
-    try {
-      const response = await apiClient.getClient().post<User>('/auth/register', data);
-      return response.data;
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
+// API Types согласно Swagger
+export interface RegisterRequest {
+  name: string;
+  login: string;
+  password: string;
+}
 
-  // Вход в систему
-  static async login(data: LoginRequest): Promise<LoginResponse> {
+export interface LoginRequest {
+  login: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  access_token: string;
+}
+
+export interface ErrorResponse {
+  error: string;
+}
+
+export class AuthAPI {
+  /**
+   * Регистрация нового пользователя
+   * Возвращает access_token в теле ответа
+   * refresh_token и session_id устанавливаются через HTTP-only cookies
+   */
+  static async register(data: RegisterRequest): Promise<AuthResponse> {
     try {
-      const response = await apiClient.getClient().post<LoginResponse>('/auth/login', data);
+      const response = await apiClient.getClient().post<AuthResponse>('/auth/register', data);
       
-      // Сохраняем токен после успешного входа
-      if (response.data.token) {
-        apiClient.setAuthToken(response.data.token);
+      // Сохраняем access_token после успешной регистрации
+      if (response.data.access_token) {
+        apiClient.setAuthToken(response.data.access_token);
       }
       
       return response.data;
@@ -41,17 +42,71 @@ export class AuthAPI {
     }
   }
 
-  // Выход из системы
-  static logout(): void {
-    apiClient.clearAuthToken();
+  /**
+   * Вход в систему
+   * Возвращает access_token в теле ответа
+   * refresh_token и session_id устанавливаются через HTTP-only cookies
+   */
+  static async login(data: LoginRequest): Promise<AuthResponse> {
+    try {
+      const response = await apiClient.getClient().post<AuthResponse>('/auth/login', data);
+      
+      // Сохраняем access_token после успешного входа
+      if (response.data.access_token) {
+        apiClient.setAuthToken(response.data.access_token);
+      }
+      
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
   }
 
-  // Проверить, авторизован ли пользователь
+  /**
+   * Обновление access токена
+   * Использует session_id и refresh_token из cookies
+   */
+  static async refresh(): Promise<AuthResponse> {
+    try {
+      const response = await apiClient.getClient().post<AuthResponse>('/auth/refresh');
+      
+      // Обновляем access_token
+      if (response.data.access_token) {
+        apiClient.setAuthToken(response.data.access_token);
+      }
+      
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Выход из системы
+   * Закрывает сессию и удаляет cookies
+   */
+  static async logout(): Promise<void> {
+    try {
+      await apiClient.getClient().post('/auth/logout');
+      // Очищаем токен на клиенте
+      apiClient.clearAuthToken();
+    } catch (error) {
+      // Даже если запрос не удался, очищаем токен на клиенте
+      apiClient.clearAuthToken();
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Проверить, авторизован ли пользователь
+   */
   static isAuthenticated(): boolean {
     return apiClient.isAuthenticated();
   }
 
-  // Обработка ошибок
+  /**
+   * Обработка ошибок
+   */
   private static handleError(error: unknown): Error {
     if (error instanceof AxiosError) {
       const errorData = error.response?.data as ErrorResponse;
@@ -60,5 +115,4 @@ export class AuthAPI {
     return new Error('Неизвестная ошибка');
   }
 }
-*/
 

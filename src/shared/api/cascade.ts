@@ -46,11 +46,6 @@ export interface BuyCascadeBonusRequest {
   amount: number; // Сумма покупки (обычно = bet × 100)
 }
 
-export interface CascadeDataResponse {
-  balance: number;
-  free_spins_left: number;
-}
-
 export interface ErrorResponse {
   error: string;
 }
@@ -58,6 +53,7 @@ export interface ErrorResponse {
 export class CascadeAPI {
   /**
    * Выполнить спин (каскадная игра)
+   * Согласно Swagger: POST /cascade/spin
    */
   static async spin(bet: number): Promise<CascadeSpinResponse> {
     try {
@@ -71,35 +67,12 @@ export class CascadeAPI {
 
   /**
    * Купить бонус (фриспины)
+   * Согласно Swagger: POST /cascade/buy-bonus
    */
   static async buyBonus(amount: number): Promise<void> {
     try {
       const data: BuyCascadeBonusRequest = { amount };
       await apiClient.getClient().post('/cascade/buy-bonus', data);
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
-
-  /**
-   * Депозит
-   */
-  static async deposit(amount: number): Promise<void> {
-    try {
-      const data: BuyCascadeBonusRequest = { amount };
-      await apiClient.getClient().post('/cascade/deposit', data);
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
-
-  /**
-   * Получить данные пользователя (баланс, фриспины)
-   */
-  static async checkData(): Promise<CascadeDataResponse> {
-    try {
-      const response = await apiClient.getClient().get<CascadeDataResponse>('/cascade/check-data');
-      return response.data;
     } catch (error) {
       throw this.handleError(error);
     }

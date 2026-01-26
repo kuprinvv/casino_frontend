@@ -11,7 +11,7 @@ export interface BuyBonusRequest {
   amount: number;
 }
 
-// API Response types - соответствуют структуре бекенда
+// API Response types - соответствуют структуре бекенда согласно Swagger
 export interface SpinResult {
   board: string[][]; // 5x3 массив символов
   line_wins: LineWinAPI[]; // Выигрышные линии
@@ -31,14 +31,9 @@ export interface LineWinAPI {
   payout: number; // Выплата
 }
 
-export interface DataResponse {
-  balance: number; // Баланс пользователя
-  free_spin_count: number; // Остаток фриспинов
-}
-
-// Простой ответ для deposit и buy_bonus
-export interface SimpleResponse {
-  result: string;
+// Согласно Swagger: GET /pay/balance
+export interface BalanceResponse {
+  balance: number; // Текущий баланс пользователя
 }
 
 // Error response

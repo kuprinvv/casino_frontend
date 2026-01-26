@@ -1,4 +1,5 @@
 // Экспорт всех API модулей
+export { AuthAPI } from './auth';
 export { UserAPI } from './user';
 export { GameAPI } from './game';
 export { CascadeAPI } from './cascade';
@@ -11,10 +12,16 @@ export type {
   BuyBonusRequest,
   SpinResult,
   LineWinAPI,
-  DataResponse,
-  SimpleResponse,
+  BalanceResponse,
   ErrorResponse,
 } from './types';
+
+// Экспорт auth типов
+export type {
+  RegisterRequest,
+  LoginRequest,
+  AuthResponse,
+} from './auth';
 
 // Экспорт cascade типов
 export type {
@@ -25,6 +32,5 @@ export type {
   Position,
   NewSymbol,
   BuyCascadeBonusRequest,
-  CascadeDataResponse,
 } from './cascade';
 

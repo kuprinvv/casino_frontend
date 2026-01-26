@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { CascadeGameState } from '@shared/types/cascade';
 import { CascadeAPI } from '@shared/api/cascade';
+import { UserAPI } from '@shared/api';
 
 interface CascadeGameStore extends CascadeGameState {
   // Actions
@@ -82,11 +83,10 @@ export const useCascadeGameStore = create<CascadeGameStore>((set, get) => ({
     if (!state.useOnlineMode) return;
 
     try {
-      const data = await CascadeAPI.checkData();
+      const balance = await UserAPI.getBalance();
       set({
-        balance: data.balance,
-        freeSpinsLeft: data.free_spins_left,
-        isBonusGame: data.free_spins_left > 0,
+        balance,
+        // Фриспины обновляются только после спина, так как нет отдельного эндпоинта для их получения
       });
     } catch (error) {
       console.error('Failed to sync balance:', error);
@@ -98,12 +98,9 @@ export const useCascadeGameStore = create<CascadeGameStore>((set, get) => ({
 
     if (state.useOnlineMode) {
       try {
-        await CascadeAPI.deposit(amount);
-        const data = await CascadeAPI.checkData();
-        set({
-          balance: data.balance,
-          freeSpinsLeft: data.free_spins_left,
-        });
+        await UserAPI.deposit(amount);
+        // После депозита синхронизируем баланс
+        await get().syncBalance();
       } catch (error) {
         alert(error instanceof Error ? error.message : 'Ошибка при пополнении баланса');
         throw error;
@@ -300,12 +297,12 @@ export const useCascadeGameStore = create<CascadeGameStore>((set, get) => ({
     if (state.useOnlineMode) {
       try {
         await CascadeAPI.buyBonus(bonusCost);
-        const data = await CascadeAPI.checkData();
+        // После покупки бонуса синхронизируем баланс
+        // Фриспины будут обновлены после следующего спина
+        await get().syncBalance();
         set({
-          balance: data.balance,
-          freeSpinsLeft: data.free_spins_left,
-          isBonusGame: data.free_spins_left > 0,
           isSpinning: false,
+          // Фриспины обновятся после следующего спина, так как нет отдельного эндпоинта для их получения
         });
       } catch (error) {
         set({ isSpinning: false });

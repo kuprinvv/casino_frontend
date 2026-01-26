@@ -1,31 +1,16 @@
 import { apiClient } from './client';
-import { DepositRequest, DataResponse, ErrorResponse, SimpleResponse } from './types';
+import { DepositRequest, BalanceResponse, ErrorResponse } from './types';
 import { AxiosError } from 'axios';
 
 export class UserAPI {
   /**
-   * Получить данные пользователя (баланс и фриспины)
-   */
-  static async getUserData(): Promise<{ balance: number; freeSpinCount: number }> {
-    try {
-      // Исправлен маршрут: /check-data вместо /user/balance
-      const response = await apiClient.getClient().get<DataResponse>('/check-data');
-      return {
-        balance: response.data.balance,
-        freeSpinCount: response.data.free_spin_count,
-      };
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
-
-  /**
    * Получить текущий баланс пользователя
+   * Согласно Swagger: GET /pay/balance
    */
   static async getBalance(): Promise<number> {
     try {
-      const data = await this.getUserData();
-      return data.balance;
+      const response = await apiClient.getClient().get<BalanceResponse>('/pay/balance');
+      return response.data.balance;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -33,12 +18,12 @@ export class UserAPI {
 
   /**
    * Пополнить баланс
+   * Согласно Swagger: POST /pay/deposit
    */
   static async deposit(amount: number): Promise<void> {
     try {
       const data: DepositRequest = { amount };
-      // Исправлен маршрут: /deposit вместо /user/deposit
-      await apiClient.getClient().post<SimpleResponse>('/deposit', data);
+      await apiClient.getClient().post('/pay/deposit', data);
     } catch (error) {
       throw this.handleError(error);
     }
