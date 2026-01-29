@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SlotMachine } from '@widgets/SlotMachine';
 import { CasinoControlPanel } from '@widgets/CasinoControlPanel';
-import { InfoPanel } from '@widgets/InfoPanel';
 import { PaytableModal } from '@widgets/PaytableModal';
-import { UserPanel } from '@widgets/UserPanel';
 import { BonusActivationAnimation } from '@widgets/BonusActivationAnimation';
 import { Button } from '@shared/ui/Button';
 import { useGameStore } from '@entities/game';
@@ -76,7 +74,7 @@ export const GamePage: React.FC = () => {
       </header>
       
       <main className="game-content">
-        <UserPanel />
+        {/*<UserPanel />*/}
         <SlotMachine />
         <CasinoControlPanel
           bet={bet}

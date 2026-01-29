@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '@features/auth';
 import { useGameStore } from '@entities/game';
 import { AuthModal } from '@features/auth';
-import './UserPanel.css';
+import styles from './UserPanel.module.css';
+
 
 export const UserPanel: React.FC = () => {
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [depositAmount, setDepositAmount] = useState('100');
   const [showDepositForm, setShowDepositForm] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register' | null>(null);
   
   const { user, isAuthenticated, logout } = useAuthStore();
   const { useOnlineMode, setOnlineMode, syncBalance, deposit } = useGameStore();
@@ -42,39 +43,40 @@ export const UserPanel: React.FC = () => {
 
   return (
     <>
-      <div className="user-panel">
-        <div className="mode-indicator">
-          <span className={`mode-badge ${useOnlineMode ? 'online' : 'offline'}`}>
-            {useOnlineMode ? '🌐 Онлайн' : '📴 Оффлайн'}
-          </span>
-        </div>
-
+      <div className={styles["user-panel"]}>
         {isAuthenticated && user ? (
-          <div className="user-info">
-            <div className="user-email">{user.email}</div>
-            <div className="user-actions">
+          <div className={styles["user-info"]}>
+            <div className={styles["user-email"]}>{user.name}</div>
+            <div className={styles["user-actions"]}>
               {useOnlineMode && (
                 <button
-                  className="btn-deposit"
+                  className={styles["btn-deposit"]}
                   onClick={() => setShowDepositForm(!showDepositForm)}
                 >
                   💰 Пополнить
                 </button>
               )}
-              <button className="btn-logout" onClick={handleLogout}>
+              <button className={styles["btn-logout"]} onClick={handleLogout}>
                 Выйти
               </button>
             </div>
           </div>
         ) : (
-          <button className="btn-login" onClick={() => setShowAuthModal(true)}>
-            🔐 Войти
-          </button>
+          <div className={styles["btn-log-reg"]}>
+              <button className={styles["btn-login"]} onClick={() =>
+                  setAuthMode("login")}>
+                  Войти
+              </button>
+              <button className={styles["btn-register"]} onClick={() =>
+                  setAuthMode("register")}>
+                  Зарегистрироваться
+              </button>
+          </div>
         )}
       </div>
 
       {showDepositForm && (
-        <div className="deposit-form">
+        <div className={styles["deposit-form"]}>
           <h3>Пополнение баланса</h3>
           <input
             type="number"
@@ -84,18 +86,23 @@ export const UserPanel: React.FC = () => {
             min="1"
             step="1"
           />
-          <div className="deposit-actions">
-            <button className="btn-confirm" onClick={handleDeposit}>
+          <div className={styles["deposit-actions"]}>
+            <button className={styles["btn-confirm"]} onClick={handleDeposit}>
               Пополнить
             </button>
-            <button className="btn-cancel" onClick={() => setShowDepositForm(false)}>
+            <button className={styles["btn-cancel"]} onClick={() => setShowDepositForm(false)}>
               Отмена
             </button>
           </div>
         </div>
       )}
 
-      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
+        {authMode && (
+            <AuthModal
+                initialMode={authMode}
+                onClose={() => setAuthMode(null)}
+            />
+        )}
     </>
   );
 };

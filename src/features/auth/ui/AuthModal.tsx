@@ -4,10 +4,11 @@ import './AuthModal.css';
 
 interface AuthModalProps {
   onClose: () => void;
+  initialMode?: 'login' | 'register';
 }
 
-export const AuthModal = ({ onClose }: AuthModalProps) => {
-  const [isLogin, setIsLogin] = useState(true);
+export const AuthModal = ({ onClose, initialMode = 'login' }: AuthModalProps) => {
+  const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [name, setName] = useState('');
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');

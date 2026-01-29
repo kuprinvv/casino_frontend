@@ -1,5 +1,6 @@
 import React from 'react';
 import './GamesMenuPage.css';
+import {UserPanel} from "@widgets/UserPanel";
 
 export type GameRoute = '#/line' | '#/cascade';
 
@@ -46,7 +47,6 @@ export const GamesMenuPage: React.FC = () => {
           <div className="brand-mark" aria-hidden="true">🎮</div>
           <div className="brand-name">casino</div>
         </div>
-
         <nav className="top-nav">
           <a className="top-nav-link active" href="#/games">HOME</a>
           <a className="top-nav-link" href="#/games">GAMES</a>
@@ -54,6 +54,7 @@ export const GamesMenuPage: React.FC = () => {
           <span className="top-nav-link muted">PARTNERS</span>
           <span className="top-nav-link muted">NEWS</span>
         </nav>
+        <UserPanel/>
       </header>
 
       <main className="games-menu-content">

@@ -32,7 +32,7 @@ export const CascadeGamePage: React.FC = () => {
     buyBonus,
     setTurbo,
   } = useCascadeGameStore();
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated} = useAuthStore();
 
   const [showBonusOverlay, setShowBonusOverlay] = useState(false);
   const lastAwardedRef = useRef(0);
@@ -76,10 +76,6 @@ export const CascadeGamePage: React.FC = () => {
     }
   }, [isAuthenticated, setOnlineMode, syncBalance]);
 
-  const handleLogout = () => {
-    logout();
-    setOnlineMode(false);
-  };
 
   const handleDeposit = async () => {
     const amount = parseFloat(depositAmount);
@@ -133,36 +129,6 @@ export const CascadeGamePage: React.FC = () => {
       </header>
       
       <main className="game-content">
-        <div className="user-panel">
-          <div className="mode-indicator">
-            <span className={`mode-badge ${useOnlineMode ? 'online' : 'offline'}`}>
-              {useOnlineMode ? '🌐 Онлайн' : '📴 Оффлайн'}
-            </span>
-          </div>
-
-          {isAuthenticated && user ? (
-            <div className="user-info">
-              <div className="user-email">{user.email}</div>
-              <div className="user-actions">
-                {useOnlineMode && (
-                  <button
-                    className="btn-deposit"
-                    onClick={() => setShowDepositForm(!showDepositForm)}
-                  >
-                    💰 Пополнить
-                  </button>
-                )}
-                <button className="btn-logout" onClick={handleLogout}>
-                  Выйти
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button className="btn-login" onClick={() => setShowAuthModal(true)}>
-              🔐 Войти
-            </button>
-          )}
-        </div>
 
         {showDepositForm && (
           <div className="deposit-form">
