@@ -20,7 +20,7 @@ ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # Продакшен: раздача статики через nginx
-FROM nginx:alpine
+FROM nginx:alpine AS app
 
 # Копируем собранное приложение из builder
 COPY --from=builder /app/dist /usr/share/nginx/html
