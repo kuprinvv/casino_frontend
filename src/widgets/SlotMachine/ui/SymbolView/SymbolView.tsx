@@ -9,14 +9,14 @@ interface SymbolViewProps {
 
 
 const SYMBOL_LABELS: Record<SymbolType, string> = {
-  [SymbolType.SYMBOL_1]: '/1.png',
-  [SymbolType.SYMBOL_2]: '/2.png',
-  [SymbolType.SYMBOL_3]: '/4.png',
+  [SymbolType.SYMBOL_1]: '/9.png',
+  [SymbolType.SYMBOL_2]: '/8.png',
+  [SymbolType.SYMBOL_3]: '/7.png',
   [SymbolType.SYMBOL_4]: '/6.png',
-  [SymbolType.SYMBOL_5]: '/7.png',
-  [SymbolType.SYMBOL_6]: '/8.png',
-  [SymbolType.SYMBOL_7]: '/9.png',
-  [SymbolType.SYMBOL_8]: '/3.png',
+  [SymbolType.SYMBOL_5]: '/4.png',
+  [SymbolType.SYMBOL_6]: '/3.png',
+  [SymbolType.SYMBOL_7]: '/2.png',
+  [SymbolType.SYMBOL_8]: '/1.png',
   [SymbolType.BONUS]: '/5.png',
   [SymbolType.WILD]: '/wild.png',
 };
