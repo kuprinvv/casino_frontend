@@ -19,18 +19,11 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
   transform: rotate(45deg);
 }
 
 .symbol-label {
-  font-size: 48px;
-  font-weight: bold;
+  width: 100px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
