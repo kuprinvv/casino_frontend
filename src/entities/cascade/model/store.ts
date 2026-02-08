@@ -276,48 +276,51 @@ export const useCascadeGameStore = create<CascadeGameStore>((set, get) => ({
     set({ bet: evenBet });
   },
 
-  buyBonus: async () => {
-    const state = get();
+    buyBonus: async () => {
+        const state = get();
 
-    if (state.isSpinning || state.isResolving || state.isBonusGame) return;
+        if (state.isSpinning || state.isResolving || state.isBonusGame) return;
 
-    const bonusCost = state.bet * 100;
+        const bonusCost = state.bet * 100;
+        if (state.balance < bonusCost) {
+            alert('Недостаточно средств для покупки бонуса!');
+            return;
+        }
 
-    if (state.balance < bonusCost) {
-      alert('Недостаточно средств для покупки бонуса!');
-      return;
-    }
+        const assumedFreeSpins = 10;
 
-    set({
-      isSpinning: true,
-      isResolving: false,
-      lastWin: 0,
-    });
-
-    if (state.useOnlineMode) {
-      try {
-        await CascadeAPI.buyBonus(bonusCost);
-        // После покупки бонуса синхронизируем баланс
-        // Фриспины будут обновлены после следующего спина
-        await get().syncBalance();
         set({
-          isSpinning: false,
-          // Фриспины обновятся после следующего спина, так как нет отдельного эндпоинта для их получения
+            isSpinning: true,
+            isResolving: false,
+            lastWin: 0,
+            isBonusGame: true,
+            freeSpinsLeft: assumedFreeSpins,
+            awardedFreeSpins: 0,
+            lastShownFreeSpins: 0,
         });
-      } catch (error) {
-        set({ isSpinning: false });
-        alert(error instanceof Error ? error.message : 'Ошибка при покупке бонуса');
-      }
-    } else {
-      // Оффлайн режим
-      set({
-        balance: state.balance - bonusCost,
-        freeSpinsLeft: 10,
-        isBonusGame: true,
-        isSpinning: false,
-      });
-    }
-  },
+
+        if (state.useOnlineMode) {
+            try {
+                await CascadeAPI.buyBonus(bonusCost);
+                await get().syncBalance();
+            } catch (error) {
+                set({
+                    isSpinning: false,
+                    isBonusGame: false,
+                    freeSpinsLeft: 0,
+                    awardedFreeSpins: 0,
+                });
+                alert(error instanceof Error ? error.message : 'Ошибка при покупке бонуса');
+                throw error;
+            }
+            setTimeout(() => set({ isSpinning: false }), 300);
+        } else {
+            set({
+                balance: state.balance - bonusCost,
+                isSpinning: false,
+            });
+        }
+    },
 
   startCascadeAnimation: (cascades: any[], initialBoard: number[][], finalBoard: number[][]) => {
     // Устанавливаем начальную доску (с кластерами для первого каскада)
