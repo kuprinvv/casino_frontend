@@ -18,7 +18,7 @@ const SYMBOL_LABELS: Record<SymbolType, string> = {
   [SymbolType.SYMBOL_7]: '/9.png',
   [SymbolType.SYMBOL_8]: '/3.png',
   [SymbolType.BONUS]: '/5.png',
-  [SymbolType.WILD]: '/w.png',
+  [SymbolType.WILD]: '/wild.png',
 };
 
 export const SymbolView: React.FC<SymbolViewProps> = ({ type, isWinning = false }) => {
