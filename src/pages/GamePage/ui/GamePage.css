@@ -2,7 +2,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(135deg, #1e3c72 0%, #842a98 50%, #1e3c72 100%);
+    background: url('/public/bg.png') no-repeat center center fixed;
+    background-size: cover;
     padding: 20px;
     color: #0b0b0f;
     --jojo-purple: #7c3aed;
