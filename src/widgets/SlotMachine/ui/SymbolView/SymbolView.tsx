@@ -21,16 +21,16 @@ const SYMBOL_COLORS: Record<SymbolType, string> = {
 };
 
 const SYMBOL_LABELS: Record<SymbolType, string> = {
-  [SymbolType.SYMBOL_1]: '/public/1.png',
-  [SymbolType.SYMBOL_2]: '/public/2.png',
-  [SymbolType.SYMBOL_3]: '/public/4.png',
-  [SymbolType.SYMBOL_4]: '/public/6.png',
-  [SymbolType.SYMBOL_5]: '/public/7.png',
-  [SymbolType.SYMBOL_6]: '/public/8.png',
-  [SymbolType.SYMBOL_7]: '/public/9.png',
-  [SymbolType.SYMBOL_8]: '/public/3.png',
-  [SymbolType.BONUS]: '/public/5.png',
-  [SymbolType.WILD]: 'W',
+  [SymbolType.SYMBOL_1]: '/1.png',
+  [SymbolType.SYMBOL_2]: '/2.png',
+  [SymbolType.SYMBOL_3]: '/4.png',
+  [SymbolType.SYMBOL_4]: '/6.png',
+  [SymbolType.SYMBOL_5]: '/7.png',
+  [SymbolType.SYMBOL_6]: '/8.png',
+  [SymbolType.SYMBOL_7]: '/9.png',
+  [SymbolType.SYMBOL_8]: '/3.png',
+  [SymbolType.BONUS]: '/5.png',
+  [SymbolType.WILD]: '/w.png',
 };
 
 export const SymbolView: React.FC<SymbolViewProps> = ({ type, isWinning = false }) => {
@@ -42,7 +42,7 @@ export const SymbolView: React.FC<SymbolViewProps> = ({ type, isWinning = false 
       className={`symbol ${isWinning ? 'symbol-winning' : ''}`}
       style={{ backgroundColor }}
     >
-      <span className="symbol-label">{label}</span>
+      <img src={label} className="symbol-label"></img>
     </div>
   );
 };
