@@ -45,11 +45,11 @@ export const GamePage: React.FC = () => {
   }, [freeSpinsLeft, isBonusGame]);
 
   const handleBetIncrease = () => {
-    setBet(bet + 1);
+    setBet(bet + 2);
   };
 
   const handleBetDecrease = () => {
-    setBet(bet - 1);
+    setBet(bet - 2);
   };
 
   return (

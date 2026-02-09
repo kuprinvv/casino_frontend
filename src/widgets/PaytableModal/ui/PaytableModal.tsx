@@ -12,16 +12,16 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
   if (!isOpen) return null;
 
   const symbols = [
-    { type: SymbolType.SYMBOL_8, label: '👑', name: 'Король' },
-    { type: SymbolType.SYMBOL_7, label: '⭐', name: 'Звезда' },
-    { type: SymbolType.SYMBOL_6, label: '💎', name: 'Алмаз' },
-    { type: SymbolType.SYMBOL_5, label: '🍉', name: 'Арбуз' },
-    { type: SymbolType.SYMBOL_4, label: '🍇', name: 'Виноград' },
-    { type: SymbolType.SYMBOL_3, label: '🍊', name: 'Апельсин' },
-    { type: SymbolType.SYMBOL_2, label: '🍋', name: 'Лимон' },
-    { type: SymbolType.SYMBOL_1, label: '🍒', name: 'Вишня' },
-    { type: SymbolType.BONUS, label: '🎁', name: 'Бонус' },
-    { type: SymbolType.WILD, label: 'W', name: 'Wild' },
+    { type: SymbolType.SYMBOL_8, label: '/1.png', name: 'Король' },
+    { type: SymbolType.SYMBOL_7, label: '/2.png', name: 'Королева' },
+    { type: SymbolType.SYMBOL_6, label: '/3.png', name: 'Корона' },
+    { type: SymbolType.SYMBOL_5, label: '/4.png', name: 'Жезл' },
+    { type: SymbolType.SYMBOL_4, label: '/6.png', name: 'Знамя' },
+    { type: SymbolType.SYMBOL_3, label: '/7.png', name: 'Герб' },
+    { type: SymbolType.SYMBOL_2, label: '/8.png', name: 'Лимон' },
+    { type: SymbolType.SYMBOL_1, label: '/9.png', name: 'Перстень' },
+    { type: SymbolType.BONUS, label: '/5.png', name: 'Бонус' },
+    { type: SymbolType.WILD, label: '/wild.png', name: 'Wild' },
   ];
 
   return (
@@ -39,7 +39,7 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
             return (
               <div key={type} className="paytable-row">
                 <div className="paytable-symbol">
-                  <span className="paytable-icon">{label}</span>
+                    <img src={label} alt="Элемент"/>
                   <span className="paytable-name">{name}</span>
                 </div>
                 <div className="paytable-values">
