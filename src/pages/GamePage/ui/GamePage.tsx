@@ -92,10 +92,7 @@ export const GamePage: React.FC = () => {
           maxBet={100}
         />
       </main>
-      
-      <footer className="game-footer">
-        <p>20 линий выигрыша • Бонусные игры • Wild символы</p>
-      </footer>
+
 
       <PaytableModal 
         isOpen={isPaytableOpen} 

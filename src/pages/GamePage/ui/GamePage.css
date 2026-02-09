@@ -4,7 +4,7 @@
     flex-direction: column;
     background: url('/public/bg.png') no-repeat center center fixed;
     background-size: cover;
-    padding: 20px;
+    padding: 5px;
     color: #0b0b0f;
     --jojo-purple: #7c3aed;
     --jojo-pink: #ec4899;
@@ -71,7 +71,7 @@
 
 @media (max-width: 768px) {
     .game-title {
-        font-size: 32px;
+        font-size: 20px;
     }
 
     .game-page {

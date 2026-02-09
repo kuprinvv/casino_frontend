@@ -41,8 +41,8 @@
 }
 
 .reel-symbol {
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   flex-shrink: 0;
   transition: all 0.3s ease;
 }
