@@ -5,15 +5,33 @@ import { LinesOverlay } from './LinesOverlay/LinesOverlay';
 import { WinAnimation } from './WinAnimation/WinAnimation';
 import './SlotMachine.css';
 
+const SYMBOL_PATHS = [
+  '/1.png',
+  '/2.png',
+  '/3.png',
+  '/4.png',
+  '/6.png',
+  '/7.png',
+  '/8.png',
+  '/9.png',
+  '/bonus.png',
+  '/wild.png',
+];
+
 export const SlotMachine: React.FC = () => {
   const { reels, isSpinning, winningLines, lastWin, isTurbo } = useGameStore();
   const [showWinAnimation, setShowWinAnimation] = useState(false);
 
-  // Создаем карту выигрышных позиций
+  useEffect(() => {
+    SYMBOL_PATHS.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
   const winningPositionsMap = useMemo(() => {
     const map: Record<number, number[]> = {};
-    
-    winningLines.forEach(line => {
+    winningLines.forEach((line) => {
       line.positions.forEach(([reelIndex, rowIndex]) => {
         if (!map[reelIndex]) {
           map[reelIndex] = [];
@@ -23,13 +41,9 @@ export const SlotMachine: React.FC = () => {
         }
       });
     });
-    
-    console.log('🔥 Winning positions map:', map, 'from lines:', winningLines);
-    
     return map;
   }, [winningLines]);
 
-  // Показываем анимацию выигрыша
   useEffect(() => {
     if (!isSpinning && lastWin > 0) {
       setShowWinAnimation(true);
@@ -59,4 +73,3 @@ export const SlotMachine: React.FC = () => {
     </div>
   );
 };
-
