@@ -39,7 +39,7 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
             return (
               <div key={type} className="paytable-row">
                 <div className="paytable-symbol">
-                    <img src={label} alt="Элемент"/>
+                    <img src={label} width={"50px"} alt="Элемент"/>
                   <span className="paytable-name">{name}</span>
                 </div>
                 <div className="paytable-values">
