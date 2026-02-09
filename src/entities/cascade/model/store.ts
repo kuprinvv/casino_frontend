@@ -365,8 +365,7 @@ export const useCascadeGameStore = create<CascadeGameStore>((set, get) => ({
         }
       }
     }
-    
-    console.log('Board validation passed: board matches finalBoard');
+
     return true;
   },
 
