@@ -17,7 +17,7 @@ const SYMBOL_LABELS: Record<SymbolType, string> = {
   [SymbolType.SYMBOL_6]: '/3.png',
   [SymbolType.SYMBOL_7]: '/2.png',
   [SymbolType.SYMBOL_8]: '/1.png',
-  [SymbolType.BONUS]: '/5.png',
+  [SymbolType.BONUS]: '/bonus.png',
   [SymbolType.WILD]: '/wild.png',
 };
 
