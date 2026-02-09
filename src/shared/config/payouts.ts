@@ -42,12 +42,6 @@ export const PAYOUTS: PayoutConfig = {
     x4: 12.5,
     x5: 125,
   },
-  [SymbolType.BONUS]: {
-    x2: 0.5,
-    x3: 1,
-    x4: 5,
-    x5: 25,
-  },
 };
 
 // Конфигурация бонусной игры

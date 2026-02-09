@@ -18,8 +18,8 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
     { type: SymbolType.SYMBOL_5, label: '/4.png', name: 'Жезл' },
     { type: SymbolType.SYMBOL_4, label: '/6.png', name: 'Знамя' },
     { type: SymbolType.SYMBOL_3, label: '/7.png', name: 'Герб' },
-    { type: SymbolType.SYMBOL_2, label: '/8.png', name: 'Лимон' },
-    { type: SymbolType.SYMBOL_1, label: '/9.png', name: 'Перстень' },
+    { type: SymbolType.SYMBOL_2, label: '/8.png', name: 'Перстень' },
+    { type: SymbolType.SYMBOL_1, label: '/9.png', name: 'Факел' },
     { type: SymbolType.BONUS, label: '/5.png', name: 'Бонус' },
     { type: SymbolType.WILD, label: '/wild.png', name: 'Wild' },
   ];
@@ -51,6 +51,24 @@ export const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose })
               </div>
             );
           })}
+                <div key={SymbolType.BONUS} className="paytable-row">
+                    <div className="paytable-symbol">
+                        <img src={'/5.png'} width={"50px"} alt="Элемент"/>
+                        <span className="paytable-name">Бонус</span>
+                    </div>
+                    <div className="paytable-values">
+                        <span>x3: BONUS GAME</span>
+                    </div>
+                </div>
+            <div key={SymbolType.WILD} className="paytable-row">
+                <div className="paytable-symbol">
+                    <img src={'/wild.png'} width={"50px"} alt="Элемент"/>
+                    <span className="paytable-name">Wild</span>
+                </div>
+                <div className="paytable-values">
+                    <span>Универсальный символ</span>
+                </div>
+            </div>
         </div>
 
         <div className="rules">
