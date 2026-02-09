@@ -20,7 +20,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 14px 20px;
+    padding: 10px 20px;
     background: linear-gradient(135deg, #ffffff1a, #ffffff0d);
     border: 2px solid rgba(255, 255, 255, .2);
     border-radius: 12px;
@@ -140,7 +140,6 @@
     align-items: center;
     justify-content: center;
     padding: 10px 13px;
-    background: linear-gradient(135deg, #ffd70033, #ffa50033);
     border: 2px solid rgba(255, 215, 0, .5);
     border-radius: 12px;
     flex: 0 0 auto;
@@ -168,9 +167,9 @@
 .spin-button {
     flex: 0 0 auto;
     padding: 15px 20px;
-    background: linear-gradient(135deg, #f30707 0%, #f93d58 100%);
+    background: rgb(255 1 1 / 30%);
     border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 16px rgba(255, 107, 107, 0.4);
+    box-shadow: 0 4px 16px #ff6b6b66;
 }
 
 .spin-button:hover:not(:disabled) {
@@ -216,7 +215,6 @@
 /* Кнопка бонуса */
 .bonus-button {
     flex: 0 0 auto;
-    background: linear-gradient(135deg, rgba(156, 39, 176, 0.3) 0%, rgba(123, 31, 162, 0.3) 100%);
     border-color: rgba(156, 39, 176, 0.5);
 }
 
