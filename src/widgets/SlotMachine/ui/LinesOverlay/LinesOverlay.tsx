@@ -215,8 +215,8 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         height={svgDimensions.height}
         style={{
           position: 'absolute',
-          top: 0,
-          left: 0,
+          top: -48,
+          left: -37,
           pointerEvents: 'none',
           zIndex: 5,
         }}

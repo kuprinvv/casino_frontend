@@ -1,26 +1,26 @@
 .slot-machine {
+ margin-bottom: -13px;
  display: flex;
  justify-content: center;
  align-items: center;
  background: url(/public/board.png) no-repeat center center;
- background-size: 780px 576px;
- padding: 100px 20px;
+ background-size: 630px 414px;
+ padding: 81px 20px;
 }
 
 .slot-machine-frame {
-  padding: 30px;
+  padding: 20px;
   border-radius: 20px;
   position: relative;
 }
 
 .reels-container {
- display: flex;
- top: 23px;
- gap: 12px;
- padding: 20px;
- border-radius: 15px;
- border: 3px solid rgba(255, 255, 255, 0.2);
- position: relative;
+    display: flex;
+    top: 16px;
+    gap: 9px;
+    padding: 0px;
+    border-radius: 15px;
+    position: relative;
 }
 
 @media (max-width: 768px) {

@@ -142,7 +142,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         title={isSpinning ? 'Вращение...' : isResolving ? 'Каскад...' : isBonusGame ? `Фриспин (${freeSpinsLeft})` : 'Крутить'}
       >
           <span className="button-label">{isBonusGame ? `FREE (${freeSpinsLeft})` :
-              <img width="50" height="50" src="https://img.icons8.com/ios-filled/50/FFFFFF/play.png" alt="play"/>}</span>
+              <img width="30" height="30" src="https://img.icons8.com/ios-filled/50/FFFFFF/play.png" alt="play"/>}</span>
       </button>
 
       {/* Кнопка турбо */}

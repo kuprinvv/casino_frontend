@@ -22,14 +22,14 @@
 }
 
 .info-label {
-    font-size: 14px;
+    font-size: 8px;
     color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .info-value {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: bold;
     color: white;
 }
