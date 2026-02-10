@@ -78,6 +78,29 @@
     transition: transform 0.45s cubic-bezier(0.23, 1.24, 0.32, 1);
 }
 
+/* Плавное появление финального состояния без резкого "телепорта" */
+.reel-final-overlay {
+    position: absolute;
+    inset: 0;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.14s ease-out;
+    z-index: 3;
+}
+
+.reel-final-overlay-visible {
+    opacity: 1;
+}
+
+.reel-final-overlay .reel-symbol {
+    filter: brightness(1);
+    opacity: 1;
+}
+
 /* Медиа-запрос для мобильных устройств */
 @media (max-width: 768px) {
     .reel-container {

@@ -36,13 +36,17 @@ export const ReelView: React.FC<ReelViewProps> = ({
     const [offset, setOffset] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
     const [hasBounce, setHasBounce] = useState(false);
+    const [finalSymbols, setFinalSymbols] = useState<Symbol[] | null>(null);
+    const [showFinalOverlay, setShowFinalOverlay] = useState(false);
     const rafRef = useRef<number | null>(null);
     const stateRef = useRef({
         velocity: 0,
         phase: 'stopped' as 'stopped' | 'accelerating' | 'cruising' | 'decelerating',
         startTime: 0,
+        lastTime: 0,
         targetOffset: 0,
     });
+    const offsetRef = useRef(0);
 
     const symbolHeight = 75 + 12; // высота символа (75px) + gap (12px) — держим в синхроне с CSS
     const bufferTop = 8;          // запас сверху — чтобы символы не "выпадали"
@@ -85,33 +89,38 @@ export const ReelView: React.FC<ReelViewProps> = ({
             setDisplaySymbols(strip);
             setIsAnimating(true);
             setHasBounce(false);
+            setFinalSymbols(null);
+            setShowFinalOverlay(false);
 
+            const startTime = performance.now();
             stateRef.current = {
                 velocity: 0,
                 phase: 'accelerating',
-                startTime: performance.now(),
+                startTime,
+                lastTime: startTime,
                 targetOffset: 0,
             };
 
             const animate = (now: number) => {
                 const elapsed = now - stateRef.current.startTime;
-                const dt = (now - stateRef.current.startTime - elapsed) / 1000 + 0.016; // ≈1/60
+                const dt = (now - stateRef.current.lastTime) / 1000 || 0.016; // реальный дельта-тайм кадра
+                stateRef.current.lastTime = now;
 
                 let { velocity, phase } = stateRef.current;
 
-                // Фазы как в хороших слотах
+                // Фазы как в хороших слотах (ускорили вращение)
                 if (phase === 'accelerating') {
-                    velocity += 60 * dt; // сильное ускорение
-                    if (velocity > (isTurbo ? 85 : 52)) {
-                        velocity = isTurbo ? 85 : 52;
+                    velocity += 110 * dt; // более резкое ускорение
+                    if (velocity > (isTurbo ? 130 : 70)) {
+                        velocity = isTurbo ? 130 : 70;
                         stateRef.current.phase = 'cruising';
                     }
                 } else if (phase === 'cruising') {
-                    if (elapsed > (isTurbo ? 900 : 2200)) { // время стабильного вращения
+                    if (elapsed > (isTurbo ? 600 : 1500)) { // короче время стабильного вращения
                         stateRef.current.phase = 'decelerating';
                     }
                 } else if (phase === 'decelerating') {
-                    velocity *= 0.962; // плавное торможение
+                    velocity *= 0.95; // быстрее тормозим
                     if (velocity < 1.2) {
                         velocity = 0;
                         stateRef.current.phase = 'stopped';
@@ -119,23 +128,23 @@ export const ReelView: React.FC<ReelViewProps> = ({
                 }
 
                 // Смещение текущей ленты вниз
-                setOffset(prev => prev - velocity);
+                setOffset(prev => {
+                    const next = prev - velocity;
+                    offsetRef.current = next;
+                    return next;
+                });
 
                 stateRef.current.velocity = velocity;
 
                 if (velocity > 0 || phase !== 'stopped') {
                     rafRef.current = requestAnimationFrame(animate);
                 } else {
-                    // Финальная точная остановка на нужных символах + лёгкий отскок
-                    const finalOffset = 0;
-                    setDisplaySymbols(symbols);
-
-                    // небольшой овершут, который вернётся назад с помощью CSS-транзишна
+                    // Финальный лёгкий отскок без резкой смены символов
                     setHasBounce(true);
-                    setOffset(finalOffset + (isTurbo ? 6 : 12));
+                    setOffset(prev => prev + (isTurbo ? 4 : 8));
 
                     requestAnimationFrame(() => {
-                        setOffset(finalOffset);
+                        setOffset(prev => prev - (isTurbo ? 4 : 8));
                     });
 
                     // отключаем класс отскока чуть позже, чтобы не мешал следующему спину
@@ -147,7 +156,7 @@ export const ReelView: React.FC<ReelViewProps> = ({
             rafRef.current = requestAnimationFrame(animate);
 
             // Stagger остановки барабанов
-            const stopAfter = isTurbo ? 0 : reelIndex * 280 + 400;
+            const stopAfter = isTurbo ? 0 : reelIndex * 200 + 300; // барабаны останавливаются быстрее
             const stopTimer = setTimeout(() => {
                 stateRef.current.phase = 'decelerating';
             }, stopAfter);
@@ -159,11 +168,13 @@ export const ReelView: React.FC<ReelViewProps> = ({
                 setHasBounce(false);
             };
         } else {
-            setOffset(0);
-            setDisplaySymbols(symbols);
+            // Спин завершился, сервер прислал финальные символы —
+            // аккуратно показываем их поверх текущей ленты без "телепорта"
             stateRef.current.phase = 'stopped';
             setIsAnimating(false);
             setHasBounce(false);
+            setFinalSymbols(symbols);
+            requestAnimationFrame(() => setShowFinalOverlay(true));
         }
     }, [isSpinning, symbols, reelIndex, isTurbo]);
 
@@ -194,6 +205,23 @@ export const ReelView: React.FC<ReelViewProps> = ({
                     </div>
                 ))}
             </div>
+            {finalSymbols && (
+                <div
+                    className={
+                        'reel-final-overlay' +
+                        (showFinalOverlay ? ' reel-final-overlay-visible' : '')
+                    }
+                >
+                    {finalSymbols.map((symbol, idx) => (
+                        <div key={`final-${symbol.id}-${idx}`} className="reel-symbol">
+                            <SymbolView
+                                type={symbol.type}
+                                isWinning={!isSpinning && winningPositions.includes(idx)}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
