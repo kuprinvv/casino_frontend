@@ -25,11 +25,18 @@ export const SymbolView: React.FC<SymbolViewProps> = ({ type, isWinning = false 
   const label = SYMBOL_LABELS[type];
 
   return (
-    <div
-      className={`symbol ${isWinning ? 'symbol-winning' : ''}`}
-    >
-      <img src={label} className="symbol-label"></img>
-    </div>
+      <div
+          className={`symbol ${isWinning ? 'symbol-winning' : ''}`}
+      >
+          <img
+              src={label}
+              className="symbol-label"
+              alt=""
+              loading="eager"
+              decoding="sync"
+              fetchPriority="high"
+          />
+      </div>
   );
 };
 
