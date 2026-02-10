@@ -38,7 +38,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
   onBetDecrease,
   onTurboToggle,
   onBuyBonus,
-  minBet = 1,
+  minBet = 2,
   maxBet = 100,
 }) => {
   // Привязка к пробелу

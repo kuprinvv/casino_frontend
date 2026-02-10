@@ -91,7 +91,8 @@
 
   .reel {
     padding: 5px;
-    gap: 4px;
+    gap: 8px;
+    top: 1px;
   }
 
   .reel-symbol {
