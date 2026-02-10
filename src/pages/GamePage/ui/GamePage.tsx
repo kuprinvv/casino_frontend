@@ -88,7 +88,7 @@ export const GamePage: React.FC = () => {
           onBetDecrease={handleBetDecrease}
           onTurboToggle={() => setTurbo(!isTurbo)}
           onBuyBonus={buyBonus}
-          minBet={1}
+          minBet={2}
           maxBet={100}
         />
       </main>
