@@ -34,6 +34,8 @@ export const ReelView: React.FC<ReelViewProps> = ({
                                                   }) => {
     const [displaySymbols, setDisplaySymbols] = useState<Symbol[]>([]);
     const [offset, setOffset] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [hasBounce, setHasBounce] = useState(false);
     const rafRef = useRef<number | null>(null);
     const stateRef = useRef({
         velocity: 0,
@@ -42,7 +44,7 @@ export const ReelView: React.FC<ReelViewProps> = ({
         targetOffset: 0,
     });
 
-    const symbolHeight = 68 + 12; // высота + gap — обязательно подгони под реальный размер!
+    const symbolHeight = 75 + 12; // высота символа (75px) + gap (12px) — держим в синхроне с CSS
     const bufferTop = 8;          // запас сверху — чтобы символы не "выпадали"
 
     // Предзагрузка всех возможных символов (один раз при монтировании)
@@ -81,6 +83,9 @@ export const ReelView: React.FC<ReelViewProps> = ({
         if (isSpinning) {
             const strip = createSpinStrip();
             setDisplaySymbols(strip);
+            setIsAnimating(true);
+            setHasBounce(false);
+
             stateRef.current = {
                 velocity: 0,
                 phase: 'accelerating',
@@ -113,23 +118,29 @@ export const ReelView: React.FC<ReelViewProps> = ({
                     }
                 }
 
+                // Смещение текущей ленты вниз
                 setOffset(prev => prev - velocity);
-
-                // Циклическое смещение (бесшовный скролл вниз)
-                if (offset < -symbolHeight * bufferTop) {
-                    setDisplaySymbols(prev => prev.slice(bufferTop));
-                    setOffset(prev => prev + symbolHeight * bufferTop);
-                }
 
                 stateRef.current.velocity = velocity;
 
                 if (velocity > 0 || phase !== 'stopped') {
                     rafRef.current = requestAnimationFrame(animate);
                 } else {
-                    // Финальная точная остановка на нужных символах
-                    const finalOffset = -symbolHeight * bufferTop; // подгоняем под первые видимые = symbols
-                    setOffset(finalOffset);
+                    // Финальная точная остановка на нужных символах + лёгкий отскок
+                    const finalOffset = 0;
                     setDisplaySymbols(symbols);
+
+                    // небольшой овершут, который вернётся назад с помощью CSS-транзишна
+                    setHasBounce(true);
+                    setOffset(finalOffset + (isTurbo ? 6 : 12));
+
+                    requestAnimationFrame(() => {
+                        setOffset(finalOffset);
+                    });
+
+                    // отключаем класс отскока чуть позже, чтобы не мешал следующему спину
+                    setTimeout(() => setHasBounce(false), 260);
+                    setIsAnimating(false);
                 }
             };
 
@@ -144,19 +155,31 @@ export const ReelView: React.FC<ReelViewProps> = ({
             return () => {
                 if (rafRef.current) cancelAnimationFrame(rafRef.current);
                 clearTimeout(stopTimer);
+                setIsAnimating(false);
+                setHasBounce(false);
             };
         } else {
             setOffset(0);
             setDisplaySymbols(symbols);
             stateRef.current.phase = 'stopped';
+            setIsAnimating(false);
+            setHasBounce(false);
         }
     }, [isSpinning, symbols, reelIndex, isTurbo]);
+
+    const reelClassName = [
+        'reel',
+        isAnimating ? 'reel-spinning' : '',
+        hasBounce ? 'reel-stop-bounce' : '',
+    ]
+        .filter(Boolean)
+        .join(' ');
 
     return (
         <div className="reel-container">
             <SpinningOverlay isActive={isSpinning} />
             <div
-                className="reel"
+                className={reelClassName}
                 style={{
                     transform: `translateY(${offset}px)`,
                     willChange: 'transform',

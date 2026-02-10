@@ -15,14 +15,17 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 50px,
-    rgba(255, 255, 255, 0.05) 50px,
-    rgba(255, 255, 255, 0.05) 51px
-  );
-  animation: scan-lines 0.08s linear infinite;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.14), transparent 55%),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 40px,
+      rgba(255, 255, 255, 0.08) 40px,
+      rgba(255, 255, 255, 0.08) 42px
+    );
+  mix-blend-mode: screen;
+  animation: scan-lines 0.06s linear infinite;
 }
 
 @keyframes scan-lines {

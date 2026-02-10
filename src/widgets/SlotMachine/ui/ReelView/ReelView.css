@@ -44,6 +44,18 @@
     -webkit-backface-visibility: hidden;
 }
 
+/* Состояние активного вращения барабана */
+.reel.reel-spinning {
+    /* небольшая перспектива и "живость" */
+    transform-origin: center center;
+}
+
+/* Во время активного спина — чуть больше яркость и лёгкий "моушн" */
+.reel.reel-spinning .reel-symbol {
+    filter: brightness(1.15);
+    opacity: 0.9;
+}
+
 /* Один символ */
 .reel-symbol {
     width: 75px;
@@ -63,7 +75,7 @@
 
 /* Финальный отскок после остановки (опционально, можно убрать) */
 .reel-stop-bounce {
-    transition: transform 0.6s cubic-bezier(0.34, 0.16, 0.3, 1.0);
+    transition: transform 0.45s cubic-bezier(0.23, 1.24, 0.32, 1);
 }
 
 /* Медиа-запрос для мобильных устройств */
