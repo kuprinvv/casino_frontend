@@ -3,7 +3,7 @@
     height: 272px;
     background: linear-gradient(180deg, #0006, #0003, #0006);
     border-radius: 10px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, .2);
     overflow: hidden;
     position: relative;
     box-shadow: inset 0 0 15px #00000080;
@@ -30,7 +30,6 @@
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
 }
 
-/* Основной контейнер барабана */
 .reel {
     display: flex;
     flex-direction: column;
@@ -38,70 +37,52 @@
     padding: 12px;
     top: -2px;
     position: relative;
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+    transition: transform .5s cubic-bezier(.25, .46, .45, .94);
 }
 
-/* Состояние активного вращения барабана */
-.reel.reel-spinning {
-    /* небольшая перспектива и "живость" */
-    transform-origin: center center;
-}
-
-/* Во время активного спина — чуть больше яркость и лёгкий "моушн" */
-.reel.reel-spinning .reel-symbol {
-    filter: brightness(1.15);
-    opacity: 0.9;
-}
-
-/* Один символ */
 .reel-symbol {
     width: 75px;
     height: 75px;
     flex-shrink: 0;
-    /* Во время спина — лёгкая яркость и прозрачность для ощущения движения */
-    filter: brightness(1.05);
-    opacity: 0.92;
-    transition: filter 0.4s ease, opacity 0.4s ease;
+    transition: all 0.3s ease;
 }
 
-/* Когда спин закончился — возвращаем нормальный вид */
-.reel:not(.reel-spinning) .reel-symbol {
-    filter: brightness(1);
-    opacity: 1;
+.reel-spinning {
+    animation: spin-reel 0.04s linear infinite;
 }
 
-/* Финальный отскок после остановки (опционально, можно убрать) */
-.reel-stop-bounce {
-    transition: transform 0.45s cubic-bezier(0.23, 1.24, 0.32, 1);
+.reel-spinning.turbo {
+    animation: spin-reel 0.01s linear infinite;
 }
 
-/* Плавное появление финального состояния без резкого "телепорта" */
-.reel-final-overlay {
-    position: absolute;
-    inset: 0;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.14s ease-out;
-    z-index: 3;
+.reel-spinning .reel-symbol {
+    filter: blur(3px) brightness(1.1);
+    opacity: 0.9;
 }
 
-.reel-final-overlay-visible {
-    opacity: 1;
+@keyframes spin-reel {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(108px); /* высота символа + gap - теперь вниз */
+    }
+
 }
 
-.reel-final-overlay .reel-symbol {
-    filter: brightness(1);
-    opacity: 1;
+/* Эффект остановки с отскоком */
+.reel:not(.reel-spinning) {
+    animation: stop-bounce .8s cubic-bezier(.3, .1, .3, 1);
 }
 
-/* Медиа-запрос для мобильных устройств */
+@keyframes stop-bounce {
+    0%   { transform: translateY(0); }
+    40%  { transform: translateY(-8px); }
+    60%  { transform: translateY(4px);   }
+    80%  { transform: translateY(-4px);  }
+    100% { transform: translateY(0);     }
+}
+
 @media (max-width: 768px) {
     .reel-container {
         width: 75px;
@@ -109,12 +90,22 @@
     }
 
     .reel {
-        padding: 5px 0;
-        gap: 4px;
+        padding: 5px;
+        gap: 8px;
+        top: 1px;
     }
 
     .reel-symbol {
         width: 60px;
         height: 60px;
+    }
+
+    @keyframes spin-reel {
+        0% {
+            transform: translateY(0);
+        }
+        100% {
+            transform: translateY(64px); /* высота символа + gap для мобильных - теперь вниз */
+        }
     }
 }
