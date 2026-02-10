@@ -5,7 +5,7 @@ import { SpinningOverlay } from './SpinningOverlay';
 import './ReelView.css';
 
 interface ReelViewProps {
-    symbols: Symbol[];
+    symbols: Symbol[];                    // финальные символы от сервера (3 или 4 штуки)
     isSpinning: boolean;
     winningPositions?: number[];
     reelIndex: number;
@@ -37,103 +37,120 @@ export const ReelView: React.FC<ReelViewProps> = ({
     const rafRef = useRef<number | null>(null);
     const stateRef = useRef({
         velocity: 0,
-        time: 0,
-        phase: 'stopped' as 'stopped' | 'accelerating' | 'constant' | 'decelerating',
+        phase: 'stopped' as 'stopped' | 'accelerating' | 'cruising' | 'decelerating',
+        startTime: 0,
+        targetOffset: 0,
     });
 
-    const symbolHeight = 68 + 12; // высота символа + gap — подгони под свой дизайн
-    const visibleCount = 4;       // сколько символов видно одновременно
-    const buffer = 6;             // буфер сверху и снизу
+    const symbolHeight = 68 + 12; // высота + gap — обязательно подгони под реальный размер!
+    const bufferTop = 8;          // запас сверху — чтобы символы не "выпадали"
 
-    // Генерация циклических символов
-    const generateLoopSymbols = () => {
-        const arr: Symbol[] = [];
-        for (let i = 0; i < visibleCount + buffer * 2; i++) {
-            arr.push({
+    // Предзагрузка всех возможных символов (один раз при монтировании)
+    useEffect(() => {
+        const paths = [
+            '/1.png','/2.png','/3.png','/4.png','/6.png','/7.png','/8.png','/9.png',
+            '/bonus.png','/wild.png'
+        ];
+        paths.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    }, []);
+
+    // Генерация ленты для спина
+    const createSpinStrip = () => {
+        const strip: Symbol[] = [];
+        // Буфер сверху + видимые + буфер снизу
+        for (let i = 0; i < bufferTop; i++) {
+            strip.push({
                 type: SYMBOL_TYPES[i % SYMBOL_TYPES.length],
-                id: `loop-${reelIndex}-${i}`,
+                id: `pre-${reelIndex}-${i}`,
             });
         }
-        return arr;
+        // Добавляем несколько циклов случайных символов
+        for (let i = 0; i < 5; i++) { // 5 циклов — достаточно для длинного спина
+            strip.push(...SYMBOL_TYPES.map(type => ({
+                type,
+                id: `cycle-${reelIndex}-${i}-${type}`,
+            })));
+        }
+        return strip;
     };
 
     useEffect(() => {
         if (isSpinning) {
-            setDisplaySymbols(generateLoopSymbols());
+            const strip = createSpinStrip();
+            setDisplaySymbols(strip);
             stateRef.current = {
                 velocity: 0,
-                time: 0,
                 phase: 'accelerating',
+                startTime: performance.now(),
+                targetOffset: 0,
             };
 
-            const startTime = performance.now();
-
-            const animate = (currentTime: number) => {
-                const elapsed = currentTime - startTime;
-                const dt = (currentTime - stateRef.current.time) / 1000;
-                stateRef.current.time = currentTime;
+            const animate = (now: number) => {
+                const elapsed = now - stateRef.current.startTime;
+                const dt = (now - stateRef.current.startTime - elapsed) / 1000 + 0.016; // ≈1/60
 
                 let { velocity, phase } = stateRef.current;
 
-                // Фазы движения (по аналогии с видео)
+                // Фазы как в хороших слотах
                 if (phase === 'accelerating') {
-                    velocity += 45 * dt;           // ускорение
-                    if (velocity > (isTurbo ? 65 : 38)) {
-                        velocity = isTurbo ? 65 : 38;
-                        stateRef.current.phase = 'constant';
+                    velocity += 60 * dt; // сильное ускорение
+                    if (velocity > (isTurbo ? 85 : 52)) {
+                        velocity = isTurbo ? 85 : 52;
+                        stateRef.current.phase = 'cruising';
                     }
-                } else if (phase === 'constant') {
-                    // стабильная скорость 1.5–2.5 секунды
-                    if (elapsed > (isTurbo ? 800 : 1800)) {
+                } else if (phase === 'cruising') {
+                    if (elapsed > (isTurbo ? 900 : 2200)) { // время стабильного вращения
                         stateRef.current.phase = 'decelerating';
                     }
                 } else if (phase === 'decelerating') {
-                    velocity *= 0.965;             // плавное торможение
-                    if (velocity < 0.8) {
+                    velocity *= 0.962; // плавное торможение
+                    if (velocity < 1.2) {
                         velocity = 0;
                         stateRef.current.phase = 'stopped';
                     }
                 }
 
-                // Движение вниз
-                setOffset((prev) => {
-                    let next = prev - velocity;
-                    // Циклический сдвиг
-                    if (Math.abs(next) > symbolHeight * displaySymbols.length) {
-                        next += symbolHeight * displaySymbols.length;
-                    }
-                    return next;
-                });
+                setOffset(prev => prev - velocity);
+
+                // Циклическое смещение (бесшовный скролл вниз)
+                if (offset < -symbolHeight * bufferTop) {
+                    setDisplaySymbols(prev => prev.slice(bufferTop));
+                    setOffset(prev => prev + symbolHeight * bufferTop);
+                }
 
                 stateRef.current.velocity = velocity;
 
                 if (velocity > 0 || phase !== 'stopped') {
                     rafRef.current = requestAnimationFrame(animate);
                 } else {
-                    // Финальная остановка с небольшим отскоком
-                    setOffset(0);
+                    // Финальная точная остановка на нужных символах
+                    const finalOffset = -symbolHeight * bufferTop; // подгоняем под первые видимые = symbols
+                    setOffset(finalOffset);
                     setDisplaySymbols(symbols);
                 }
             };
 
             rafRef.current = requestAnimationFrame(animate);
 
-            // Задержка остановки для stagger-эффекта
-            const stopDelay = isTurbo ? 0 : reelIndex * 250 + 300;
-            const timer = setTimeout(() => {
+            // Stagger остановки барабанов
+            const stopAfter = isTurbo ? 0 : reelIndex * 280 + 400;
+            const stopTimer = setTimeout(() => {
                 stateRef.current.phase = 'decelerating';
-            }, stopDelay);
+            }, stopAfter);
 
             return () => {
                 if (rafRef.current) cancelAnimationFrame(rafRef.current);
-                clearTimeout(timer);
+                clearTimeout(stopTimer);
             };
         } else {
             setOffset(0);
             setDisplaySymbols(symbols);
             stateRef.current.phase = 'stopped';
         }
-    }, [isSpinning, symbols, reelIndex, isTurbo, displaySymbols.length]);
+    }, [isSpinning, symbols, reelIndex, isTurbo]);
 
     return (
         <div className="reel-container">
@@ -149,7 +166,7 @@ export const ReelView: React.FC<ReelViewProps> = ({
                     <div key={symbol.id} className="reel-symbol">
                         <SymbolView
                             type={symbol.type}
-                            isWinning={!isSpinning && winningPositions.includes(idx % symbols.length)}
+                            isWinning={!isSpinning && winningPositions.includes(idx)}
                         />
                     </div>
                 ))}
