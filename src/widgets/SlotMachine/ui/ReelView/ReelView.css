@@ -1,6 +1,6 @@
 .reel-container {
-    width: 98px;
-    height: 246px;
+    width: 101px;
+    height: 272px;
     background: linear-gradient(180deg, #0006, #0003, #0006);
     border-radius: 10px;
     border: 2px solid rgba(255, 255, 255, .2);
@@ -34,15 +34,15 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 14px;
-    top: -7px;
+    padding: 12px;
+    top: -2px;
     position: relative;
     transition: transform .5s cubic-bezier(.25, .46, .45, .94);
 }
 
 .reel-symbol {
-  width: 68px;
-  height: 68px;
+  width: 75px;
+  height: 75px;
   flex-shrink: 0;
   transition: all 0.3s ease;
 }
