@@ -214,11 +214,7 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         width={svgDimensions.width}
         height={svgDimensions.height}
         style={{
-          position: 'absolute',
-          top: -48,
-          left: -37,
-          pointerEvents: 'none',
-          zIndex: 5,
+
         }}
       >
         {/* Градиенты для линий - должны быть в defs и иметь уникальные ID */}

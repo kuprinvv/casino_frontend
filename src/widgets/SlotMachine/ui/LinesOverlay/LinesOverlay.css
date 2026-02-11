@@ -1,6 +1,11 @@
 /* SVG линии выигрыша */
 .winning-lines-svg {
   overflow: visible;
+  position: absolute;
+  top: -48px;
+  left: -37px;
+  pointer-event: 'none';
+  z-index: 5;
 }
 
 .line-shadow {
@@ -244,7 +249,7 @@
   }
   
   .line-dot {
-    r: 6;
+    r: 6px;
   }
   
   
@@ -278,3 +283,9 @@
   }
 }
 
+@media(max-width: 480px) {
+    .winning-lines-svg{
+        top: -6px;
+        left: -24px;
+    }
+}

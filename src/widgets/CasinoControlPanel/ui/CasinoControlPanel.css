@@ -279,7 +279,7 @@
 @media (max-width: 480px) {
     .casino-control-panel {
         grid-template-columns: 1fr;
-        gap: 2px;
+        gap: 5px;
         padding: 20px;
     }
 

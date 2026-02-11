@@ -40,7 +40,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     .slot-machine {
         background-size: 366px 275px;
     }
@@ -50,7 +50,7 @@
     }
 
     .reels-container {
-        gap: 8px;
+        gap: 4px;
         padding: 10px;
         top: 10px;
     }
