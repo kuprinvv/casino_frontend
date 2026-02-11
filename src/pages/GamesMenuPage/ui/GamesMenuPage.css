@@ -328,6 +328,14 @@
   }
 }
 
+@media (max-width: 801px) {
+    .game-title{
+        padding: 5px 12px;
+        font-size: 15px;
+    }
+
+}
+
 @media (max-width: 600px) {
   .games-grid {
     grid-template-columns: 1fr;
