@@ -83,7 +83,7 @@
     100% { transform: translateY(0);     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 801px) {
     .reel-container {
         width: 75px;
         height: 210px;
@@ -110,7 +110,7 @@
     }
 }
 
-@media (max-width: 760px) and (max-height: 480px) {
+@media (max-width: 800px) and (max-height: 500px) {
     .reel-container {
         width: 73px;
         height: 167px;

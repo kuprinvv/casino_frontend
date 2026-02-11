@@ -116,7 +116,7 @@
     font-size: 14px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 801px) {
     .info-section {
         flex-direction: column;
         gap: 15px;

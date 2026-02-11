@@ -285,7 +285,7 @@
   }
 }
 
-@media(max-width: 760px) {
+@media(max-width: 801px) {
     .winning-lines-svg{
         top: -11px;
         left: 2px;

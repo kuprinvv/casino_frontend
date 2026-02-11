@@ -225,7 +225,7 @@
 }
 
 /* Адаптивность */
-@media (max-width: 768px) {
+@media (max-width: 801px) {
     .casino-control-panel {
         grid-template-columns: 1fr;
         gap: 12px;
