@@ -316,14 +316,17 @@
 
 @media (max-width: 801px) {
   .game-header {
-    flex-direction: row;
-    align-items: stretch;
-    padding: 0;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 0;
+      background: none;
+      backdrop-filter: unset;
   }
 
   .game-title {
       padding: 2px 12px;
       font-size: 15px;
+      visibility: hidden;
   }
 
   .header-buttons {

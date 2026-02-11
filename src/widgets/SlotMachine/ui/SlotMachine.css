@@ -42,8 +42,8 @@
 
 @media (max-width: 800px) and (max-height: 500px) {
     .slot-machine {
-        background-size: 475px 270px;
-        margin-top: -39px;
+        background-size: 475px 250px;
+        margin-top: -88px;
     }
     .slot-machine-frame {
         padding: 0;

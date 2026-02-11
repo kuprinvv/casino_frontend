@@ -280,36 +280,40 @@
     .casino-control-panel{
         gap: 3px;
         padding: 0;
-        margin-top: -27px;
+        margin-top: -39px;
     }
     .bet-decrease .bet-increase{
         width: 20px;
     }
     .casino-button{
-        min-height: 48px;
-        padding: 4px 20px;
+        min-height: 24px;
+        padding: 1px 20px;
     }
     .casino-button svg {
         width: 20px;
         height: 20px;
     }
     .bet-display {
-        width: 13%;
-        min-height: 20px;
-        padding: 4px 12px;
+        width: 10%;
+        min-height: 13px;
+        padding: 0 12px;
     }
     .bet-label{
-        font-size: 8px;
+        font-size: 6px;
     }
     .bet-value {
-        font-size: 14px;
+        font-size: 10px;
     }
     .spin-button {
         width: 13%;
         padding: 6px 24px;
     }
+    .spin-button img {
+        width: 15px;
+        height: 15px;
+    }
     .casino-button .button-label {
-        font-size: 8px;
+        font-size: 5px;
     }
 
 }
