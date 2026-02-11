@@ -19,7 +19,7 @@
     display: flex;
     top: 16px;
     gap: 9px;
-    padding: 0px;
+    padding: 0;
     border-radius: 15px;
     position: relative;
 }
@@ -40,3 +40,18 @@
   }
 }
 
+@media (max-width: 768px) {
+    .slot-machine {
+        background-size: 366px 275px;
+    }
+
+    .slot-machine-frame {
+        padding: 0;
+    }
+
+    .reels-container {
+        gap: 8px;
+        padding: 10px;
+        top: 10px;
+    }
+}

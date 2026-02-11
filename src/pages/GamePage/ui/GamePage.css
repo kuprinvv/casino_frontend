@@ -1,9 +1,8 @@
 .game-page {
-    /* Высота по вьюпорту, чтобы не было лишнего скролла */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: url('/public/bg.png') no-repeat center center;
+    background: url('/public/bg.png') no-repeat center center fixed;
     background-size: cover;
     padding: 5px;
     color: #0b0b0f;
@@ -13,7 +12,6 @@
     --jojo-ink: #000000;
     --jojo-paper: #fff9f2;
     --jojo-blue: #f59e0b;
-    overflow: hidden;
 }
 
 .game-header {
@@ -57,34 +55,6 @@
 .game-content {
     max-width: 1200px;
     margin: 0 auto;
-    flex: 1 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Очень низкие экраны (обычно горизонтальная ориентация телефонов) */
-@media (max-height: 550px) {
-    .game-page {
-        padding: 4px 2px;
-    }
-
-    .game-header {
-        padding: 4px 6px;
-        margin-bottom: 0;
-    }
-
-    .game-title {
-        font-size: 24px;
-    }
-
-    .game-content {
-        /* Масштабируем весь игровой блок, чтобы он уместился по высоте,
-           при этом сохраняем относительные расстояния между слот-машиной и панелью */
-        transform: scale(0.85);
-        transform-origin: top center;
-    }
 }
 
 .game-footer {

@@ -86,3 +86,8 @@
   }
 }
 
+@media (max-width: 480px) {
+    .symbol-label {
+        width: 47px;
+    }
+}

@@ -109,3 +109,22 @@
         }
     }
 }
+
+@media (max-width: 480px) {
+    .reel-container {
+        width: 54px;
+        height: 164px;
+    }
+
+    .reel {
+        padding: 3px;
+        gap: 9px;
+        top: 1px;
+    }
+
+    .reel-symbol {
+        width: 45px;
+        height: 45px;
+    }
+
+}
