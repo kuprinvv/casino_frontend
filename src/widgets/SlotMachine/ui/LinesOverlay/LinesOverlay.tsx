@@ -143,10 +143,10 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
     const symbolHeight = isMobile ? SYMBOL_HEIGHT_MOBILE : SYMBOL_HEIGHT;
     const symbolGap = isMobile ? SYMBOL_GAP_MOBILE : SYMBOL_GAP;
     const padding = isMobile ? REEL_PADDING_MOBILE : REEL_PADDING;
-    
+
     const width = REELS_COUNT * reelWidth + (REELS_COUNT - 1) * reelGap;
     const height = ROWS_COUNT * symbolHeight + (ROWS_COUNT - 1) * symbolGap + 2 * padding;
-    
+
     return { width, height };
   }, [isMobile]);
   
@@ -213,9 +213,6 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         className="winning-lines-svg"
         width={svgDimensions.width}
         height={svgDimensions.height}
-        style={{
-
-        }}
       >
         {/* Градиенты для линий - должны быть в defs и иметь уникальные ID */}
         <defs>

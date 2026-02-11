@@ -80,6 +80,9 @@
 }
 
 @media (max-width: 480px) {
+    .game-page{
+        padding: 0;
+    }
     .game-content {
         margin: 0;
     }
