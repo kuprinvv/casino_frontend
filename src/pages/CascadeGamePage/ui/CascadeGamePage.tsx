@@ -32,7 +32,7 @@ export const CascadeGamePage: React.FC = () => {
   useEffect(() => {
     const trigger = () => {
       setShowBonusOverlay(true);
-      const t = window.setTimeout(() => setShowBonusOverlay(false), 2200);
+      const t = window.setTimeout(() => setShowBonusOverlay(false), 6000);
       return () => window.clearTimeout(t);
     };
 

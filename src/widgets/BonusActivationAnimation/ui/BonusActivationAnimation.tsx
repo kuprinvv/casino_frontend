@@ -1,42 +1,64 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './BonusActivationAnimation.css';
 
 interface BonusActivationAnimationProps {
-  show: boolean;
-  text?: string;
-  durationMs?: number;
+    show: boolean;
+    text?: string;
+    durationMs?: number;
+    videoSrc?: string; // Путь к видео файлу
 }
 
 export const BonusActivationAnimation: React.FC<BonusActivationAnimationProps> = ({
-  show,
-  text = 'БОНУСНАЯ ИГРА',
-  durationMs = 2200,
-}) => {
-  const [isVisible, setIsVisible] = useState(false);
+    show,
+    text = 'БОНУСНАЯ ИГРА',
+    durationMs = 6000,
+    videoSrc = '/5.mp4',
+        }) => {
+    const [isVisible, setIsVisible] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    if (!show) {
-      setIsVisible(false);
-      return;
-    }
+    useEffect(() => {
+        if (!show) {
+            setIsVisible(false);
+            return;
+        }
 
-    setIsVisible(true);
-    const t = window.setTimeout(() => setIsVisible(false), durationMs);
-    return () => window.clearTimeout(t);
-  }, [show, durationMs]);
+        setIsVisible(true);
 
-  if (!isVisible) return null;
+        // Воспроизведение видео при показе
+        if (videoRef.current) {
+            videoRef.current.currentTime = 0;
+            videoRef.current.play().catch(e => console.log('Autoplay prevented:', e));
+        }
 
-  return (
-    <div className="bonus-activation-overlay" aria-hidden="true">
-      <div className="bonus-activation-backdrop" />
-      <div className="bonus-activation-content">
-        <div className="bonus-activation-sparkles" />
-        <div className="bonus-activation-title">{text}</div>
-        <div className="bonus-activation-subtitle">Бесплатные вращения активированы </div>
-      </div>
-    </div>
-  );
+        const t = window.setTimeout(() => setIsVisible(false), durationMs);
+        return () => window.clearTimeout(t);
+    }, [show, durationMs]);
+
+    if (!isVisible) return null;
+
+    return (
+        <div className="bonus-activation-overlay" aria-hidden="true">
+            {/* Видео как фон */}
+            <video
+                ref={videoRef}
+                className="bonus-activation-video"
+                autoPlay
+                muted
+                loop
+                playsInline
+                src={videoSrc}
+            />
+
+            {/* Полупрозрачный затемняющий слой */}
+            <div className="bonus-activation-backdrop" />
+
+            {/* Основной контент поверх видео */}
+            <div className="bonus-activation-content">
+                <div className="bonus-activation-sparkles" />
+                <div className="bonus-activation-title">{text}</div>
+                <div className="bonus-activation-subtitle">Бесплатные вращения активированы</div>
+            </div>
+        </div>
+    );
 };
-
-
