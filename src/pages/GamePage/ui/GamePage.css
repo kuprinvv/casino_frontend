@@ -79,6 +79,24 @@
     }
 }
 
+@media (max-width: 800px) and (max-height: 500px) {
+    .game-page {
+        padding: 1px;
+    }
+    .game-header {
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .game-title {
+        padding: 2px 12px;
+        font-size: 15px;
+    }
+    .info-button {
+        padding: 5px;
+        font-size: 9px;
+    }
+}
+
 @media (max-width: 480px) {
     .game-page{
         padding: 0;
