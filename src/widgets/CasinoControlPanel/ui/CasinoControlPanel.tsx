@@ -168,7 +168,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         disabled={!canSpin}
         title={isSpinning ? 'Вращение...' : isResolving ? 'Каскад...' : isBonusGame ? `Фриспин (${freeSpinsLeft})` : isCooldown ? 'Подождите...' : 'Крутить'}
       >
-          <span className="button-label">{isBonusGame ? `FREE (${freeSpinsLeft})` :
+          <span className="button-label">{isBonusGame ? `FREE (${freeSpinsLeft + 1})` :
               <img width="30" height="30" src="https://img.icons8.com/ios-filled/50/FFFFFF/play.png" alt="play"/>}</span>
       </button>
 
