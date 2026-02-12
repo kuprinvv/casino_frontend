@@ -41,23 +41,51 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
   minBet = 2,
   maxBet = 100,
 }) => {
+    const [isSpinningLocal, setIsSpinningLocal] = React.useState(false);
   // Привязка к пробелу
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !isSpinning && !isResolving && (balance >= bet || isBonusGame)) {
+      if (e.code === 'Space' && !isSpinning && !isResolving && !isSpinningLocal && (balance >= bet || isBonusGame)) {
         e.preventDefault();
         onSpin();
+        setIsSpinningLocal(true);
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [onSpin, isSpinning, isResolving, balance, bet, isBonusGame]);
+  }, [onSpin, isSpinning, isResolving, isSpinningLocal, balance, bet, isBonusGame]);
 
-  const canSpin = (balance >= bet || isBonusGame) && !isSpinning && !isResolving;
+    useEffect(() => {
+        if (!isSpinning && !isResolving) {
+            setIsSpinningLocal(false);
+        }
+    }, [isSpinning, isResolving]);
+
+  const canSpin = (balance >= bet || isBonusGame) && !isSpinning && !isResolving && !isSpinningLocal;
   const canBuyBonus = balance >= bet * 100 && !isBonusGame && !isSpinning && !isResolving;
   const canDecreaseBet = bet > minBet && !isSpinning && !isResolving;
   const canIncreaseBet = bet < maxBet && !isSpinning && !isResolving;
+
+    // Обработчик спина с защитой
+    const handleSpin = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Двойная проверка для надёжности
+        if (!canSpin || isSpinningLocal) {
+            return;
+        }
+        // Блокируем повторные клики
+        setIsSpinningLocal(true);
+        // Убираем фокус
+        if (e.currentTarget) {
+            e.currentTarget.blur();
+        }
+        // Предотвращаем скролл
+        window.scrollTo(window.scrollX, window.scrollY);
+        // Запускаем спин
+        onSpin();
+    };
 
   return (
     <div className="casino-control-panel">
@@ -114,24 +142,27 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
       <button
         type="button"
         className="casino-button spin-button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          // Предотвращаем фокус, который может вызвать скролл
-          if (e.currentTarget) {
-            e.currentTarget.blur();
-          }
-          // Предотвращаем скролл к элементу
-          window.scrollTo(window.scrollX, window.scrollY);
-          onSpin();
-        }}
+        onClick={handleSpin}
         onMouseDown={(e) => {
+          if (!canSpin) {
+              e.preventDefault();
+              e.stopPropagation();
+              return;
+          }
           // Предотвращаем фокус при нажатии мыши
           e.preventDefault();
           e.stopPropagation();
           if (e.currentTarget) {
             e.currentTarget.blur();
           }
+        }}
+        onTouchStart={(e) => {
+            // Для мобильных устройств
+            if (!canSpin) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
         }}
         onFocus={(e) => {
           // Предотвращаем скролл при получении фокуса
