@@ -1,5 +1,5 @@
-/* Обновленный ReelView.css: Удаляем keyframes spin-reel (теперь JS управляет translateY)
-   Сохраняем остальные стили, добавляем фильтры для спина */
+/* Обновленный ReelView.css: Canvas вместо div.reel, стили контейнера сохранены
+   Удалены стили для .reel, .reel-symbol, keyframes - теперь drawing на canvas */
 
 .reel-container {
     width: 101px;
@@ -10,6 +10,9 @@
     overflow: hidden;
     position: relative;
     box-shadow: inset 0 0 15px #00000080;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .reel-container::before,
@@ -33,50 +36,11 @@
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
 }
 
-.reel {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-    top: -2px;
-    position: relative;
-    transition: transform .5s cubic-bezier(.25, .46, .45, .94); /* Для плавности, но основное в JS */
-}
-
-.reel-symbol {
-    width: 75px;
-    height: 75px;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-}
-
-.reel-spinning .reel-symbol {
-    filter: blur(3px) brightness(1.1);
-    opacity: 0.9;
-}
-
-/* Удаляем @keyframes spin-reel - теперь JS */
-
-/* Эффект остановки с отскоком - теперь в JS, но оставляем класс для стилей */
-.reel:not(.reel-spinning) {
-    /* Анимация bounce теперь в JS, здесь только стили если нужно */
-}
-
+/* Медиа-запросы для размеров (адаптируйте SYMBOL_WIDTH/HEIGHT в TS если нужно динамически) */
 @media (max-width: 901px) {
     .reel-container {
         width: 75px;
         height: 210px;
-    }
-
-    .reel {
-        padding: 5px;
-        gap: 8px;
-        top: 1px;
-    }
-
-    .reel-symbol {
-        width: 60px;
-        height: 60px;
     }
 }
 
@@ -85,31 +49,11 @@
         width: 73px;
         height: 167px;
     }
-    .reel {
-        padding: 9px;
-        gap: 7px;
-        top: -5px;
-    }
-    .reel-symbol {
-        width: 50px;
-        height: 47px;
-    }
 }
 
 @media (max-width: 480px) {
     .reel-container {
         width: 54px;
         height: 164px;
-    }
-
-    .reel {
-        padding: 3px;
-        gap: 9px;
-        top: 1px;
-    }
-
-    .reel-symbol {
-        width: 45px;
-        height: 45px;
     }
 }
