@@ -68,8 +68,8 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
 
   const canSpin = (balance >= bet || isBonusGame) && !isSpinning && !isResolving && !isCooldown;
   const canBuyBonus = balance >= bet * 100 && !isBonusGame && !isSpinning && !isResolving;
-  const canDecreaseBet = bet > minBet && !isSpinning && !isResolving;
-  const canIncreaseBet = bet < maxBet && !isSpinning && !isResolving;
+  const canDecreaseBet = bet > minBet && !isSpinning && !isResolving && !isBonusGame;
+  const canIncreaseBet = bet < maxBet && !isSpinning && !isResolving && !isBonusGame;
 
     // Обработчик спина с защитой
     const handleSpin = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -102,7 +102,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
           e.preventDefault();
         }}
         disabled={!canDecreaseBet}
-        title="Уменьшить ставку"
+        title={isBonusGame ? 'Нельзя изменить ставку во время бонусной игры' : 'Уменьшить ставку'}
       >
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -129,7 +129,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
           e.preventDefault();
         }}
         disabled={!canIncreaseBet}
-        title="Увеличить ставку"
+        title={isBonusGame ? 'Нельзя изменить ставку во время бонусной игры' : 'Увеличить ставку'}
       >
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -185,8 +185,8 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         onMouseDown={(e) => {
           e.preventDefault();
         }}
-        disabled={isSpinning || isResolving}
-        title={isTurbo ? 'Турбо режим включен' : 'Включить турбо режим'}
+        disabled={isSpinning || isResolving || isBonusGame}
+        title={isBonusGame ? 'Недоступно во время бонусной игры' : isTurbo ? 'Турбо режим включен' : 'Включить турбо режим'}
       >
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

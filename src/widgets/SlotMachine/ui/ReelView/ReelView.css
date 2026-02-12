@@ -48,7 +48,7 @@
 }
 
 .reel-spinning {
-    animation: spin-reel 0.3s linear infinite;
+    animation: spin-reel 0.35s linear infinite;
 }
 
 .reel-spinning.turbo {
@@ -56,7 +56,6 @@
 }
 
 .reel-spinning .reel-symbol {
-    /*filter: blur(3px) brightness(1.1);*/
     opacity: 0.9;
 }
 
