@@ -32,11 +32,11 @@ const createSpinningSymbols = (count: number): Symbol[] => {
 };
 
 export const ReelView: React.FC<ReelViewProps> = ({
-    symbols,
-    isSpinning,
-    winningPositions = [],
-    reelIndex,
-    isTurbo = false,
+                                                      symbols,
+                                                      isSpinning,
+                                                      winningPositions = [],
+                                                      reelIndex,
+                                                      isTurbo = false,
                                                   }) => {
     const [displaySymbols, setDisplaySymbols] = useState<Symbol[]>(symbols || []);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -52,8 +52,9 @@ export const ReelView: React.FC<ReelViewProps> = ({
             const spinSymbols = createSpinningSymbols(20);
             setDisplaySymbols([...spinSymbols, ...symbols]);
         } else {
-            // Задержка перед остановкой каждого барабана
-            const stopDelay = isTurbo ? 0 : reelIndex * 200; // В турбо режиме останавливаем сразу
+            // Задержка остановки для последовательной остановки слева направо
+            // Турбо: 60мс между барабанами, Обычный: 300мс
+            const stopDelay = isTurbo ? reelIndex * 60 : reelIndex * 300;
 
             const timer = setTimeout(() => {
                 setIsAnimating(false);
@@ -69,9 +70,7 @@ export const ReelView: React.FC<ReelViewProps> = ({
             <SpinningOverlay isActive={isAnimating} />
             <div
                 className={`reel ${isAnimating ? 'reel-spinning' : ''} ${isTurbo && isAnimating ? 'turbo' : ''}`}
-                style={{
-                    animationDelay: `${reelIndex * 0.1}s`, // Каскадный запуск
-                }}
+                // Убран animationDelay - он мешал последовательной остановке
             >
                 {displaySymbols?.length > 0 && displaySymbols.map((symbol, index) => (
                     <div key={symbol.id} className="reel-symbol">
