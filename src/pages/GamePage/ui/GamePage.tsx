@@ -36,7 +36,7 @@ export const GamePage: React.FC = () => {
     // Показ "БОНУСНАЯ ИГРА" при входе во фриспины (и при выигрыше, и при покупке)
     if (prevFreeSpinsRef.current === 0 && freeSpinsLeft > 0 && isBonusGame) {
       setShowBonusOverlay(true);
-      const t = window.setTimeout(() => setShowBonusOverlay(false), 2200);
+      const t = window.setTimeout(() => setShowBonusOverlay(false), 6000);
       prevFreeSpinsRef.current = freeSpinsLeft;
       return () => window.clearTimeout(t);
     }

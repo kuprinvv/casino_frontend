@@ -49,7 +49,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         e.preventDefault();
         onSpin();
         setIsCooldown(true);
-        setTimeout(() => setIsCooldown(false), 5000);
+        setTimeout(() => setIsCooldown(false), 3000);
       }
     };
 
@@ -60,7 +60,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     useEffect(() => {
         if (!isSpinning && !isResolving) {
             setIsCooldown(true);
-            const cooldownTime =  isTurbo ? 2500 : 5000;
+            const cooldownTime =  isTurbo ? 2000 : 4000;
             const timer = setTimeout(() => setIsCooldown(false), cooldownTime);
             return () => clearTimeout(timer);
         }
