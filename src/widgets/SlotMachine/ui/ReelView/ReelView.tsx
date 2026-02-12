@@ -32,11 +32,11 @@ const createSpinningSymbols = (count: number): Symbol[] => {
 };
 
 export const ReelView: React.FC<ReelViewProps> = ({
-                                                      symbols,
-                                                      isSpinning,
-                                                      winningPositions = [],
-                                                      reelIndex,
-                                                      isTurbo = false,
+    symbols,
+    isSpinning,
+    winningPositions = [],
+    reelIndex,
+    isTurbo = false,
                                                   }) => {
     const [displaySymbols, setDisplaySymbols] = useState<Symbol[]>(symbols || []);
     const [isAnimating, setIsAnimating] = useState(false);

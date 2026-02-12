@@ -62,10 +62,10 @@
 
 @keyframes spin-reel {
     0% {
-        transform: translateY(0);
+        top: 0;
     }
     100% {
-        transform: translateY(108px); /* высота символа + gap - теперь вниз */
+        top: -1187%;
     }
 
 }
