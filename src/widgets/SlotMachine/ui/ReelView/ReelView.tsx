@@ -27,7 +27,7 @@ const createSpinningSymbols = (count: number): Symbol[] => {
 
     return Array.from({ length: count }, (_, i) => ({
         type: types[i % types.length],
-        id: `spinning-${i}-${Math.random()}`,
+        id: `spinning-${i}-${Math.floor(Math.random() * types.length)}`,
     }));
 };
 
@@ -49,7 +49,7 @@ export const ReelView: React.FC<ReelViewProps> = ({
         if (isSpinning) {
             setIsAnimating(true);
             // Создаем много символов для прокрутки
-            const spinSymbols = createSpinningSymbols(14);
+            const spinSymbols = createSpinningSymbols(9);
             setDisplaySymbols([...spinSymbols, ...symbols]);
         } else {
             // Задержка остановки для последовательной остановки слева направо
