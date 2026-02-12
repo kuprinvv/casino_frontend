@@ -86,7 +86,7 @@
   }
 }
 
-@media (max-width: 800px) and (max-height: 500px) {
+@media (max-width: 800px)  {
     .symbol-label {
         width: 45px;
     }
