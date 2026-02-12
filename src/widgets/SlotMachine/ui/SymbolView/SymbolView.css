@@ -80,13 +80,13 @@
   }
 }
 
-@media (max-width: 801px) {
+@media (max-width: 901px) {
   .symbol-label {
     font-size: 32px;
   }
 }
 
-@media (max-width: 800px) and (max-height: 500px) {
+@media (max-width: 900px) and (max-height: 500px) {
     .symbol-label {
         width: 45px;
     }

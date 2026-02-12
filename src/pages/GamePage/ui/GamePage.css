@@ -69,7 +69,7 @@
     font-size: 14px;
 }
 
-@media (max-width: 801px) {
+@media (max-width: 901px) {
     .game-title {
         font-size: 20px;
     }
@@ -79,7 +79,7 @@
     }
 }
 
-@media (max-width: 800px) and (max-height: 500px) {
+@media (max-width: 900px) and (max-height: 500px) {
     .game-page {
         padding: 0;
     }

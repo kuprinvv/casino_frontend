@@ -285,7 +285,7 @@
   }
 }
 
-@media(max-width: 801px) {
+@media(max-width: 901px) {
     .winning-lines-svg{
         top: -11px;
         left: 2px;
@@ -294,7 +294,7 @@
     }
 }
 
-@media (max-width: 800px) and (max-height: 500px) {
+@media (max-width: 900px) and (max-height: 500px) {
     .lines-overlay {
         top: -31px;
     }

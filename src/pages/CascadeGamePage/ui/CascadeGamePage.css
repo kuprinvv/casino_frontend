@@ -314,7 +314,7 @@
   background: rgba(107, 114, 128, 0.5);
 }
 
-@media (max-width: 801px) {
+@media (max-width: 901px) {
   .game-header {
       flex-direction: row;
       justify-content: space-between;
@@ -365,7 +365,10 @@
     }
     .game-header {
         width: 70%;
-        flex-direction: column;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        flex-direction: row;
         align-items: stretch;
         align-self: center;
     }
@@ -374,6 +377,7 @@
     }
     .game-title {
         font-size: 1.1rem;
+        visibility: visible;
     }
     .header-buttons {
         flex-direction: row;
