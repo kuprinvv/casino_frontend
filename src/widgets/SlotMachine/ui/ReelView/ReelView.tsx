@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Symbol, SymbolType } from '@shared/types/game';
 import { SymbolView } from '../SymbolView/SymbolView';
 import { SpinningOverlay } from './SpinningOverlay';
@@ -12,9 +12,9 @@ interface ReelViewProps {
     isTurbo?: boolean;
 }
 
-// Создаем дополнительные символы для эффекта прокрутки
-// Добавляем reelIndex для уникальности каждого барабана
-const createSpinningSymbols = (count: number, reelIndex: number): Symbol[] => {
+// Создаем статические символы для прокрутки для каждого барабана
+// Используем фиксированный паттерн на основе индекса барабана
+const createStaticSpinningSymbols = (count: number, reelIndex: number): Symbol[] => {
     const types = [
         SymbolType.SYMBOL_1,
         SymbolType.SYMBOL_2,
@@ -26,15 +26,14 @@ const createSpinningSymbols = (count: number, reelIndex: number): Symbol[] => {
         SymbolType.SYMBOL_8,
     ];
 
-    // Используем reelIndex как seed для уникальности
+    // Фиксированный паттерн для каждого барабана (без рандома!)
     return Array.from({ length: count }, (_, i) => {
-        // Генерируем случайный индекс с учетом reelIndex для уникальности
-        const randomOffset = (reelIndex * 137 + i * 997) % types.length;
-        const randomIndex = (Math.floor(Math.random() * types.length) + randomOffset) % types.length;
+        // Используем формулу с простыми числами для уникального распределения
+        const typeIndex = (i * 7 + reelIndex * 13) % types.length;
 
         return {
-            type: types[randomIndex],
-            id: `spinning-${reelIndex}-${i}-${Date.now()}-${Math.random()}`,
+            type: types[typeIndex],
+            id: `spinning-${reelIndex}-${i}`,
         };
     });
 };
@@ -49,6 +48,12 @@ export const ReelView: React.FC<ReelViewProps> = ({
     const [displaySymbols, setDisplaySymbols] = useState<Symbol[]>(symbols || []);
     const [isAnimating, setIsAnimating] = useState(false);
 
+    // Создаем статические символы ОДИН РАЗ при монтировании
+    const staticSpinningSymbols = useMemo(
+        () => createStaticSpinningSymbols(9, reelIndex),
+        [reelIndex]
+    );
+
     useEffect(() => {
         if (!symbols || symbols.length === 0) {
             return;
@@ -56,9 +61,8 @@ export const ReelView: React.FC<ReelViewProps> = ({
 
         if (isSpinning) {
             setIsAnimating(true);
-            // Передаем reelIndex для уникальных символов на каждом барабане
-            const spinSymbols = createSpinningSymbols(9, reelIndex);
-            setDisplaySymbols([...spinSymbols, ...symbols]);
+            // Используем статические символы вместо генерации новых
+            setDisplaySymbols([...staticSpinningSymbols, ...symbols]);
         } else {
             // Задержка остановки для последовательной остановки слева направо
             // Турбо: 60мс между барабанами, Обычный: 300мс
@@ -71,14 +75,13 @@ export const ReelView: React.FC<ReelViewProps> = ({
 
             return () => clearTimeout(timer);
         }
-    }, [isSpinning, symbols, reelIndex, isTurbo]);
+    }, [isSpinning, symbols, reelIndex, isTurbo, staticSpinningSymbols]);
 
     return (
         <div className="reel-container">
             <SpinningOverlay isActive={isAnimating} />
             <div
                 className={`reel ${isAnimating ? 'reel-spinning' : ''} ${isTurbo && isAnimating ? 'turbo' : ''}`}
-                // Убран animationDelay - он мешал последовательной остановке
             >
                 {displaySymbols?.length > 0 && displaySymbols.map((symbol, index) => (
                     <div key={symbol.id} className="reel-symbol">
