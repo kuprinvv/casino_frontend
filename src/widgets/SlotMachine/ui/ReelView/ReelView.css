@@ -62,10 +62,10 @@
 
 @keyframes spin-reel {
     0% {
-        top: 0;
+        top: -120%;
     }
     100% {
-        top: 120%;
+        top: 0;
     }
 }
 
