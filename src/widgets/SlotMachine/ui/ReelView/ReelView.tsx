@@ -13,7 +13,6 @@ interface ReelViewProps {
 }
 
 // Создаем статические символы для прокрутки для каждого барабана
-// Используем фиксированный паттерн на основе индекса барабана
 const createStaticSpinningSymbols = (count: number, reelIndex: number): Symbol[] => {
     const types = [
         SymbolType.SYMBOL_1,
@@ -26,9 +25,7 @@ const createStaticSpinningSymbols = (count: number, reelIndex: number): Symbol[]
         SymbolType.SYMBOL_8,
     ];
 
-    // Фиксированный паттерн для каждого барабана (без рандома!)
     return Array.from({ length: count }, (_, i) => {
-        // Используем формулу с простыми числами для уникального распределения
         const typeIndex = (i * 7 + reelIndex * 13) % types.length;
 
         return {
@@ -48,9 +45,9 @@ export const ReelView: React.FC<ReelViewProps> = ({
     const [displaySymbols, setDisplaySymbols] = useState<Symbol[]>(symbols || []);
     const [isAnimating, setIsAnimating] = useState(false);
 
-    // Создаем статические символы ОДИН РАЗ при монтировании
+    // Создаем статические символы ОДИН РАЗ
     const staticSpinningSymbols = useMemo(
-        () => createStaticSpinningSymbols(9, reelIndex),
+        () => createStaticSpinningSymbols(15, reelIndex), // Увеличено до 15 для плавности
         [reelIndex]
     );
 
@@ -61,11 +58,9 @@ export const ReelView: React.FC<ReelViewProps> = ({
 
         if (isSpinning) {
             setIsAnimating(true);
-            // Используем статические символы вместо генерации новых
+            // Спин-символы ДО основных для движения вниз
             setDisplaySymbols([...staticSpinningSymbols, ...symbols]);
         } else {
-            // Задержка остановки для последовательной остановки слева направо
-            // Турбо: 60мс между барабанами, Обычный: 300мс
             const stopDelay = isTurbo ? reelIndex * 60 : reelIndex * 300;
 
             const timer = setTimeout(() => {
