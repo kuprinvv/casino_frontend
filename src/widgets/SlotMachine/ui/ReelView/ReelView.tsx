@@ -59,7 +59,7 @@ export const ReelView: React.FC<ReelViewProps> = ({
         if (isSpinning) {
             setIsAnimating(true);
             // Спин-символы ДО основных для движения вниз
-            setDisplaySymbols([...staticSpinningSymbols, ...symbols]);
+            setDisplaySymbols([ ...symbols, ...staticSpinningSymbols]);
         } else {
             const stopDelay = isTurbo ? reelIndex * 60 : reelIndex * 300;
 
