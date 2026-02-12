@@ -276,7 +276,7 @@
     }
 }
 
-@media (max-width: 800px)  {
+@media (max-width: 800px) and (max-height: 500px) {
     .casino-control-panel{
         gap: 3px;
         padding: 0;
