@@ -49,7 +49,7 @@ export const ReelView: React.FC<ReelViewProps> = ({
         if (isSpinning) {
             setIsAnimating(true);
             // Создаем много символов для прокрутки
-            const spinSymbols = createSpinningSymbols(20);
+            const spinSymbols = createSpinningSymbols(14);
             setDisplaySymbols([...spinSymbols, ...symbols]);
         } else {
             // Задержка остановки для последовательной остановки слева направо
