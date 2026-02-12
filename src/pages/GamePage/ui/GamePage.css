@@ -112,4 +112,8 @@
     .game-header {
         margin-left: 0;
     }
+    .game-title{
+        font-size: 11px;
+        align-self: center;
+    }
 }

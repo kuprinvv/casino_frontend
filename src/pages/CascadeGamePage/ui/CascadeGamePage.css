@@ -364,29 +364,35 @@
         align-items: center;
     }
     .game-header {
-        width: 70%;
-        background: rgba(255, 255, 255, 0.1);
+        width: 100%;
+        background: #ffffff3b;
         border-radius: 15px;
         backdrop-filter: blur(10px);
         flex-direction: row;
         align-items: stretch;
         align-self: center;
+        flex-wrap: nowrap;
+        gap: 0;
     }
     .menu-and-title {
         display: flow;
     }
     .game-title {
-        font-size: 1.1rem;
+        font-size: 14px;
         visibility: visible;
     }
     .header-buttons {
         flex-direction: row;
     }
+    .info-button, .online-button, .back-menu-button{
+        padding: 4px;
+    }
     .info-button, .online-button {
-        min-width: 50px;
-        font-size: 12px;
+        min-width: 100px;
+        font-size: 9px;
     }
     .back-menu-button {
-        font-size: 12px;
+        font-size: 10px;
+        min-width: 100px;
     }
 }
