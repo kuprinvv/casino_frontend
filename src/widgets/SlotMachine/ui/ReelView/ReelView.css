@@ -1,3 +1,6 @@
+/* Обновленный ReelView.css: Удаляем keyframes spin-reel (теперь JS управляет translateY)
+   Сохраняем остальные стили, добавляем фильтры для спина */
+
 .reel-container {
     width: 101px;
     height: 272px;
@@ -37,7 +40,7 @@
     padding: 12px;
     top: -2px;
     position: relative;
-    transition: transform .5s cubic-bezier(.25, .46, .45, .94);
+    transition: transform .5s cubic-bezier(.25, .46, .45, .94); /* Для плавности, но основное в JS */
 }
 
 .reel-symbol {
@@ -47,40 +50,16 @@
     transition: all 0.3s ease;
 }
 
-.reel-spinning {
-    animation: spin-reel 0.04s linear infinite;
-}
-
-.reel-spinning.turbo {
-    animation: spin-reel 0.01s linear infinite;
-}
-
 .reel-spinning .reel-symbol {
     filter: blur(3px) brightness(1.1);
     opacity: 0.9;
 }
 
-@keyframes spin-reel {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(108px); /* высота символа + gap - теперь вниз */
-    }
+/* Удаляем @keyframes spin-reel - теперь JS */
 
-}
-
-/* Эффект остановки с отскоком */
+/* Эффект остановки с отскоком - теперь в JS, но оставляем класс для стилей */
 .reel:not(.reel-spinning) {
-    animation: stop-bounce .8s cubic-bezier(.3, .1, .3, 1);
-}
-
-@keyframes stop-bounce {
-    0%   { transform: translateY(0); }
-    40%  { transform: translateY(-8px); }
-    60%  { transform: translateY(4px);   }
-    80%  { transform: translateY(-4px);  }
-    100% { transform: translateY(0);     }
+    /* Анимация bounce теперь в JS, здесь только стили если нужно */
 }
 
 @media (max-width: 901px) {
@@ -98,15 +77,6 @@
     .reel-symbol {
         width: 60px;
         height: 60px;
-    }
-
-    @keyframes spin-reel {
-        0% {
-            transform: translateY(0);
-        }
-        100% {
-            transform: translateY(64px); /* высота символа + gap для мобильных - теперь вниз */
-        }
     }
 }
 
@@ -142,5 +112,4 @@
         width: 45px;
         height: 45px;
     }
-
 }
