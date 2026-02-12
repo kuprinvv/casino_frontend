@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import './CasinoControlPanel.css';
 import {InfoPanel} from "@widgets/InfoPanel";
 
@@ -41,28 +41,32 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
   minBet = 2,
   maxBet = 100,
 }) => {
-    const [isSpinningLocal, setIsSpinningLocal] = React.useState(false);
+    const [isCooldown, setIsCooldown] = useState(false);
   // Привязка к пробелу
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !isSpinning && !isResolving && !isSpinningLocal && (balance >= bet || isBonusGame)) {
+      if (e.code === 'Space' && !isSpinning && !isResolving && !isCooldown && (balance >= bet || isBonusGame)) {
         e.preventDefault();
         onSpin();
-        setIsSpinningLocal(true);
+        setIsCooldown(true);
+        setTimeout(() => setIsCooldown(false), 400);
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [onSpin, isSpinning, isResolving, isSpinningLocal, balance, bet, isBonusGame]);
+  }, [onSpin, isSpinning, isResolving, isCooldown, balance, bet, isBonusGame]);
 
     useEffect(() => {
         if (!isSpinning && !isResolving) {
-            setIsSpinningLocal(false);
+            setIsCooldown(true);
+            const cooldownTime =  isTurbo ? 200 : 400;
+            const timer = setTimeout(() => setIsCooldown(false), cooldownTime);
+            return () => clearTimeout(timer);
         }
-    }, [isSpinning, isResolving]);
+    }, [isSpinning, isResolving, isTurbo]);
 
-  const canSpin = (balance >= bet || isBonusGame) && !isSpinning && !isResolving && !isSpinningLocal;
+  const canSpin = (balance >= bet || isBonusGame) && !isSpinning && !isResolving && !isCooldown;
   const canBuyBonus = balance >= bet * 100 && !isBonusGame && !isSpinning && !isResolving;
   const canDecreaseBet = bet > minBet && !isSpinning && !isResolving;
   const canIncreaseBet = bet < maxBet && !isSpinning && !isResolving;
@@ -71,20 +75,14 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     const handleSpin = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
-        // Двойная проверка для надёжности
-        if (!canSpin || isSpinningLocal) {
+
+        if (!canSpin) {
             return;
         }
-        // Блокируем повторные клики
-        setIsSpinningLocal(true);
-        // Убираем фокус
-        if (e.currentTarget) {
-            e.currentTarget.blur();
-        }
-        // Предотвращаем скролл
+        e.currentTarget.blur();
         window.scrollTo(window.scrollX, window.scrollY);
-        // Запускаем спин
         onSpin();
+        setIsCooldown(true);
     };
 
   return (
@@ -152,11 +150,9 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
           // Предотвращаем фокус при нажатии мыши
           e.preventDefault();
           e.stopPropagation();
-          if (e.currentTarget) {
-            e.currentTarget.blur();
-          }
+          e.currentTarget.blur();
         }}
-        onTouchStart={(e) => {
+        onTouchStart={(e: React.TouchEvent<HTMLButtonElement>) => {
             // Для мобильных устройств
             if (!canSpin) {
                 e.preventDefault();
@@ -164,13 +160,13 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
                 return;
             }
         }}
-        onFocus={(e) => {
+        onFocus={(e: React.FocusEvent<HTMLButtonElement>) => {
           // Предотвращаем скролл при получении фокуса
           e.preventDefault();
           e.currentTarget.blur();
         }}
         disabled={!canSpin}
-        title={isSpinning ? 'Вращение...' : isResolving ? 'Каскад...' : isBonusGame ? `Фриспин (${freeSpinsLeft})` : 'Крутить'}
+        title={isSpinning ? 'Вращение...' : isResolving ? 'Каскад...' : isBonusGame ? `Фриспин (${freeSpinsLeft})` : isCooldown ? 'Подождите...' : 'Крутить'}
       >
           <span className="button-label">{isBonusGame ? `FREE (${freeSpinsLeft})` :
               <img width="30" height="30" src="https://img.icons8.com/ios-filled/50/FFFFFF/play.png" alt="play"/>}</span>
