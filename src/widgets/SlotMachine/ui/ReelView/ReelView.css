@@ -48,7 +48,7 @@
 }
 
 .reel-spinning {
-    animation: spin-reel 0.04s linear infinite;
+    animation: spin-reel 0.1s linear infinite;
 }
 
 .reel-spinning.turbo {
@@ -65,7 +65,7 @@
         top: 0;
     }
     100% {
-        top: -105%;
+        top: -120%;
     }
 }
 
