@@ -13,7 +13,8 @@ interface ReelViewProps {
 }
 
 // Создаем дополнительные символы для эффекта прокрутки
-const createSpinningSymbols = (count: number): Symbol[] => {
+// Добавляем reelIndex для уникальности каждого барабана
+const createSpinningSymbols = (count: number, reelIndex: number): Symbol[] => {
     const types = [
         SymbolType.SYMBOL_1,
         SymbolType.SYMBOL_2,
@@ -25,10 +26,17 @@ const createSpinningSymbols = (count: number): Symbol[] => {
         SymbolType.SYMBOL_8,
     ];
 
-    return Array.from({ length: count }, (_, i) => ({
-        type: types[i % types.length],
-        id: `spinning-${i}-${Math.floor(Math.random() * types.length)}`,
-    }));
+    // Используем reelIndex как seed для уникальности
+    return Array.from({ length: count }, (_, i) => {
+        // Генерируем случайный индекс с учетом reelIndex для уникальности
+        const randomOffset = (reelIndex * 137 + i * 997) % types.length;
+        const randomIndex = (Math.floor(Math.random() * types.length) + randomOffset) % types.length;
+
+        return {
+            type: types[randomIndex],
+            id: `spinning-${reelIndex}-${i}-${Date.now()}-${Math.random()}`,
+        };
+    });
 };
 
 export const ReelView: React.FC<ReelViewProps> = ({
@@ -48,8 +56,8 @@ export const ReelView: React.FC<ReelViewProps> = ({
 
         if (isSpinning) {
             setIsAnimating(true);
-            // Создаем много символов для прокрутки
-            const spinSymbols = createSpinningSymbols(9);
+            // Передаем reelIndex для уникальных символов на каждом барабане
+            const spinSymbols = createSpinningSymbols(9, reelIndex);
             setDisplaySymbols([...spinSymbols, ...symbols]);
         } else {
             // Задержка остановки для последовательной остановки слева направо
