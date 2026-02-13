@@ -1,16 +1,28 @@
 .slot-machine {
- margin-top: -15px;
- margin-bottom: -13px;
- display: flex;
- justify-content: center;
- align-items: center;
- background: url(/public/board.png) no-repeat center center;
- background-size: 650px 440px;
- padding: 80px 20px;
+    position: relative;           /* обязательно */
+    /* убираем background отсюда полностью */
+    margin-top: -15px;
+    margin-bottom: -13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 20px;
+    overflow: hidden;             /* на всякий случай */
+}
+
+.slot-machine::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;                   /* под всем остальным */
+    pointer-events: none;
+    background: url(/public/board.png) no-repeat center center;
+    background-size: 650px 440px;
 }
 
 .slot-machine-frame {
   padding: 20px;
+  z-index: 2;
   border-radius: 20px;
   position: relative;
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useVideoPreload } from 'src/hooks/useVideoPreload.ts'; // Импортируем хук
+import { useVideoPreload } from '@/hooks/useVideoPreload.ts'; // Импортируем хук
 import './BonusActivationAnimation.css';
 
 interface BonusActivationAnimationProps {
