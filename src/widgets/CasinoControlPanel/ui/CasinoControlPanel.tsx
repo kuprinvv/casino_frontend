@@ -38,15 +38,15 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     const [isCooldown, setIsCooldown] = useState(false);
     const [isAutoSpin, setIsAutoSpin] = useState(false);
     const cooldownRef = useRef(false);
-    const autoSpinActiveRef = useRef(false);
-    const wasBonusGameRef = useRef(false);
+    const prevBonusGameRef = useRef(isBonusGame);
+    const autoSpinEnabledRef = useRef(false);
 
     useEffect(() => {
-        autoSpinActiveRef.current = isAutoSpin;
+        autoSpinEnabledRef.current = isAutoSpin;
     }, [isAutoSpin]);
 
     useEffect(() => {
-        if (!autoSpinActiveRef.current || isSpinning || isResolving || isCooldown) {
+        if (!isAutoSpin || isSpinning || isResolving || isCooldown) {
             return;
         }
 
@@ -59,13 +59,19 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         setIsCooldown(true);
         onSpin();
         
-    }, [isSpinning, isResolving, isCooldown, onSpin, balance, bet, isBonusGame]);
+    }, [isAutoSpin, isSpinning, isResolving, isCooldown, onSpin, balance, bet, isBonusGame]);
 
     useEffect(() => {
-        if (isBonusGame && !wasBonusGameRef.current) {
+        if (isBonusGame && !prevBonusGameRef.current) {
             setIsAutoSpin(true);
         }
-        wasBonusGameRef.current = isBonusGame;
+        prevBonusGameRef.current = isBonusGame;
+    }, [isBonusGame]);
+
+    useEffect(() => {
+        if (!isBonusGame && prevBonusGameRef.current) {
+            setIsAutoSpin(false);
+        }
     }, [isBonusGame]);
 
     const toggleAutoSpin = () => {

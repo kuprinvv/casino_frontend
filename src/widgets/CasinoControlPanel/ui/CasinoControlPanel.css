@@ -179,9 +179,8 @@
 }
 
 .auto-spin-button:hover:not(:disabled),
-.auto-spin-button:active{
+.auto-spin-button.active{
     background: linear-gradient(135deg, rgba(255, 108, 0, 0.22) 0%, rgba(255, 146, 4, 0.53) 100%);
-    border-color: orange;
     box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
 }
 
@@ -216,7 +215,6 @@
 .bonus-button:hover:not(:disabled),
 .bonus-button.active {
     background: linear-gradient(135deg, rgba(156, 39, 176, 0.5) 0%, rgba(123, 31, 162, 0.5) 100%);
-    border-color: rgba(156, 39, 176, 0.7);
     box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
 }
 
