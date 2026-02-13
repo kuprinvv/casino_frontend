@@ -7,22 +7,21 @@
     justify-content: center;
     align-items: center;
     padding: 80px 20px;
-    overflow: hidden;             /* на всякий случай */
+    overflow: hidden;
 }
 
-.slot-machine::before {
+.slot-machine::after {
     content: "";
     position: absolute;
     inset: 0;
-    z-index: 3;                   /* под всем остальным */
+    z-index: 3;
     pointer-events: none;
-    background: url(/public/board.png) no-repeat center center;
-    background-size: 650px 440px;
+    background: url(/public/board.png) no-repeat center center / 650px 440px;
+    image-rendering: crisp-edges;
 }
 
 .slot-machine-frame {
   padding: 20px;
-  z-index: 2;
   border-radius: 20px;
   position: relative;
 }
