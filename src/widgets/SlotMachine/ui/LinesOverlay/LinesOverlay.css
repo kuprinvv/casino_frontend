@@ -287,10 +287,10 @@
 
 @media(max-width: 901px) {
     .winning-lines-svg{
-        top: -11px;
-        left: 2px;
-        /*width: 302px !important;*/
-        /*height: 52px !important;*/
+        top: -8px;
+        left: 6px;
+        width: 407px !important;
+        height: 198px !important;
     }
 }
 
