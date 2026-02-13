@@ -275,7 +275,6 @@
 .game-title {
   text-align: center;
   font-weight: 900;
-  padding: 12px 12px 2px;
   color: var(--jojo-blue);
   font-family: Impact, Haettenschweiler, 'Arial Black', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   letter-spacing: 0.06em;
