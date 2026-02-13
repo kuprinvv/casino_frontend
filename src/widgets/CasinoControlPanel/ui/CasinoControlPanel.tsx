@@ -37,16 +37,13 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
 }) => {
     const [isCooldown, setIsCooldown] = useState(false);
     const [isAutoSpin, setIsAutoSpin] = useState(false);
+    const [bonusDelayActive, setBonusDelayActive] = useState(false);
     const cooldownRef = useRef(false);
     const prevBonusGameRef = useRef(isBonusGame);
-    const autoSpinEnabledRef = useRef(false);
+    const prevFreeSpinsRef = useRef(freeSpinsLeft);
 
     useEffect(() => {
-        autoSpinEnabledRef.current = isAutoSpin;
-    }, [isAutoSpin]);
-
-    useEffect(() => {
-        if (!isAutoSpin || isSpinning || isResolving || isCooldown) {
+        if (!isAutoSpin || isSpinning || isResolving || isCooldown || bonusDelayActive) {
             return;
         }
 
@@ -59,23 +56,33 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         setIsCooldown(true);
         onSpin();
         
-    }, [isAutoSpin, isSpinning, isResolving, isCooldown, onSpin, balance, bet, isBonusGame]);
+    }, [isAutoSpin, isSpinning, isResolving, isCooldown, bonusDelayActive, onSpin, balance, bet, isBonusGame]);
 
     useEffect(() => {
         if (isBonusGame && !prevBonusGameRef.current) {
             setIsAutoSpin(true);
+            setBonusDelayActive(true);
+            const timer = setTimeout(() => {
+                setBonusDelayActive(false);
+            }, 6500);
+            return () => clearTimeout(timer);
         }
         prevBonusGameRef.current = isBonusGame;
     }, [isBonusGame]);
 
     useEffect(() => {
-        if (!isBonusGame && prevBonusGameRef.current) {
+        if (!isBonusGame && prevBonusGameRef.current && prevFreeSpinsRef.current === 0) {
             setIsAutoSpin(false);
         }
-    }, [isBonusGame]);
+        prevFreeSpinsRef.current = freeSpinsLeft;
+        prevBonusGameRef.current = isBonusGame;
+    }, [isBonusGame, freeSpinsLeft]);
 
     const toggleAutoSpin = () => {
         setIsAutoSpin(prev => !prev);
+        if (!isAutoSpin && bonusDelayActive) {
+            setBonusDelayActive(false);
+        }
     };
 
     useEffect(() => {
