@@ -28,6 +28,7 @@
     cursor: pointer;
     transition: all .3s ease;
     flex: 0 0 auto;
+    gap: 4px;
     min-height: 30px;
     position: relative;
     overflow: hidden;
@@ -92,14 +93,14 @@
     filter: grayscale(0.5);
 }
 
-.casino-button svg {
+.casino-button img {
     width: 32px;
     height: 32px;
     stroke: currentColor;
     transition: transform 0.3s ease;
 }
 
-.casino-button:hover:not(:disabled) svg {
+.casino-button:hover:not(:disabled) img {
     transform: scale(1.1);
 }
 
@@ -117,7 +118,7 @@
     width: 70px;
 }
 
-.bet-decrease svg {
+.bet-decrease img {
     width: 18px;
     height: 18px;
 }
@@ -128,7 +129,7 @@
     width: 70px;
 }
 
-.bet-increase svg {
+.bet-increase img {
     width: 18px;
     height: 18px;
 }
@@ -177,30 +178,35 @@
     box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
 }
 
-.spin-button svg {
-    width: 48px;
-    height: 48px;
+.spin-button img {
+    width: 32px;
+    height: 32px;
 }
 
 .spin-button .button-label {
     font-size: 12px;
     font-weight: 700;
 }
+.auto-spin-button{
+    border: 2px solid orange;
+}
+
+.auto-spin-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(255, 108, 0, 0.22) 0%, rgba(255, 146, 4, 0.53) 100%);
+    border-color: orange;
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+}
 
 /* Кнопка турбо */
 .turbo-button {
     flex: 0 0 auto;
+    border: 2px solid red;
 }
 
-.turbo-button.active {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.3) 0%, rgba(255, 152, 0, 0.3) 100%);
-    border-color: rgba(255, 193, 7, 0.6);
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
-}
-
-.turbo-button.active svg {
-    color: #FFC107;
-    animation: pulse 2s infinite;
+.turbo-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(241, 8, 8, 0.5) 0%, rgb(255, 0, 0) 100%);
+    border-color: red;
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
 }
 
 @keyframes pulse {
@@ -261,12 +267,12 @@
         padding: 14px 24px;
     }
 
-    .spin-button svg {
-        width: 40px;
-        height: 40px;
+    .spin-button img {
+        width: 20px;
+        height: 20px;
     }
 
-    .casino-button svg {
+    .casino-button img {
         width: 28px;
         height: 28px;
     }
@@ -289,7 +295,7 @@
         min-height: 24px;
         padding: 1px 20px;
     }
-    .casino-button svg {
+    .casino-button img {
         width: 20px;
         height: 20px;
     }
@@ -358,12 +364,12 @@
         padding: 14px 20px;
     }
 
-    .spin-button svg {
+    .spin-button img {
         width: 40px;
         height: 40px;
     }
 
-    .casino-button svg {
+    .casino-button img {
         width: 20px;
         height: 28px;
     }
