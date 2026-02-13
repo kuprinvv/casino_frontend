@@ -113,26 +113,13 @@
 }
 
 /* Кнопка уменьшения ставки */
-.bet-decrease {
-    flex: 0 0 auto;
-    width: 70px;
-}
-
-.bet-decrease img {
-    width: 18px;
-    height: 18px;
-}
-
 /* Кнопка увеличения ставки */
-.bet-increase {
+.bet-increase, .bet-decrease {
     flex: 0 0 auto;
-    width: 70px;
+    font-size: 30px;
+    font-weight: bold;
 }
 
-.bet-increase img {
-    width: 18px;
-    height: 18px;
-}
 
 /* Отображение ставки */
 .bet-display {
@@ -309,6 +296,9 @@
     }
     .bet-value {
         font-size: 10px;
+    }
+    .bet-decrease, .bet-increase {
+        font-size: 22px;
     }
     .spin-button {
         width: 13%;
