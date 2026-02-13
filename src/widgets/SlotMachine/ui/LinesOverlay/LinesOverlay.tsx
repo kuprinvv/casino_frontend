@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { WinningLine, SymbolType } from '@shared/types/game';
 import './LinesOverlay.css';
 
@@ -6,7 +6,6 @@ interface LinesOverlayProps {
     winningLines: WinningLine[];
 }
 
-// Константы для расчета позиций
 const REEL_WIDTH = 120;
 const REEL_GAP = 12;
 const SYMBOL_HEIGHT = 100;
@@ -15,7 +14,6 @@ const REEL_PADDING = 10;
 const REELS_COUNT = 5;
 const ROWS_COUNT = 3;
 
-// Мобильные размеры
 const REEL_WIDTH_MOBILE = 75;
 const REEL_GAP_MOBILE = 8;
 const SYMBOL_HEIGHT_MOBILE = 60;
@@ -43,7 +41,7 @@ const generateLinePath = (
     positions: number[][],
     isMobile: boolean = false
 ): string => {
-    if (!positions || positions.length === 0) return '';
+    if (!positions?.length) return '';
 
     const points = positions
         .filter(pos => pos && pos.length >= 2 && !isNaN(pos[0]) && !isNaN(pos[1]))
@@ -53,29 +51,26 @@ const generateLinePath = (
             }
             return getSymbolCenter(reelIndex, rowIndex, isMobile);
         })
-        .filter(point => point !== null) as { x: number; y: number }[];
+        .filter((p): p is { x: number; y: number } => p !== null);
 
     if (points.length === 0) return '';
+    if (points.length === 1) {
+        return `M ${points[0].x} ${points[0].y} L ${points[0].x} ${points[0].y}`;
+    }
 
     let path = `M ${points[0].x} ${points[0].y}`;
-
     for (let i = 1; i < points.length; i++) {
         path += ` L ${points[i].x} ${points[i].y}`;
     }
-
     return path;
 };
 
 export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
     const [currentLineIndex, setCurrentLineIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
-    const pathRef = useRef<SVGPathElement>(null);
-    const dashArrayRef = useRef<number>(0);
 
     const filteredLines = useMemo(() => {
-        return winningLines.filter(line =>
-            line.lineIndex !== -1 && line.symbols !== SymbolType.BONUS
-        );
+        return winningLines.filter(line => line.lineIndex !== -1 && line.symbols !== SymbolType.BONUS);
     }, [winningLines]);
 
     useEffect(() => {
@@ -86,20 +81,24 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
     }, []);
 
     useEffect(() => {
-        if (filteredLines.length === 0 || currentLineIndex >= filteredLines.length) {
+        if (filteredLines.length === 0) {
+            setCurrentLineIndex(0);
+            return;
+        }
+        if (currentLineIndex >= filteredLines.length) {
             setCurrentLineIndex(0);
         }
-    }, [filteredLines, currentLineIndex]);
+    }, [filteredLines]);
 
     useEffect(() => {
-        if (filteredLines.length === 0) return;
+        if (filteredLines.length <= 1) return;
 
         const interval = setInterval(() => {
             setCurrentLineIndex(prev => (prev + 1) % filteredLines.length);
-        }, 1500);
+        }, 2200); // ← увеличен интервал
 
         return () => clearInterval(interval);
-    }, [filteredLines]);
+    }, [filteredLines.length]);
 
     const svgDimensions = useMemo(() => {
         const reelWidth = isMobile ? REEL_WIDTH_MOBILE : REEL_WIDTH;
@@ -108,25 +107,17 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         const symbolGap = isMobile ? SYMBOL_GAP_MOBILE : SYMBOL_GAP;
         const padding = isMobile ? REEL_PADDING_MOBILE : REEL_PADDING;
 
-        const width = REELS_COUNT * reelWidth + (REELS_COUNT - 1) * reelGap;
-        const height = ROWS_COUNT * symbolHeight + (ROWS_COUNT - 1) * symbolGap + 2 * padding;
-
-        return { width, height };
+        return {
+            width: REELS_COUNT * reelWidth + (REELS_COUNT - 1) * reelGap,
+            height: ROWS_COUNT * symbolHeight + (ROWS_COUNT - 1) * symbolGap + 2 * padding,
+        };
     }, [isMobile]);
 
-    const currentLine = filteredLines.length > 0 ? filteredLines[currentLineIndex] : null;
+    const currentLine = filteredLines[currentLineIndex] ?? null;
     const linePath = currentLine ? generateLinePath(currentLine.positions, isMobile) : '';
-
-    useEffect(() => {
-        if (pathRef.current && currentLine) {
-            const length = pathRef.current.getTotalLength();
-            dashArrayRef.current = length;
-        }
-    }, [currentLine, linePath]);
 
     if (filteredLines.length === 0) {
         if (winningLines.length === 0) return null;
-
         return (
             <div className="lines-overlay">
                 <div className="lines-counter">
@@ -137,7 +128,7 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         );
     }
 
-    if (!currentLine || !linePath || currentLine.positions.length === 0) {
+    if (!currentLine || !linePath) {
         return (
             <div className="lines-overlay">
                 <div className="lines-counter">
@@ -147,6 +138,9 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
             </div>
         );
     }
+
+    const gradientId = `lineGradient-${currentLine.lineIndex}`;
+    const glowId = `lineGlowGradient-${currentLine.lineIndex}`;
 
     return (
         <>
@@ -154,74 +148,43 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                 className="winning-lines-svg"
                 width={svgDimensions.width}
                 height={svgDimensions.height}
+                shapeRendering="geometricPrecision"  // ← улучшает качество линий
             >
                 <defs>
-                    <linearGradient id={`lineGradient-${currentLine.lineIndex}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#64C8FF" />
-                        <stop offset="30%" stopColor="#7DB8FF" />
-                        <stop offset="50%" stopColor="#9B7FFF" />
-                        <stop offset="70%" stopColor="#D18AFF" />
-                        <stop offset="100%" stopColor="#FF6B9D" />
+                    <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#70D0FF" />
+                        <stop offset="50%" stopColor="#A78BFA" />
+                        <stop offset="100%" stopColor="#FF7EB3" />
                     </linearGradient>
-                    <linearGradient id={`lineGlowGradient-${currentLine.lineIndex}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#B8E6FF" stopOpacity="0.8" />
-                        <stop offset="30%" stopColor="#C8EDFF" stopOpacity="0.8" />
-                        <stop offset="50%" stopColor="#C4B5FF" stopOpacity="0.8" />
-                        <stop offset="70%" stopColor="#E0C5FF" stopOpacity="0.8" />
-                        <stop offset="100%" stopColor="#FFB8D1" stopOpacity="0.8" />
+
+                    <linearGradient id={glowId} x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#B8F0FF" />
+                        <stop offset="50%" stopColor="#D5C4FF" />
+                        <stop offset="100%" stopColor="#FFD1E0" />
                     </linearGradient>
-                    <radialGradient id={`lineGlowRadial-${currentLine.lineIndex}`}>
-                        <stop offset="0%" stopColor="rgba(100, 200, 255, 0.8)" />
-                        <stop offset="50%" stopColor="rgba(155, 127, 255, 0.5)" />
-                        <stop offset="100%" stopColor="rgba(255, 107, 157, 0.2)" />
-                    </radialGradient>
                 </defs>
 
+                {/* Тень */}
                 <path
                     d={linePath}
                     className="line-shadow"
-                    strokeWidth={isMobile ? 6 : 10}
+                    strokeWidth={isMobile ? 10 : 14}
                 />
+
+                {/* Основная линия */}
                 <path
-                    ref={pathRef}
                     d={linePath}
                     className="winning-line"
-                    strokeWidth={isMobile ? 6 : 8}
-                    stroke={`url(#lineGradient-${currentLine.lineIndex})`}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeDasharray={dashArrayRef.current}
-                    strokeDashoffset={dashArrayRef.current}
-                    style={{
-                        animation: 'drawLine 1.2s ease-out forwards',
-                    }}
+                    stroke={`url(#${gradientId})`}
+                    strokeWidth={isMobile ? 5 : 7}
                 />
+
+                {/* Свечение */}
                 <path
                     d={linePath}
                     className="winning-line-glow"
-                    strokeWidth={isMobile ? 4 : 5}
-                    stroke={`url(#lineGlowGradient-${currentLine.lineIndex})`}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    style={{
-                        animation: 'drawLine 1.2s ease-out 0.1s forwards',
-                    }}
-                />
-                <path
-                    d={linePath}
-                    className="winning-line-glow"
-                    strokeWidth={isMobile ? 3 : 4}
-                    stroke={`url(#lineGlowGradient-${currentLine.lineIndex})`}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    opacity="0.6"
-                    style={{
-                        filter: 'blur(3px)',
-                        animation: 'drawLine 1.2s ease-out 0.2s forwards',
-                    }}
+                    stroke={`url(#${glowId})`}
+                    strokeWidth={isMobile ? 10 : 14}
                 />
             </svg>
 
@@ -234,14 +197,10 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
 
             {filteredLines.length > 1 && (
                 <div className="line-indicator">
-          <span className="line-number">
-            {currentLine.lineIndex === -1
-                ? 'Бонус'
-                : `Линия ${currentLine.lineIndex}`}
-          </span>
-                    <span className="line-win">
-            +{currentLine.winAmount}
-          </span>
+                    <span className="line-number">
+                        {currentLine.lineIndex === -1 ? 'Бонус' : `Линия ${currentLine.lineIndex + 1}`}
+                    </span>
+                    <span className="line-win">+{currentLine.winAmount}</span>
                 </div>
             )}
         </>
