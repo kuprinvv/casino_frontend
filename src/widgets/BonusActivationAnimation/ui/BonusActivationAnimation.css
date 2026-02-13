@@ -27,12 +27,10 @@
     100% { opacity: 0; }
 }
 
-/* УБРАН backdrop-filter - ОСНОВНАЯ ПРИЧИНА ЛАГОВ! */
 .bonus-activation-backdrop {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.62);
-    /* backdrop-filter: blur(3px); - УДАЛЕНО */
     will-change: opacity;
     animation: bonusBackdrop 6000ms ease-in-out both;
 }
@@ -66,7 +64,6 @@
     text-shadow:
             0 0 18px rgba(255, 215, 0, 0.55),
             0 0 36px rgba(255, 105, 180, 0.30);
-    /* filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.35)); - УДАЛЕНО */
 }
 
 .bonus-activation-subtitle {

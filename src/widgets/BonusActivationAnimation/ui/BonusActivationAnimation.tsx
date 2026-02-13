@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useVideoPreload } from '@/hooks/useVideoPreload.ts'; // Импортируем хук
 import './BonusActivationAnimation.css';
 
 interface BonusActivationAnimationProps {
@@ -10,14 +9,11 @@ interface BonusActivationAnimationProps {
 }
 
 export const BonusActivationAnimation: React.FC<BonusActivationAnimationProps> = ({
-                                                                                      show,
-                                                                                      text = 'БОНУСНАЯ ИГРА',
-                                                                                      durationMs = 6000,
-                                                                                      videoSrc = '/5.mp4',
-                                                                                  }) => {
-    // Используем хук для предзагрузки
-    const videoLoaded = useVideoPreload(videoSrc);
-
+   show,
+   text = 'БОНУСНАЯ ИГРА',
+   durationMs = 6000,
+   videoSrc = '/5.mp4',
+    }) => {
     const [isVisible, setIsVisible] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -29,27 +25,29 @@ export const BonusActivationAnimation: React.FC<BonusActivationAnimationProps> =
 
         setIsVisible(true);
 
-        // Воспроизводим ТОЛЬКО если видео загружено
-        if (videoRef.current && videoLoaded) {
+        // Запускаем видео при показе
+        if (videoRef.current) {
             videoRef.current.currentTime = 0;
-            videoRef.current.play().catch(e => console.log('Autoplay prevented:', e));
+            videoRef.current.play().catch(e => console.log('Playback error:', e));
         }
 
         const timer = window.setTimeout(() => setIsVisible(false), durationMs);
         return () => window.clearTimeout(timer);
-    }, [show, durationMs, videoLoaded]);
+    }, [show, durationMs]);
 
     if (!isVisible) return null;
 
     return (
         <div className="bonus-activation-overlay" aria-hidden="true">
+            {/* Видео с предзагрузкой */}
             <video
                 ref={videoRef}
                 className="bonus-activation-video"
+                autoPlay
                 muted
                 playsInline
+                preload="auto"
                 src={videoSrc}
-                // Важно: НЕ используем autoPlay здесь!
             />
 
             <div className="bonus-activation-backdrop" />
