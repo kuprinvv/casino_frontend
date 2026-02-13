@@ -4,10 +4,11 @@
     position: absolute;
     top: -28px;
     left: -37px;
-    pointer-events: none;
+    pointer-events: none; /* Исправлена опечатка */
     z-index: 4;
 }
 
+/* Тень линии */
 .line-shadow {
     stroke: rgba(0, 0, 0, 0.4);
     stroke-linecap: round;
@@ -18,17 +19,38 @@
     z-index: 1;
 }
 
-.winning-line,
+/* Основная линия - убрана анимация толщины и пунктир */
+.winning-line {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    filter: drop-shadow(0 0 15px rgba(100, 200, 255, 1));
+    stroke-width: 8;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+    /* Анимация рисования задаётся в компоненте через инлайн-стиль */
+}
+
+/* Свечение линии - убран пунктир (stroke-dasharray) */
 .winning-line-glow {
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: block !important;
+    opacity: 1;
+    /* УБРАН: stroke-dasharray: 20 10; */
+    animation: line-pulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(150, 220, 255, 1));
+    stroke-width: 5;
 }
 
-/* Анимация рисования линии */
+/* Дополнительный слой свечения с размытием */
+.winning-line-glow.blur {
+    filter: blur(3px) drop-shadow(0 0 12px rgba(150, 220, 255, 0.8));
+    opacity: 0.7;
+}
+
+/* Анимация рисования линии (применяется в компоненте) */
 @keyframes drawLine {
     from {
         stroke-dashoffset: var(--dasharray, 1000);
@@ -38,7 +60,19 @@
     }
 }
 
-/* Счетчик линий */
+/* Пульсация свечения */
+@keyframes line-pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.02);
+    }
+}
+
+/* Счётчик линий */
 .lines-overlay {
     position: absolute;
     top: -50px;
@@ -128,6 +162,18 @@
 
 /* Адаптивность */
 @media (max-width: 768px) {
+    .winning-line {
+        stroke-width: 6;
+    }
+
+    .line-shadow {
+        stroke-width: 6;
+    }
+
+    .winning-line-glow {
+        stroke-width: 4;
+    }
+
     .lines-overlay {
         top: -50px;
     }
