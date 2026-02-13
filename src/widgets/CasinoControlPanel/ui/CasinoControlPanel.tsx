@@ -49,7 +49,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         e.preventDefault();
         onSpin();
         setIsCooldown(true);
-        setTimeout(() => setIsCooldown(false), 3000);
+        setTimeout(() => setIsCooldown(false), 2000);
       }
     };
 
