@@ -34,30 +34,35 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     onBuyBonus,
     minBet = 2,
     maxBet = 100,
-                                                                      }) => {
+}) => {
     const [isCooldown, setIsCooldown] = useState(false);
-    const [isAutoSpin, setIsAutoSpin] = useState(false); // Новое состояние
+    const [isAutoSpin, setIsAutoSpin] = useState(false);
     const cooldownRef = useRef(false);
-    const autoSpinRef = useRef(false); // Для отслеживания состояния в эффектах
+    const autoSpinActiveRef = useRef(false);
 
     useEffect(() => {
-        autoSpinRef.current = isAutoSpin;
+        autoSpinActiveRef.current = isAutoSpin;
     }, [isAutoSpin]);
 
     useEffect(() => {
-        if (!isAutoSpin || !canSpin || cooldownRef.current) return;
+        if (!autoSpinActiveRef.current || isSpinning || isResolving || cooldownRef.current) {
+            return;
+        }
+
+        if (balance < bet && !isBonusGame) {
+            setIsAutoSpin(false);
+            return;
+        }
 
         cooldownRef.current = true;
         setIsCooldown(true);
         onSpin();
-
-        if (balance < bet && !isBonusGame) {
-            setIsAutoSpin(false);
-        }
-    }, [isAutoSpin, onSpin, balance, bet, isBonusGame]);
+        
+    }, [isSpinning, isResolving, onSpin, balance, bet, isBonusGame]);
 
     const toggleAutoSpin = () => {
         setIsAutoSpin(prev => !prev);
+        
         if (isAutoSpin && (cooldownRef.current || isCooldown)) {
             cooldownRef.current = false;
             setIsCooldown(false);
@@ -67,7 +72,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     useEffect(() => {
         const handleKeyPress = (e: KeyboardEvent) => {
             if (cooldownRef.current || isSpinning || isResolving || !((balance >= bet) || isBonusGame)) return;
-
+            
             if (e.code === 'Space') {
                 e.preventDefault();
                 cooldownRef.current = true;
@@ -107,9 +112,11 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         e.stopPropagation();
 
         if (!canSpin || cooldownRef.current) return;
+        
         if (isAutoSpin) {
             setIsAutoSpin(false);
         }
+        
         cooldownRef.current = true;
         setIsCooldown(true);
         e.currentTarget.blur();

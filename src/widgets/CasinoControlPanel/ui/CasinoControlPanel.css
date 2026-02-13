@@ -184,6 +184,12 @@
     box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
 }
 
+.auto-spin-button:active {
+    background: linear-gradient(135deg, rgba(255, 108, 0, 0.22) 0%, rgba(255, 146, 4, 0.53) 100%);
+    border-color: orange;
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+}
+
 /* Кнопка турбо */
 .turbo-button {
     flex: 0 0 auto;
