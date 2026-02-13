@@ -1,19 +1,23 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useVideoPreload } from 'src/hooks/useVideoPreload.ts'; // Импортируем хук
 import './BonusActivationAnimation.css';
 
 interface BonusActivationAnimationProps {
     show: boolean;
     text?: string;
     durationMs?: number;
-    videoSrc?: string; // Путь к видео файлу
+    videoSrc?: string;
 }
 
 export const BonusActivationAnimation: React.FC<BonusActivationAnimationProps> = ({
-    show,
-    text = 'БОНУСНАЯ ИГРА',
-    durationMs = 6000,
-    videoSrc = '/5.mp4',
-        }) => {
+                                                                                      show,
+                                                                                      text = 'БОНУСНАЯ ИГРА',
+                                                                                      durationMs = 6000,
+                                                                                      videoSrc = '/5.mp4',
+                                                                                  }) => {
+    // Используем хук для предзагрузки
+    const videoLoaded = useVideoPreload(videoSrc);
+
     const [isVisible, setIsVisible] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -25,35 +29,30 @@ export const BonusActivationAnimation: React.FC<BonusActivationAnimationProps> =
 
         setIsVisible(true);
 
-        // Воспроизведение видео при показе
-        if (videoRef.current) {
+        // Воспроизводим ТОЛЬКО если видео загружено
+        if (videoRef.current && videoLoaded) {
             videoRef.current.currentTime = 0;
             videoRef.current.play().catch(e => console.log('Autoplay prevented:', e));
         }
 
-        const t = window.setTimeout(() => setIsVisible(false), durationMs);
-        return () => window.clearTimeout(t);
-    }, [show, durationMs]);
+        const timer = window.setTimeout(() => setIsVisible(false), durationMs);
+        return () => window.clearTimeout(timer);
+    }, [show, durationMs, videoLoaded]);
 
     if (!isVisible) return null;
 
     return (
         <div className="bonus-activation-overlay" aria-hidden="true">
-            {/* Видео как фон */}
             <video
                 ref={videoRef}
                 className="bonus-activation-video"
-                autoPlay
                 muted
-                loop
                 playsInline
                 src={videoSrc}
+                // Важно: НЕ используем autoPlay здесь!
             />
 
-            {/* Полупрозрачный затемняющий слой */}
             <div className="bonus-activation-backdrop" />
-
-            {/* Основной контент поверх видео */}
             <div className="bonus-activation-content">
                 <div className="bonus-activation-sparkles" />
                 <div className="bonus-activation-title">{text}</div>

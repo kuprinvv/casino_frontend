@@ -6,6 +6,7 @@
     display: grid;
     place-items: center;
     overflow: hidden;
+    will-change: opacity;
 }
 
 .bonus-activation-video {
@@ -15,6 +16,7 @@
     height: 100%;
     object-fit: cover;
     opacity: 0;
+    will-change: opacity;
     animation: bonusVideoFade 6000ms ease-in-out both;
 }
 
@@ -25,99 +27,100 @@
     100% { opacity: 0; }
 }
 
-/* Остальные стили остаются без изменений */
+/* УБРАН backdrop-filter - ОСНОВНАЯ ПРИЧИНА ЛАГОВ! */
 .bonus-activation-backdrop {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.62);
-    backdrop-filter: blur(3px);
+    /* backdrop-filter: blur(3px); - УДАЛЕНО */
+    will-change: opacity;
     animation: bonusBackdrop 6000ms ease-in-out both;
 }
 
-
 .bonus-activation-content {
-  position: relative;
-  padding: 28px 34px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
-  border: 2px solid rgba(255, 255, 255, 0.22);
-  box-shadow:
-    0 30px 90px rgba(0, 0, 0, 0.55),
-    0 0 80px rgba(255, 215, 0, 0.28);
-  transform-origin: center;
-  animation: bonusCard 6000ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  text-align: center;
-  max-width: min(760px, calc(100vw - 40px));
+    position: relative;
+    padding: 28px 34px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+    border: 2px solid rgba(255, 255, 255, 0.22);
+    box-shadow:
+            0 30px 90px rgba(0, 0, 0, 0.55),
+            0 0 80px rgba(255, 215, 0, 0.28);
+    transform-origin: center;
+    will-change: transform, opacity;
+    animation: bonusCard 6000ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    text-align: center;
+    max-width: min(760px, calc(100vw - 40px));
 }
 
 .bonus-activation-title {
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-size: clamp(28px, 4.5vw, 56px);
-  line-height: 1.05;
-  background: linear-gradient(90deg, #fff7bf 0%, #ffd700 35%, #ff8bd4 70%, #7ee7ff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow:
-    0 0 18px rgba(255, 215, 0, 0.55),
-    0 0 36px rgba(255, 105, 180, 0.30);
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.35));
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: clamp(28px, 4.5vw, 56px);
+    line-height: 1.05;
+    background: linear-gradient(90deg, #fff7bf 0%, #ffd700 35%, #ff8bd4 70%, #7ee7ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow:
+            0 0 18px rgba(255, 215, 0, 0.55),
+            0 0 36px rgba(255, 105, 180, 0.30);
+    /* filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.35)); - УДАЛЕНО */
 }
 
 .bonus-activation-subtitle {
-  margin-top: 10px;
-  font-size: clamp(12px, 2.1vw, 18px);
-  color: rgba(255, 255, 255, 0.88);
-  letter-spacing: 0.02em;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
-  opacity: 0;
-  animation: bonusSubtitle 6000ms ease-in-out both;
+    margin-top: 10px;
+    font-size: clamp(12px, 2.1vw, 18px);
+    color: rgba(255, 255, 255, 0.88);
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: bonusSubtitle 6000ms ease-in-out both;
 }
 
 .bonus-activation-sparkles {
-  position: absolute;
-  inset: -40px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.55), transparent 35%),
-    radial-gradient(circle at 80% 25%, rgba(255, 215, 0, 0.55), transparent 40%),
-    radial-gradient(circle at 30% 85%, rgba(255, 105, 180, 0.40), transparent 45%),
-    radial-gradient(circle at 75% 80%, rgba(0, 210, 255, 0.40), transparent 45%);
-  filter: blur(18px);
-  opacity: 0;
-  animation: bonusSparkles 2200ms ease-in-out both;
+    position: absolute;
+    inset: -40px;
+    border-radius: 28px;
+    background:
+            radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.55), transparent 35%),
+            radial-gradient(circle at 80% 25%, rgba(255, 215, 0, 0.55), transparent 40%),
+            radial-gradient(circle at 30% 85%, rgba(255, 105, 180, 0.40), transparent 45%),
+            radial-gradient(circle at 75% 80%, rgba(0, 210, 255, 0.40), transparent 45%);
+    /* filter: blur(18px); - УДАЛЕНО */
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: bonusSparkles 2200ms ease-in-out both;
 }
 
 @keyframes bonusBackdrop {
-  0% { opacity: 0; }
-  12% { opacity: 1; }
-  82% { opacity: 1; }
-  100% { opacity: 0; }
+    0% { opacity: 0; }
+    12% { opacity: 1; }
+    82% { opacity: 1; }
+    100% { opacity: 0; }
 }
 
 @keyframes bonusCard {
-  0% { opacity: 0; transform: translateY(30px) scale(0.94); }
-  18% { opacity: 1; transform: translateY(0) scale(1.02); }
-  32% { transform: translateY(0) scale(1); }
-  82% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(10px) scale(0.98); }
+    0% { opacity: 0; transform: translateY(30px) scale(0.94); }
+    18% { opacity: 1; transform: translateY(0) scale(1.02); }
+    32% { transform: translateY(0) scale(1); }
+    82% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(10px) scale(0.98); }
 }
 
 @keyframes bonusSparkles {
-  0% { opacity: 0; transform: scale(0.95); }
-  22% { opacity: 1; transform: scale(1); }
-  80% { opacity: 0.9; }
-  100% { opacity: 0; transform: scale(1.02); }
+    0% { opacity: 0; transform: scale(0.95); }
+    22% { opacity: 1; transform: scale(1); }
+    80% { opacity: 0.9; }
+    100% { opacity: 0; transform: scale(1.02); }
 }
 
 @keyframes bonusSubtitle {
-  0% { opacity: 0; transform: translateY(6px); }
-  26% { opacity: 0; transform: translateY(6px); }
-  40% { opacity: 1; transform: translateY(0); }
-  82% { opacity: 1; }
-  100% { opacity: 0; }
+    0% { opacity: 0; transform: translateY(6px); }
+    26% { opacity: 0; transform: translateY(6px); }
+    40% { opacity: 1; transform: translateY(0); }
+    82% { opacity: 1; }
+    100% { opacity: 0; }
 }
-
-
