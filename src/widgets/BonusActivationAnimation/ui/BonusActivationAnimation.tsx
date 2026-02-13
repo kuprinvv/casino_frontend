@@ -12,7 +12,7 @@ export const BonusActivationAnimation: React.FC<BonusActivationAnimationProps> =
    show,
    text = 'БОНУСНАЯ ИГРА',
    durationMs = 6000,
-   videoSrc = '/5.mp4',
+   videoSrc = '/bonusVideo.mp4',
     }) => {
     const [isVisible, setIsVisible] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
