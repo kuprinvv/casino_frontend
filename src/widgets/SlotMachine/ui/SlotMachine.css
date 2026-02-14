@@ -70,7 +70,9 @@
 
 @media (max-width: 480px) {
     .slot-machine {
-        margin-top: -28px;
+        margin-top: -2px;
+        padding: 49px;
+        margin-bottom: -2px;
     }
     .slot-machine::after {
         background-size: 357px 275px;

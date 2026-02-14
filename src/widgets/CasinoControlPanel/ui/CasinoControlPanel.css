@@ -317,15 +317,13 @@
 
 @media (max-width: 480px) {
     .casino-control-panel {
-        grid-template-columns: 1fr;
-        gap: 5px;
-        padding: 20px;
+        gap: 3px;
     }
 
     .casino-button {
-        width: 10%;
+        width: 13%;
         min-height: 70px;
-        padding: 14px 14px;
+        padding: 14px 10px;
     }
 
     .bet-display {
@@ -342,12 +340,8 @@
         font-size: 9px;
     }
 
-    .bet-decrease{
-        width: 20px;
-    }
-
-    .bet-increase {
-        width: 20px;
+    .bet-decrease, .bet-increase {
+        width: 40px;
     }
 
     .spin-button {
