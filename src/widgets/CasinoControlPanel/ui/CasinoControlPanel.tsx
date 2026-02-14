@@ -44,6 +44,18 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     const justExitedBonusRef = useRef(false);
 
     useEffect(() => {
+        console.log({
+            isBonusGame,
+            isAutoSpin,
+            justExitedBonus: justExitedBonusRef.current,
+            isSpinning,
+            isResolving,
+            bonusDelayActive,
+            willSpin: isAutoSpin && !justExitedBonusRef.current && !isSpinning && !isResolving && !isCooldown && !bonusDelayActive
+        });
+    }, [isBonusGame, isAutoSpin, isSpinning, isResolving, isCooldown, bonusDelayActive]);
+
+    useEffect(() => {
         if (isBonusGame && !prevBonusGameRef.current) {
             setIsAutoSpin(true);
             setBonusDelayActive(true);
