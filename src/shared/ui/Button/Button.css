@@ -34,13 +34,13 @@
 }
 
 .button-secondary {
-  background: linear-gradient(135deg, #fbd393, #ffb400);
+  background: linear-gradient(135deg, #ff0000, #ffce00);
   color: white;
 }
 
 .button-secondary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(240, 147, 251, 0.4);
+  box-shadow: 0 6px 12px rgb(255 52 0);
 }
 
 .button-danger {
