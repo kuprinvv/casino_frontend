@@ -74,7 +74,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         if (justExitedBonusRef.current) return;
         if (isSpinning || isResolving || isCooldown || bonusDelayActive) return;
 
-        if (isBonusGame && freeSpinsLeft === 0) return;
+        if (isBonusGame && freeSpinsLeft === -1) return;
 
         if (balance < bet && !isBonusGame) {
             setIsAutoSpin(false);
