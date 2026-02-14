@@ -34,7 +34,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     onBuyBonus,
     minBet = 2,
     maxBet = 100,
-          }) => {
+}) => {
     const [isCooldown, setIsCooldown] = useState(false);
     const [isAutoSpin, setIsAutoSpin] = useState(false);
     const [bonusDelayActive, setBonusDelayActive] = useState(false);
@@ -69,7 +69,6 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         prevBonusGameRef.current = isBonusGame;
     }, [isBonusGame]);
 
-    // Новый эффект — выключаем автоспин, как только freeSpinsLeft = 0 внутри бонуса
     useEffect(() => {
         if (isBonusGame && freeSpinsLeft === 0) {
             setIsAutoSpin(false);
@@ -81,8 +80,6 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         if (justExitedBonusRef.current) return;
         if (isSpinning || isResolving || isCooldown || bonusDelayActive) return;
 
-        if (isBonusGame && freeSpinsLeft === 0) return;
-
         if (balance < bet && !isBonusGame) {
             setIsAutoSpin(false);
             return;
@@ -91,7 +88,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         cooldownRef.current = true;
         setIsCooldown(true);
         onSpin();
-    }, [isAutoSpin, isSpinning, isResolving, isCooldown, bonusDelayActive, balance, bet, isBonusGame, freeSpinsLeft, onSpin]);
+    }, [isAutoSpin, isSpinning, isResolving, isCooldown, bonusDelayActive, balance, bet, isBonusGame, onSpin]);
 
     useEffect(() => {
         if (!isSpinning && !isResolving) {
@@ -235,12 +232,12 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
                     isSpinning
                         ? 'Вращение...'
                         : isResolving
-                            ? 'Каскад...'
-                            : isBonusGame
-                                ? `Фриспин (${freeSpinsLeft})`
-                                : isCooldown
-                                    ? 'Подождите...'
-                                    : 'Крутить'
+                        ? 'Каскад...'
+                        : isBonusGame
+                        ? `Фриспин (${freeSpinsLeft})`
+                        : isCooldown
+                        ? 'Подождите...'
+                        : 'Крутить'
                 }
             >
                 <span className="button-label">
@@ -257,8 +254,8 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
                     isAutoSpin
                         ? 'Остановить автопрокрутку'
                         : balance < bet && !isBonusGame
-                            ? `Недостаточно средств (требуется ${bet})`
-                            : 'Запустить автопрокрутку'
+                        ? `Недостаточно средств (требуется ${bet})`
+                        : 'Запустить автопрокрутку'
                 }
             >
                 <img src="/auto.png" alt="Авто" />
