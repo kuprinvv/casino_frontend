@@ -295,12 +295,18 @@
 }
 
 @media (max-width: 900px) and (max-height: 500px) {
+    .winning-lines-svg{
+        top: -17px;
+        left: -43px;
+        width: 317px !important;
+        height: 102px !important;
+    }
     .lines-overlay {
-        top: -31px;
+        top: -7px;
     }
     .line-indicator {
-        bottom: -23px;
-        padding: 6px 12px;
+        bottom: 2px;
+        padding: 3px 8px;
     }
 }
 
