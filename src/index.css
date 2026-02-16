@@ -6,7 +6,5 @@
 }
 
 body {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     overscroll-behavior: none;
 }
