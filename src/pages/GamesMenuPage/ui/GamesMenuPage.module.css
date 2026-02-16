@@ -13,7 +13,6 @@
     radial-gradient(circle at 70% 88%, rgba(251, 191, 36, 0.16), transparent 48%),
     linear-gradient(180deg, #fff7fb 0%, #f3f0ff 100%);
   position: relative;
-  overflow-x: hidden;
 }
 
 /* Manga halftone dots */
