@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import '@app/App.css';
+import {NeonLoading} from "@widgets/Loading/NeonLoading.tsx";
 
 const GamesMenuPage = React.lazy(() => import('@pages/GamesMenuPage'));
 const GamePage = React.lazy(() => import('@pages/GamePage'));
@@ -26,13 +26,6 @@ const preloadGameAssets = () => {
     });
 };
 
-const NeonLoading = () => (
-    <div className="neon-loader">
-        <div className="neon-text">КАЗИНО</div>
-        <div className="neon-subtext">ЗАГРУЗКА...</div>
-        <div className="neon-pulse"></div>
-    </div>
-);
 
 const router = createBrowserRouter([
     {
