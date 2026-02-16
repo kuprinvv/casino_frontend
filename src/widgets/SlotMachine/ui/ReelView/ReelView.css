@@ -103,17 +103,17 @@
 
 @media (max-width: 900px) and (max-height: 500px) {
     .reel-container {
-        width: 73px;
+        width: 80px;
         height: 167px;
     }
     .reel {
         padding: 9px;
-        gap: 7px;
-        top: -5px;
+        gap: 3px;
+        top: 6px;
     }
     .reel-symbol {
-        width: 50px;
-        height: 47px;
+        width: 61px;
+        height: 41px;
     }
     @keyframes spin-reel {
         0% {

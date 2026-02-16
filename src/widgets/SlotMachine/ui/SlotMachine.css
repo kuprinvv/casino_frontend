@@ -50,11 +50,12 @@
 
 @media (max-width: 900px) and (max-height: 500px) {
     .slot-machine {
-        top: -71px;
+        top: -33px;
+        padding: 21px 44px;
         bottom: env(safe-area-inset-bottom);
     }
     .slot-machine::after {
-        background-size: 475px 250px;
+        background-size: 511px 220px;
     }
     .slot-machine-frame {
         padding: 0;
