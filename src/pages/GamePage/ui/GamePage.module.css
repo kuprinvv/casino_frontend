@@ -87,6 +87,7 @@
         padding: 0;
         background: none;
         backdrop-filter: unset;
+        bottom: env(safe-area-inset-bottom);
     }
 
     .game-title {
