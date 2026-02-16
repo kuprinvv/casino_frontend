@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import {NeonLoading} from "@widgets/Loading/NeonLoading.tsx";
-import {ScrollToTop} from "@widgets/ScrollToTop/ScrollToTop.tsx";
 
 const GamesMenuPage = React.lazy(() => import('@pages/GamesMenuPage'));
 const GamePage = React.lazy(() => import('@pages/GamePage'));
@@ -39,7 +38,6 @@ export const App: React.FC = () => {
 
     return (
         <div className="app-container">
-            <ScrollToTop/>
             <RouterProvider router={router} />
         </div>
     );
