@@ -3,16 +3,17 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    padding: 3px 419px;
+    gap: 12px;
+    padding: 3px 10px;
     background: linear-gradient(135deg, #59420087, #2b1b1494);
     border-radius: 20px;
     border: 2px solid rgba(255, 255, 255, .1);
     box-shadow: 0 8px 32px #00000080;
     backdrop-filter: blur(10px);
-    width: 100%;
-    max-width: 500px;
+    width: 800px;
     flex-wrap: nowrap;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .casino-button {
@@ -38,7 +39,6 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-
 }
 
 .casino-button::before {
@@ -68,7 +68,6 @@
     box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
 }
 
-/* Предотвращаем скролл при фокусе кнопок */
 .casino-button:focus {
     outline: none !important;
     scroll-margin: 0 !important;
@@ -112,16 +111,12 @@
     white-space: nowrap;
 }
 
-/* Кнопка уменьшения ставки */
-/* Кнопка увеличения ставки */
 .bet-increase, .bet-decrease {
     flex: 0 0 auto;
     font-size: 30px;
     font-weight: bold;
 }
 
-
-/* Отображение ставки */
 .bet-display {
     display: flex;
     flex-direction: column;
@@ -151,7 +146,6 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Кнопка спина */
 .spin-button {
     flex: 0 0 auto;
     padding: 15px 20px;
@@ -174,6 +168,7 @@
     font-size: 12px;
     font-weight: 700;
 }
+
 .auto-spin-button{
     border: 2px solid orange;
 }
@@ -184,7 +179,6 @@
     box-shadow: 0 4px 12px rgb(255 100 0 / 84%);
 }
 
-/* Кнопка турбо */
 .turbo-button {
     flex: 0 0 auto;
     border: 2px solid red;
@@ -196,7 +190,6 @@
     box-shadow: 0 4px 12px rgb(255 0 0 / 92%);
 }
 
-
 @keyframes pulse {
     0%, 100% {
         transform: scale(1);
@@ -206,7 +199,6 @@
     }
 }
 
-/* Кнопка бонуса */
 .bonus-button {
     flex: 0 0 auto;
     border-color: rgba(156, 39, 176, 0.5);
@@ -218,7 +210,6 @@
     box-shadow: 0 4px 12px rgb(156 39 176 / 90%);
 }
 
-/* Адаптивность */
 @media (max-width: 901px) {
     .casino-control-panel {
         grid-template-columns: 1fr;
@@ -273,15 +264,15 @@
 @media (max-width: 900px) and (max-height: 500px) {
     .casino-control-panel{
         gap: 3px;
-        padding: 0;
-        margin-top: -39px;
+        padding: 5px;
+        width: 470px;
     }
     .bet-decrease .bet-increase{
         width: 20px;
     }
     .casino-button{
         min-height: 24px;
-        padding: 1px 20px;
+        padding: 3px 20px;
     }
     .casino-button img {
         width: 20px;
@@ -290,7 +281,7 @@
     .bet-display {
         width: 10%;
         min-height: 13px;
-        padding: 0 12px;
+        padding: 6px 12px;
     }
     .bet-label{
         font-size: 6px;
@@ -312,12 +303,12 @@
     .casino-button .button-label {
         font-size: 5px;
     }
-
 }
 
 @media (max-width: 480px) {
     .casino-control-panel {
-        gap: 3px;
+        gap: 2px;
+        width: 365px;
     }
 
     .casino-button {

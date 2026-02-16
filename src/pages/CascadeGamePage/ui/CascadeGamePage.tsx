@@ -1,14 +1,16 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CascadeBoard } from '@widgets/CascadeBoard';
 import { BonusActivationAnimation } from '@widgets/BonusActivationAnimation';
 import { Button } from '@shared/ui/Button';
 import { useCascadeGameStore } from '@entities/cascade/model/store';
 import { useAuthStore } from '@features/auth';
 import { AuthModal } from '@features/auth';
-import './CascadeGamePage.css';
-import {CascadeControlPanel} from "@widgets/CascadeControlPanel";
+import styles from './CascadeGamePage.module.css';
+import { CascadeControlPanel } from "@widgets/CascadeControlPanel";
 
 export const CascadeGamePage: React.FC = () => {
+  const navigate = useNavigate();
   const [isPaytableOpen, setIsPaytableOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [depositAmount, setDepositAmount] = useState('100');
@@ -23,7 +25,7 @@ export const CascadeGamePage: React.FC = () => {
     freeSpinsLeft,
     awardedFreeSpins,
   } = useCascadeGameStore();
-  const { isAuthenticated} = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   const [showBonusOverlay, setShowBonusOverlay] = useState(false);
   const lastAwardedRef = useRef(0);
@@ -36,14 +38,12 @@ export const CascadeGamePage: React.FC = () => {
       return () => window.clearTimeout(t);
     };
 
-    // 1) Получение бонуски через выигрыш (бек начислил фриспины)
     if (awardedFreeSpins > 0 && lastAwardedRef.current === 0) {
       lastAwardedRef.current = awardedFreeSpins;
       lastFreeSpinsRef.current = freeSpinsLeft;
       return trigger();
     }
 
-    // 2) Покупка бонуски: фриспины появились, но awardedFreeSpins = 0 (обычно так и бывает при покупке)
     if (
       awardedFreeSpins === 0 &&
       lastFreeSpinsRef.current === 0 &&
@@ -54,19 +54,16 @@ export const CascadeGamePage: React.FC = () => {
       return trigger();
     }
 
-    // Обновляем рефы
     if (awardedFreeSpins === 0) lastAwardedRef.current = 0;
     lastFreeSpinsRef.current = freeSpinsLeft;
   }, [awardedFreeSpins, freeSpinsLeft, isBonusGame]);
 
-  // Синхронизация баланса при загрузке
   useEffect(() => {
     if (isAuthenticated) {
       setOnlineMode(true);
       syncBalance();
     }
   }, [isAuthenticated, setOnlineMode, syncBalance]);
-
 
   const handleDeposit = async () => {
     const amount = parseFloat(depositAmount);
@@ -84,45 +81,42 @@ export const CascadeGamePage: React.FC = () => {
     }
   };
 
-  // Продвижение каскадов теперь управляется внутри CascadeBoard
-  // после завершения анимации и обновления доски через updateBoardAfterCascade
-
   return (
-    <div className="cascade-game-page">
+    <div className={styles["cascade-game-page"]}>
       <BonusActivationAnimation show={showBonusOverlay} text="БОНУСНАЯ ИГРА" />
-      <header className="game-header">
-        <div className={"menu-and-title"}>
+      <header className={styles["game-header"]}>
+        <div className={styles["menu-and-title"]}>
           <Button
-            onClick={() => { window.location.hash = '#/games'; }}
+            onClick={() => navigate('/')}
             variant="secondary"
-            className="back-menu-button"
+            className={styles["back-menu-button"]}
           >
             ← В меню
           </Button>
-          <h1 className="game-title">🍬 SugarRash Cascade 🍬</h1>
+          <h1 className={styles["game-title"]}>🍬 SugarRash Cascade 🍬</h1>
         </div>
-        <div className="header-buttons">
+        <div className={styles["header-buttons"]}>
           <Button 
             onClick={() => setIsPaytableOpen(true)}
             variant="secondary"
-            className="info-button"
+            className={styles["info-button"]}
           >
             📊 Правила
           </Button>
           <Button 
             onClick={() => setOnlineMode(!useOnlineMode)}
             variant={useOnlineMode ? "primary" : "secondary"}
-            className="online-button"
+            className={styles["online-button"]}
           >
             {useOnlineMode ? '🌐 Онлайн' : '💻 Оффлайн'}
           </Button>
         </div>
       </header>
       
-      <main className="game-content">
+      <main className={styles["game-content"]}>
 
         {showDepositForm && (
-          <div className="deposit-form">
+          <div className={styles["deposit-form"]}>
             <h3>Пополнение баланса</h3>
             <input
               type="number"
@@ -132,19 +126,19 @@ export const CascadeGamePage: React.FC = () => {
               min="1"
               step="1"
             />
-            <div className="deposit-actions">
-              <button className="btn-confirm" onClick={handleDeposit}>
+            <div className={styles["deposit-actions"]}>
+              <button className={styles["btn-confirm"]} onClick={handleDeposit}>
                 Пополнить
               </button>
-              <button className="btn-cancel" onClick={() => setShowDepositForm(false)}>
+              <button className={styles["btn-cancel"]} onClick={() => setShowDepositForm(false)}>
                 Отмена
               </button>
             </div>
           </div>
         )}
 
-        <div className="game-content-wrapper">
-          <div className="game-center-content">
+        <div className={styles["game-content-wrapper"]}>
+          <div className={styles["game-center-content"]}>
             <CascadeBoard />
             <CascadeControlPanel/>
           </div>
@@ -154,13 +148,13 @@ export const CascadeGamePage: React.FC = () => {
       {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
 
       {isPaytableOpen && (
-        <div className="paytable-modal-overlay" onClick={() => setIsPaytableOpen(false)}>
-          <div className="paytable-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="paytable-header">
+        <div className={styles["paytable-modal-overlay"]} onClick={() => setIsPaytableOpen(false)}>
+          <div className={styles["paytable-modal"]} onClick={(e) => e.stopPropagation()}>
+            <div className={styles["paytable-header"]}>
               <h2>Правила игры</h2>
               <Button onClick={() => setIsPaytableOpen(false)} variant="secondary">✕</Button>
             </div>
-            <div className="paytable-content">
+            <div className={styles["paytable-content"]}>
               <h3>Механика игры:</h3>
               <ul>
                 <li>Игровое поле 7x7 символов</li>
@@ -190,4 +184,3 @@ export const CascadeGamePage: React.FC = () => {
     </div>
   );
 };
-

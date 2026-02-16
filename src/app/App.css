@@ -1,9 +1,107 @@
-.app-container {
-  height: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
+.neon-loader {
+    position: fixed;
+    inset: 0;
+    background: #0a0015;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
 }
 
+.neon-text {
+    font-size: 5.5rem;
+    font-weight: 900;
+    color: #00f0ff;
+    text-shadow:
+            0 0 7px #00f0ff,
+            0 0 20px #00f0ff,
+            0 0 40px #00f0ff,
+            0 0 80px #00d0ff;
+    animation: neonFlicker 1.5s infinite alternate;
+    margin-bottom: 24px;
+}
+
+.neon-subtext {
+    font-size: 2rem;
+    color: #00ff15;
+    font-weight: bold;
+    margin-bottom: 48px;
+    text-shadow: 0 0 10px #00ff2a;
+    letter-spacing: 2px;
+}
+
+.progress-container {
+    width: 400px;
+    max-width: 85vw;
+    height: 16px;
+    background: rgba(0, 240, 255, 0.06);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow:
+            inset 0 2px 8px rgba(0,0,0,0.7),
+            0 0 20px rgba(0, 240, 255, 0.25);
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #00f0ff, #00d4ff, #ff00aa, #00f0ff);
+    background-size: 300% 100%;
+    animation:
+            barFill 4s ease-in-out infinite,
+            gradientFlow 3s linear infinite;
+    box-shadow:
+            0 0 18px #00f0ff,
+            0 0 35px #ff00aa88;
+    border-radius: 8px;
+}
+
+@keyframes neonFlicker {
+    0%, 100% {
+        opacity: 1;
+        text-shadow: 0 0 7px #00f0ff, 0 0 20px #00f0ff, 0 0 40px #00f0ff;
+    }
+    50% {
+        opacity: 0.92;
+        text-shadow: 0 0 4px #00f0ff, 0 0 12px #00f0ff, 0 0 25px #00f0ff;
+    }
+}
+
+@keyframes barFill {
+    0%   { width: 0%; }
+    50%  { width: 100%; }
+    100% { width: 0%; }
+}
+
+@keyframes gradientFlow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .neon-text {
+        font-size: 4rem;
+    }
+    .neon-subtext {
+        font-size: 1.6rem;
+        margin-bottom: 32px;
+    }
+    .progress-container {
+        width: 320px;
+        height: 12px;
+    }
+}
+
+/* Уважение к настройкам reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .neon-text,
+    .progress-bar {
+        animation: none;
+    }
+    .progress-bar {
+        width: 65%;
+        background: #00f0ff;
+    }
+}

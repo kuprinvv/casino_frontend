@@ -85,6 +85,7 @@
   background: linear-gradient(135deg, var(--jojo-purple), var(--jojo-pink), var(--jojo-gold));
   box-shadow: 0 0 0 3px var(--jojo-ink), 0 14px 0 rgba(0, 0, 0, 0.12);
   transform: rotate(-6deg);
+  aria-hidden: true;
 }
 
 .brand-name {
@@ -273,6 +274,7 @@
 }
 
 .game-title {
+  font-size: 28px;
   text-align: center;
   font-weight: 900;
   color: var(--jojo-blue);
@@ -347,6 +349,9 @@
 @media (max-width: 480px) {
     .brand-name, .top-nav-link {
         font-size: 12px;
+    }
+    .games-menu-header{
+        gap: 8px;
     }
 
 }

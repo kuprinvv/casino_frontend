@@ -236,4 +236,7 @@
     .btn-register, .btn-login{
         font-size: 12px !important;
     }
+    .btn-log-reg {
+        flex-direction: column;
+    }
 }

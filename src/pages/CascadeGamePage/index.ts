@@ -1,2 +1,2 @@
-export { CascadeGamePage } from './ui/CascadeGamePage';
+export { CascadeGamePage as default } from './ui/CascadeGamePage';
 

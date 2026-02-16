@@ -147,7 +147,7 @@
 
 @media (max-width: 480px) {
     .info-item {
-        padding: 0;
+        padding: 4px;
     }
 
     .info-label {

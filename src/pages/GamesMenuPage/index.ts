@@ -1,3 +1,3 @@
-export { GamesMenuPage } from './ui/GamesMenuPage';
+export {GamesMenuPage as default } from './ui/GamesMenuPage';
 
 

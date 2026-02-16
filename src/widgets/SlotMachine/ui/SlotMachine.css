@@ -1,12 +1,9 @@
 .slot-machine {
-    position: relative;           /* обязательно */
-    /* убираем background отсюда полностью */
-    margin-top: -15px;
-    margin-bottom: -13px;
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 80px 20px;
+    padding: 80px 30px;
     overflow: hidden;
 }
 
@@ -53,7 +50,7 @@
 
 @media (max-width: 900px) and (max-height: 500px) {
     .slot-machine {
-        margin-top: -88px;
+        padding: 43px 27px;
     }
     .slot-machine::after {
         background-size: 475px 250px;
@@ -69,10 +66,8 @@
 }
 
 @media (max-width: 480px) {
-    .slot-machine {
-        margin-top: -2px;
-        padding: 49px;
-        margin-bottom: -2px;
+    .slot-machine{
+        padding: 60px 30px;
     }
     .slot-machine::after {
         background-size: 357px 275px;

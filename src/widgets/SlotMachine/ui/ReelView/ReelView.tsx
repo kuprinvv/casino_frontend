@@ -36,12 +36,12 @@ const createStaticSpinningSymbols = (count: number, reelIndex: number): Symbol[]
 };
 
 export const ReelView: React.FC<ReelViewProps> = ({
-                                                      symbols,
-                                                      isSpinning,
-                                                      winningPositions = [],
-                                                      reelIndex,
-                                                      isTurbo = false,
-                                                  }) => {
+    symbols,
+    isSpinning,
+    winningPositions = [],
+    reelIndex,
+    isTurbo = false,
+     }) => {
     const [displaySymbols, setDisplaySymbols] = useState<Symbol[]>(symbols || []);
     const [isAnimating, setIsAnimating] = useState(false);
 
@@ -59,7 +59,7 @@ export const ReelView: React.FC<ReelViewProps> = ({
         if (isSpinning) {
             setIsAnimating(true);
             // Спин-символы ДО основных для движения вниз
-            setDisplaySymbols([ ...symbols, ...staticSpinningSymbols]);
+            setDisplaySymbols([ ...staticSpinningSymbols, ...symbols]);
         } else {
             const stopDelay = isTurbo ? reelIndex * 60 : reelIndex * 300;
 
