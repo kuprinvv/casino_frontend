@@ -218,8 +218,8 @@
 
 @media (max-width: 900px) and (max-height: 500px) {
     .winning-lines-svg {
-        top: -17px;
-        left: -27px;
+        top: -6px;
+        left: 18px;
     }
     .lines-overlay {
         top: -7px;
