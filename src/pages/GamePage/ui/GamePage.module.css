@@ -73,9 +73,6 @@
 }
 
 @media (max-width: 901px) {
-    html {
-        overflow: hidden;
-    }
     .game-title {
         font-size: 20px;
     }
