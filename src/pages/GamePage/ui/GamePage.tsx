@@ -29,18 +29,6 @@ export const GamePage: React.FC = () => {
     const prevFreeSpinsRef = useRef(freeSpinsLeft);
 
     useEffect(() => {
-        // При входе на страницу игры
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
-
-        // При уходе со страницы игры — возвращаем скролл
-        return () => {
-            document.documentElement.style.overflow = '';
-            document.body.style.overflow = '';
-        };
-    }, []);
-
-    useEffect(() => {
         if (!mountedRef.current) {
             mountedRef.current = true;
             prevFreeSpinsRef.current = freeSpinsLeft;
