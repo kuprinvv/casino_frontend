@@ -23,15 +23,10 @@ export const GamePage: React.FC = () => {
         setBet,
         buyBonus,
         setTurbo,
-        syncBalance,
     } = useGameStore();
 
     const mountedRef = useRef(false);
     const prevFreeSpinsRef = useRef(freeSpinsLeft);
-
-    useEffect(() => {
-        syncBalance(); // Загружаем актуальные данные при монтировании
-    }, [syncBalance]);
 
     useEffect(() => {
         if (!mountedRef.current) {

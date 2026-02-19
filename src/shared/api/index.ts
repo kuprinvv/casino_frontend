@@ -12,9 +12,9 @@ export type {
   BuyBonusRequest,
   SpinResult,
   LineWinAPI,
+  BonusSpinResponse,
   BalanceResponse,
-  ErrorResponse,
-  DataResponse
+  ErrorResponse
 } from './types';
 
 // Экспорт auth типов
