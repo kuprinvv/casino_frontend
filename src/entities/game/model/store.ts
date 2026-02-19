@@ -180,14 +180,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
             return;
         }
 
-        set({
-            isSpinning: true,
-            winningLines: [],
-            lastWin: 0,
-        });
+        set({ isSpinning: true, winningLines: [], lastWin: 0 });
 
         try {
-            // ✅ Передаём bet (store сам посчитает bonusCost внутри game.ts)
             const result = await GameAPI.buyBonus(state.bet);
 
             const spinDuration = state.isTurbo ? 100 : GAME_CONFIG.SPIN_DURATION;
@@ -205,7 +200,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     balance: result.balance,
                     winningLines: result.winningLines,
                     isSpinning: false,
-                    // ✅ Ключевое: устанавливаем фриспины и бонус-режим
                     freeSpinsLeft: result.freeSpinCount,
                     isBonusGame: result.inFreeSpin,
                 });
