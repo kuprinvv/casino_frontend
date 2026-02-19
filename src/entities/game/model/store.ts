@@ -74,7 +74,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
             const balance = await UserAPI.getBalance();
             set({
                 balance,
-                // Фриспины обновляются только после спина, так как нет отдельного эндпоинта для их получения
             });
         } catch (error) {
             console.error('Failed to sync balance:', error);
@@ -201,8 +200,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     balance: result.balance,
                     winningLines: result.winningLines,
                     isSpinning: false,
-                    freeSpinsLeft: result.freeSpinCount,
-                    isBonusGame: result.inFreeSpin,
+                    freeSpinsLeft: result.freeSpinCount,  // ✅ ключевое
+                    isBonusGame: result.inFreeSpin,        // ✅ ключевое
                 });
             }, spinDuration);
 
