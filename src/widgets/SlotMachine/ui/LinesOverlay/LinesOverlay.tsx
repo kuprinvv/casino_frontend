@@ -1,4 +1,3 @@
-// LinesOverlay.tsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { WinningLine, SymbolType } from '@shared/types/game';
 import './LinesOverlay.css';
@@ -63,6 +62,18 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         return currentLine ? generateRelativePath(currentLine.positions) : '';
     }, [currentLine]);
 
+    // Генерируем позиции для декоративных точек
+    const reelDots = useMemo(() => {
+        if (!currentLine) return [];
+        return currentLine.positions
+            .filter(pos => pos && pos.length >= 2)
+            .map(([reelIndex, rowIndex]) => ({
+                x: reelIndex + 0.5,
+                y: rowIndex + 0.5,
+                key: `${reelIndex}-${rowIndex}`
+            }));
+    }, [currentLine]);
+
     if (filteredLines.length === 0) {
         if (winningLines.length === 0) return null;
         return (
@@ -94,7 +105,17 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                 preserveAspectRatio="none"
                 style={{ overflow: 'visible' }}
             >
-                {/* Тень для контраста */}
+                {/* 1. Внешнее широкое свечение (Aura) */}
+                <path
+                    d={linePath}
+                    className="winning-line-aura"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    vectorEffect="non-scaling-stroke"
+                />
+
+                {/* 2. Тень для глубины */}
                 <path
                     d={linePath}
                     className="winning-line-shadow"
@@ -104,7 +125,7 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                     vectorEffect="non-scaling-stroke"
                 />
 
-                {/* Основная линия - теперь без SVG градиента */}
+                {/* 3. Основная золотая линия */}
                 <path
                     d={linePath}
                     className="winning-line-path"
@@ -115,15 +136,27 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                     shapeRendering="geometricPrecision"
                 />
 
-                {/* Белый блик по центру */}
+                {/* 4. Внутренний яркий блик (Core) */}
                 <path
                     d={linePath}
-                    className="winning-line-highlight"
+                    className="winning-line-core"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     vectorEffect="non-scaling-stroke"
                 />
+
+                {/* 5. Декоративные точки на барабанах */}
+                {reelDots.map((dot) => (
+                    <circle
+                        key={dot.key}
+                        cx={dot.x}
+                        cy={dot.y}
+                        r="0.15"
+                        className="winning-line-dot"
+                        vectorEffect="non-scaling-stroke"
+                    />
+                ))}
             </svg>
 
             <div className="lines-bottom-info">

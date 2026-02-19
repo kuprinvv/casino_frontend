@@ -1,4 +1,3 @@
-/* LinesOverlay.css */
 .lines-overlay-container {
     position: absolute;
     top: 0;
@@ -19,46 +18,112 @@
     overflow: visible;
 }
 
-/* Тень */
-.winning-line-shadow {
-    stroke: rgba(0, 0, 0, 0.6);
-    stroke-width: 5;
-    filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.5));
+/* 1. AURA - Широкое мягкое свечение вокруг */
+.winning-line-aura {
+    stroke: rgba(255, 215, 0, 0.3);
+    stroke-width: 12;
+    filter: blur(4px);
+    opacity: 0.6;
+    animation: auraPulse 3s ease-in-out infinite;
 }
 
-/* Основная линия - CSS градиент через stroke */
-.winning-line-path {
-    stroke: #FFD700;
-    stroke-width: 3;
-    /* CSS-свечение вместо SVG фильтра */
-    filter: drop-shadow(0px 0px 4px rgba(255, 215, 0, 0.8))
-    drop-shadow(0px 0px 8px rgba(255, 165, 0, 0.4));
-    animation: royalGlow 2s ease-in-out infinite;
-}
-
-@keyframes royalGlow {
+@keyframes auraPulse {
     0%, 100% {
-        stroke: #FFD700;
-        filter: drop-shadow(0px 0px 4px rgba(255, 215, 0, 0.8))
-        drop-shadow(0px 0px 8px rgba(255, 165, 0, 0.4));
-        opacity: 1;
+        stroke-width: 12;
+        opacity: 0.4;
     }
     50% {
-        stroke: #FFA500;
-        filter: drop-shadow(0px 0px 6px rgba(255, 215, 0, 1))
-        drop-shadow(0px 0px 12px rgba(255, 165, 0, 0.6));
-        opacity: 0.95;
+        stroke-width: 16;
+        opacity: 0.7;
     }
 }
 
-/* Белый блик */
-.winning-line-highlight {
-    stroke: #FFF8DC;
-    stroke-width: 1;
-    opacity: 0.9;
+/* 2. SHADOW - Глубокая тень для объема */
+.winning-line-shadow {
+    stroke: rgba(0, 0, 0, 0.5);
+    stroke-width: 6;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.4));
 }
 
-/* Остальные стили без изменений... */
+/* 3. MAIN PATH - Основная золотая линия */
+.winning-line-path {
+    stroke: #FFD700;
+    stroke-width: 4;
+    /* Многослойное свечение */
+    filter:
+            drop-shadow(0 0 2px rgba(255, 215, 0, 1))
+            drop-shadow(0 0 4px rgba(255, 165, 0, 0.8))
+            drop-shadow(0 0 8px rgba(255, 140, 0, 0.4));
+    animation: goldFlow 2.5s ease-in-out infinite;
+}
+
+@keyframes goldFlow {
+    0%, 100% {
+        stroke: #FFD700;
+        filter:
+                drop-shadow(0 0 2px rgba(255, 215, 0, 1))
+                drop-shadow(0 0 4px rgba(255, 165, 0, 0.8))
+                drop-shadow(0 0 8px rgba(255, 140, 0, 0.4));
+    }
+    50% {
+        stroke: #FFEC8B;
+        filter:
+                drop-shadow(0 0 3px rgba(255, 215, 0, 1))
+                drop-shadow(0 0 6px rgba(255, 165, 0, 1))
+                drop-shadow(0 0 12px rgba(255, 140, 0, 0.6));
+    }
+}
+
+/* 4. CORE - Яркий белый центр для эффекта металла */
+.winning-line-core {
+    stroke: url(#coreGradient);
+    stroke-width: 1.5;
+    opacity: 0.9;
+    /* Анимация блика */
+    stroke-dasharray: 10 5;
+    animation: coreShine 3s linear infinite;
+}
+
+@keyframes coreShine {
+    to {
+        stroke-dashoffset: -30;
+    }
+}
+
+/* 5. DOTS - Декоративные точки на барабанах */
+.winning-line-dot {
+    fill: #FFF8DC;
+    stroke: #FFD700;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    filter:
+            drop-shadow(0 0 2px rgba(255, 215, 0, 1))
+            drop-shadow(0 0 4px rgba(255, 165, 0, 0.6));
+    animation: dotPulse 1.5s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes dotPulse {
+    0%, 100% {
+        r: 0.15;
+        opacity: 0.8;
+    }
+    50% {
+        r: 0.25;
+        opacity: 1;
+        fill: #FFFFFF;
+    }
+}
+
+/* Задержка анимации для точек чтобы они пульсировали по очереди */
+.winning-line-dot:nth-child(1) { animation-delay: 0s; }
+.winning-line-dot:nth-child(2) { animation-delay: 0.1s; }
+.winning-line-dot:nth-child(3) { animation-delay: 0.2s; }
+.winning-line-dot:nth-child(4) { animation-delay: 0.3s; }
+.winning-line-dot:nth-child(5) { animation-delay: 0.4s; }
+
+/* --- UI Элементы (без изменений функционала, мелкие правки стиля) --- */
+
 .lines-top-info {
     position: absolute;
     top: -45px;
