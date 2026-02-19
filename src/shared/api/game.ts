@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import {SpinRequest, SpinApiResponse, BuyBonusRequest} from './types';
+import { SpinRequest, SpinApiResponse, BuyBonusRequest } from './types';
 import { AxiosError } from 'axios';
 import { Symbol, SymbolType, WinningLine } from '@shared/types/game';
 import { PAYLINES } from '@shared/config/lines';
@@ -17,12 +17,18 @@ export class GameAPI {
         inFreeSpin: boolean;
     }> {
         try {
+            console.log('🔹 GameAPI.spin called with bet:', bet);
+
             const data: SpinRequest = { bet };
+
+            console.log('🔹 Sending request to /line/spin:', data);
+
             const response = await apiClient.getClient().post<SpinApiResponse>('/line/spin', data);
 
             console.log('🎰 Spin RAW response:', JSON.stringify(response.data, null, 2));
 
             if (!response.data?.board) {
+                console.error('❌ Board is missing in response:', response.data);
                 throw new Error('Invalid API response: board is missing');
             }
 
@@ -31,11 +37,11 @@ export class GameAPI {
             const balance = response.data.balance;
             const winningLines = this.convertWinningLinesFromAPI(response.data.line_wins || []);
 
-            console.log('🎰 Spin result from API:', {
-                board: response.data.board,
-                lineWins: response.data.line_wins,
-                winningLines: winningLines,
-                totalPayout: winAmount,
+            console.log('🎰 Spin result processed:', {
+                reelsCount: reels.length,
+                winAmount,
+                balance,
+                winningLinesCount: winningLines.length,
             });
 
             if (response.data.scatter_count >= 3 && response.data.scatter_payout > 0) {
@@ -72,6 +78,7 @@ export class GameAPI {
                 inFreeSpin,
             };
         } catch (error) {
+            console.error('❌ GameAPI.spin error:', error);
             throw this.handleError(error);
         }
     }
@@ -88,12 +95,18 @@ export class GameAPI {
         inFreeSpin: boolean;
     }> {
         try {
+            console.log('🔹 GameAPI.buyBonus called with bet:', bet);
+
             const data: BuyBonusRequest = { bet };
+
+            console.log('🔹 Sending request to /line/buy-bonus:', data);
+
             const response = await apiClient.getClient().post<SpinApiResponse>('/line/buy-bonus', data);
 
             console.log('🎁 BuyBonus RAW response:', JSON.stringify(response.data, null, 2));
 
             if (!response.data?.board) {
+                console.error('❌ Board is missing in response:', response.data);
                 throw new Error('Invalid API response: board is missing');
             }
 
@@ -131,6 +144,7 @@ export class GameAPI {
                 inFreeSpin: true,
             };
         } catch (error) {
+            console.error('❌ GameAPI.buyBonus error:', error);
             throw this.handleError(error);
         }
     }
@@ -184,15 +198,6 @@ export class GameAPI {
                         positions.push([reelIndex, rowIndex]);
                     }
                 }
-            }
-
-            if (line.line === 3) {
-                console.log('🎯 Line 3 conversion:', {
-                    apiLine: line,
-                    linePattern: linePattern,
-                    positions: positions,
-                    count: line.count
-                });
             }
 
             return {
