@@ -62,18 +62,6 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         return currentLine ? generateRelativePath(currentLine.positions) : '';
     }, [currentLine]);
 
-    // Генерируем позиции для декоративных точек
-    const reelDots = useMemo(() => {
-        if (!currentLine) return [];
-        return currentLine.positions
-            .filter(pos => pos && pos.length >= 2)
-            .map(([reelIndex, rowIndex]) => ({
-                x: reelIndex + 0.5,
-                y: rowIndex + 0.5,
-                key: `${reelIndex}-${rowIndex}`
-            }));
-    }, [currentLine]);
-
     if (filteredLines.length === 0) {
         if (winningLines.length === 0) return null;
         return (
@@ -103,60 +91,30 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                 className="winning-lines-svg"
                 viewBox={`0 0 ${REELS_COUNT} ${ROWS_COUNT}`}
                 preserveAspectRatio="none"
-                style={{ overflow: 'visible' }}
             >
-                {/* 1. Внешнее широкое свечение (Aura) */}
+                {/* 1. Внешнее свечение (Aura) */}
                 <path
                     d={linePath}
                     className="winning-line-aura"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    vectorEffect="non-scaling-stroke"
                 />
 
                 {/* 2. Тень для глубины */}
                 <path
                     d={linePath}
                     className="winning-line-shadow"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    vectorEffect="non-scaling-stroke"
                 />
 
                 {/* 3. Основная золотая линия */}
                 <path
                     d={linePath}
                     className="winning-line-path"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    vectorEffect="non-scaling-stroke"
-                    shapeRendering="geometricPrecision"
                 />
 
                 {/* 4. Внутренний яркий блик (Core) */}
                 <path
                     d={linePath}
                     className="winning-line-core"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    vectorEffect="non-scaling-stroke"
                 />
-
-                {/* 5. Декоративные точки на барабанах */}
-                {reelDots.map((dot) => (
-                    <circle
-                        key={dot.key}
-                        cx={dot.x}
-                        cy={dot.y}
-                        r="0.15"
-                        className="winning-line-dot"
-                        vectorEffect="non-scaling-stroke"
-                    />
-                ))}
             </svg>
 
             <div className="lines-bottom-info">
