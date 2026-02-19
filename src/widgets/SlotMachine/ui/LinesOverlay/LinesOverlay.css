@@ -1,138 +1,354 @@
-.winning-lines-svg {
-    /* SVG теперь занимает весь контейнер */
+/* Контейнер для всех элементов */
+.lines-overlay-container {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 4;
+    z-index: 10;
+}
+
+/* SVG с линиями */
+.winning-lines-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
     overflow: visible;
 }
 
+/* Стили для линий */
 .line-shadow {
-    stroke: rgba(0, 0, 0, 0.4);
-    /* Относительная толщина (высота сетки = 3) */
-    stroke-width: 0.25;
+    stroke: rgba(0, 0, 0, 0.5);
+    stroke-width: 0.2;
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-    filter: blur(0.05); /* Размытие тоже уменьшено под масштаб */
-    opacity: 0.5;
+    filter: blur(0.1);
+    opacity: 0.4;
 }
 
 .winning-line {
-    /* Относительная толщина */
     stroke-width: 0.15;
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-    /* Анимация свечения */
-    animation: line-glow 2s ease-in-out infinite;
-    opacity: 1;
+    animation: royalGlow 2s ease-in-out infinite;
 }
 
-.winning-line-glow {
-    stroke-width: 0.1;
+.winning-line-inner {
+    stroke-width: 0.08;
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-    stroke: rgba(255, 255, 255, 0.6);
-    stroke-dasharray: 0.5 0.3; /* Пунктир в относительных единицах */
-    animation: line-dash 1s linear infinite, line-pulse 2s ease-in-out infinite;
-    filter: drop-shadow(0 0 0.1px rgba(150, 220, 255, 1));
+    opacity: 0.9;
+    animation: lineShimmer 3s ease-in-out infinite;
 }
 
-@keyframes line-glow {
+/* Точки на символах */
+.symbol-point {
+    animation: pointPulse 1.5s ease-in-out infinite;
+}
+
+.symbol-point-ring {
+    animation: ringExpand 2s ease-out infinite;
+    opacity: 0.6;
+}
+
+/* Анимации */
+@keyframes royalGlow {
     0%, 100% {
+        filter: url(#royalGlow) brightness(1);
         stroke-width: 0.15;
-        opacity: 1;
-        filter: drop-shadow(0 0 0.1px rgba(100, 200, 255, 1));
     }
     50% {
-        stroke-width: 0.2;
-        opacity: 0.9;
-        filter: drop-shadow(0 0 0.2px rgba(100, 200, 255, 1.5));
+        filter: url(#royalGlow) brightness(1.3);
+        stroke-width: 0.18;
     }
 }
 
-@keyframes line-dash {
-    0% { stroke-dashoffset: 0; opacity: 1; }
-    50% { opacity: 0.8; }
-    100% { stroke-dashoffset: 1; opacity: 1; }
+@keyframes lineShimmer {
+    0%, 100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
-@keyframes line-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.85; }
+@keyframes pointPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.9;
+    }
 }
 
-/* Контейнер информации */
-.lines-overlay-info {
+@keyframes ringExpand {
+    0% {
+        r: 0.2;
+        opacity: 0.8;
+    }
+    100% {
+        r: 0.35;
+        opacity: 0;
+    }
+}
+
+/* Верхняя панель */
+.lines-top-info {
     position: absolute;
-    bottom: 20px; /* Отступ снизу контейнера */
+    top: -45px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 10;
+    z-index: 15;
+    animation: slideDown 0.5s ease-out;
+}
+
+/* Нижняя панель */
+.lines-bottom-info {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    pointer-events: none;
-    width: 100%;
-}
-
-.lines-counter {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    padding: 4px 12px;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
-    display: flex;
     gap: 10px;
-    align-items: center;
-    animation: pulse-glow 1s ease-in-out infinite;
+    z-index: 15;
+    animation: slideUp 0.5s ease-out;
 }
 
-@keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6); }
-    50% { box-shadow: 0 6px 20px rgba(255, 215, 0, 0.9); }
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
-.lines-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
-.lines-count {
-    font-size: 20px;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.line-indicator {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
-    padding: 5px 15px;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+/* Королевский бейдж */
+.royal-badge {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
+    padding: 8px 24px;
+    border-radius: 25px;
     display: flex;
     gap: 12px;
     align-items: center;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    white-space: nowrap;
+    box-shadow:
+            0 4px 15px rgba(255, 215, 0, 0.5),
+            inset 0 2px 4px rgba(255, 255, 255, 0.5),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    border: 2px solid #FFF8DC;
+    position: relative;
+    overflow: hidden;
 }
 
-.line-win {
+.royal-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.6),
+            transparent
+    );
+    animation: badgeShine 3s infinite;
+}
+
+@keyframes badgeShine {
+    0% { left: -100%; }
+    50%, 100% { left: 100%; }
+}
+
+.badge-label {
     font-size: 14px;
+    font-weight: 600;
+    color: #8B4513;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.badge-count {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow:
+            2px 2px 4px rgba(0, 0, 0, 0.4),
+            0 0 10px rgba(255, 215, 0, 0.8);
+    min-width: 30px;
+    text-align: center;
+}
+
+/* Бейдж с выигрышем */
+.win-amount-badge {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+    padding: 10px 28px;
+    border-radius: 25px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    box-shadow:
+            0 4px 20px rgba(30, 60, 114, 0.6),
+            inset 0 2px 4px rgba(255, 255, 255, 0.3),
+            0 0 30px rgba(255, 215, 0, 0.4);
+    border: 2px solid #FFD700;
+    animation: winPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes winPulse {
+    0%, 100% {
+        box-shadow:
+                0 4px 20px rgba(30, 60, 114, 0.6),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3),
+                0 0 30px rgba(255, 215, 0, 0.4);
+    }
+    50% {
+        box-shadow:
+                0 6px 30px rgba(30, 60, 114, 0.8),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3),
+                0 0 50px rgba(255, 215, 0, 0.7);
+    }
+}
+
+.win-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #FFF8DC;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.win-amount {
+    font-size: 26px;
     font-weight: bold;
     color: #FFD700;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    text-shadow:
+            2px 2px 4px rgba(0, 0, 0, 0.6),
+            0 0 20px rgba(255, 215, 0, 1);
 }
 
-/*
-   Убраны медиа-запросы для top/left SVG, так как теперь он
-   автоматически подстраивается под размер родителя (width: 100%).
-   Если линии не попадают в центр символов, проверьте padding
-   у родительского контейнера слотов.
-*/
+/* Индикатор прогресса линий */
+.line-progress {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.progress-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+    background: #FFD700;
+    border-color: #FFF;
+    box-shadow: 0 0 10px #FFD700;
+    transform: scale(1.3);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .lines-top-info {
+        top: -40px;
+    }
+
+    .lines-bottom-info {
+        bottom: -45px;
+    }
+
+    .royal-badge {
+        padding: 6px 18px;
+    }
+
+    .badge-label {
+        font-size: 12px;
+    }
+
+    .badge-count {
+        font-size: 20px;
+    }
+
+    .win-amount-badge {
+        padding: 8px 20px;
+    }
+
+    .win-label {
+        font-size: 11px;
+    }
+
+    .win-amount {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .lines-top-info {
+        top: -35px;
+    }
+
+    .lines-bottom-info {
+        bottom: -40px;
+    }
+
+    .royal-badge {
+        padding: 5px 14px;
+    }
+
+    .badge-label {
+        font-size: 11px;
+    }
+
+    .badge-count {
+        font-size: 18px;
+    }
+
+    .win-amount-badge {
+        padding: 6px 16px;
+    }
+
+    .win-label {
+        font-size: 10px;
+    }
+
+    .win-amount {
+        font-size: 18px;
+    }
+
+    .progress-dot {
+        width: 8px;
+        height: 8px;
+    }
+}

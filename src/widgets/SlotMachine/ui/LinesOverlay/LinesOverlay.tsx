@@ -9,8 +9,6 @@ interface LinesOverlayProps {
 const REELS_COUNT = 5;
 const ROWS_COUNT = 3;
 
-// Генерирует путь в относительных координатах (сетка 5x3)
-// Центр первой ячейки: x=0.5, y=0.5
 const generateRelativePath = (positions: number[][]): string => {
     if (!positions || positions.length === 0) return '';
 
@@ -46,12 +44,10 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         );
     }, [winningLines]);
 
-    // Сброс индекса при новом спине
     useEffect(() => {
         setCurrentLineIndex(0);
     }, [winningLines]);
 
-    // Анимация переключения линий
     useEffect(() => {
         if (filteredLines.length <= 1) return;
 
@@ -71,10 +67,12 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
     if (filteredLines.length === 0) {
         if (winningLines.length === 0) return null;
         return (
-            <div className="lines-overlay">
-                <div className="lines-counter">
-                    <span className="lines-label">Выигрышных линий:</span>
-                    <span className="lines-count">{winningLines.length}</span>
+            <div className="lines-overlay-container">
+                <div className="lines-top-info">
+                    <div className="royal-badge">
+                        <span className="badge-label">Выигрышных линий:</span>
+                        <span className="badge-count">{winningLines.length}</span>
+                    </div>
                 </div>
             </div>
         );
@@ -83,24 +81,52 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
     if (!currentLine || !linePath) return null;
 
     return (
-        <>
-            {/*
-                viewBox="0 0 5 3" задает логическую сетку координат.
-                width/height 100% растягивают SVG на весь контейнер.
-            */}
+        <div className="lines-overlay-container">
+            {/* Верхняя панель */}
+            <div className="lines-top-info">
+                <div className="royal-badge">
+                    <span className="badge-label">Линия:</span>
+                    <span className="badge-count">{currentLine.lineIndex + 1}</span>
+                </div>
+            </div>
+
+            {/* SVG с линиями */}
             <svg
                 className="winning-lines-svg"
                 viewBox={`0 0 ${REELS_COUNT} ${ROWS_COUNT}`}
                 preserveAspectRatio="none"
             >
                 <defs>
-                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#64C8FF" />
-                        <stop offset="50%" stopColor="#9B7FFF" />
-                        <stop offset="100%" stopColor="#FF6B9D" />
+                    {/* Основной золотой градиент */}
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#FFD700" />
+                        <stop offset="25%" stopColor="#FFA500" />
+                        <stop offset="50%" stopColor="#FFD700" />
+                        <stop offset="75%" stopColor="#FFA500" />
+                        <stop offset="100%" stopColor="#FFD700" />
                     </linearGradient>
-                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="0.05" result="coloredBlur" />
+
+                    {/* Градиент для свечения */}
+                    <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#FFF8DC" />
+                        <stop offset="50%" stopColor="#FFD700" />
+                        <stop offset="100%" stopColor="#FFF8DC" />
+                    </linearGradient>
+
+                    {/* Фильтр свечения */}
+                    <filter id="royalGlow" x="-100%" y="-100%" width="300%" height="300%">
+                        <feGaussianBlur stdDeviation="0.08" result="blur" />
+                        <feFlood floodColor="#FFD700" floodOpacity="0.8" result="glowColor" />
+                        <feComposite in="glowColor" in2="blur" operator="in" result="softGlow" />
+                        <feMerge>
+                            <feMergeNode in="softGlow" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+
+                    {/* Фильтр для блеска */}
+                    <filter id="sparkle" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="0.03" result="coloredBlur" />
                         <feMerge>
                             <feMergeNode in="coloredBlur" />
                             <feMergeNode in="SourceGraphic" />
@@ -115,47 +141,66 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                     fill="none"
                 />
 
-                {/* Основная линия */}
+                {/* Основная золотая линия */}
                 <path
                     d={linePath}
                     className="winning-line"
-                    stroke="url(#lineGradient)"
+                    stroke="url(#goldGradient)"
                     fill="none"
-                    filter="url(#glow)"
+                    filter="url(#royalGlow)"
                 />
 
-                {/* Эффект пунктира/бегающей линии */}
+                {/* Внутренняя белая линия для эффекта объема */}
                 <path
                     d={linePath}
-                    className="winning-line-glow"
+                    className="winning-line-inner"
+                    stroke="url(#glowGradient)"
                     fill="none"
+                    filter="url(#sparkle)"
                 />
 
-                {/* Точки на барабанах (опционально) */}
+                {/* Анимированные точки на барабанах */}
                 {currentLine.positions.map(([reel, row], idx) => (
-                    <circle
-                        key={idx}
-                        cx={reel + 0.5}
-                        cy={row + 0.5}
-                        r="0.15"
-                        fill="#fff"
-                        stroke="#FF6B9D"
-                        strokeWidth="0.05"
-                    />
+                    <g key={idx}>
+                        <circle
+                            cx={reel + 0.5}
+                            cy={row + 0.5}
+                            r="0.2"
+                            fill="none"
+                            stroke="#FFD700"
+                            strokeWidth="0.05"
+                            className="symbol-point-ring"
+                        />
+                        <circle
+                            cx={reel + 0.5}
+                            cy={row + 0.5}
+                            r="0.12"
+                            fill="#FFD700"
+                            stroke="#FFF"
+                            strokeWidth="0.03"
+                            className="symbol-point"
+                        />
+                    </g>
                 ))}
             </svg>
 
-            <div className="lines-overlay-info">
-                <div className="lines-counter">
-                    <span className="lines-label">Линия:</span>
-                    <span className="lines-count">{currentLine.lineIndex + 1}</span>
-                </div>
+            {/* Нижняя панель с выигрышем */}
+            <div className="lines-bottom-info">
                 {filteredLines.length > 1 && (
-                    <div className="line-indicator">
-                        <span className="line-win">+{currentLine.winAmount}</span>
+                    <div className="win-amount-badge">
+                        <span className="win-label">Выигрыш:</span>
+                        <span className="win-amount">+{currentLine.winAmount}</span>
                     </div>
                 )}
+                <div className="line-progress">
+                    {filteredLines.map((_, idx) => (
+                        <div
+                            key={idx}
+                            className={`progress-dot ${idx === currentLineIndex ? 'active' : ''}`}
+                        />
+                    ))}
+                </div>
             </div>
-        </>
+        </div>
     );
 };
