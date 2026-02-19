@@ -4,7 +4,6 @@ import { GAME_CONFIG } from '@shared/config/payouts';
 import { GameAPI, UserAPI } from '@shared/api';
 
 interface GameStore extends GameState {
-    // Actions
     spin: () => void;
     setBet: (bet: number) => void;
     buyBonus: () => void;
@@ -18,7 +17,6 @@ interface GameStore extends GameState {
     setTurbo: (turbo: boolean) => void;
 }
 
-// Начальные барабаны - пустые, будут получены от бэкенда при первом спине
 const createInitialReels = () => {
     const makeSymbol = (type: SymbolType, reelIdx: number, rowIdx: number): Symbol => ({
         type,
@@ -97,7 +95,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         if (state.isSpinning) return;
 
-        // Проверяем баланс только для обычных спинов
         if (!state.isBonusGame && state.balance < state.bet) {
             alert('Недостаточно средств!');
             return;
@@ -113,8 +110,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
             setTimeout(() => {
                 const currentState = get();
 
-                // 🎯 Ключевое: free_spin_count от бэкенда — это актуальный остаток после спина
-                // Не вычитаем ничего на фронте, доверяем бэкенду
                 const newFreeSpinsLeft = result.freeSpinCount;
 
                 set({
@@ -128,17 +123,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     winningLines: result.winningLines,
                     isSpinning: false,
                     freeSpinsLeft: newFreeSpinsLeft,
-                    // 🎯 Бонус-режим активен, пока есть остаток фриспинов
                     isBonusGame: newFreeSpinsLeft > 0,
                 });
 
-                // Логирование скаттеров и начисленных фриспинов
                 if (result.scatterCount >= 3) {
                     console.log(`🎁 Скаттеров: ${result.scatterCount}, выплата: ${result.scatterPayout}`);
                 }
                 if (result.awardedFreeSpins > 0) {
                     console.log(`✨ Дополнительных фриспинов начислено: ${result.awardedFreeSpins}`);
-                    // Здесь можно вызвать toast/анимацию
                 }
             }, spinDuration);
 
@@ -179,7 +171,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
         });
 
         try {
-            // 🎯 Бэкенд возвращает результат первого спина бонуса сразу
             const bonusResult = await GameAPI.buyBonus(state.bet);
 
             const spinDuration = state.isTurbo ? 100 : GAME_CONFIG.SPIN_DURATION;
@@ -191,17 +182,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
                         position: index,
                     })),
                     lastWin: bonusResult.winAmount,
-                    totalWin: bonusResult.winAmount, // новая сессия бонуса — сбрасываем накопленный выигрыш
+                    totalWin: bonusResult.winAmount,
                     balance: bonusResult.balance,
                     winningLines: bonusResult.winningLines,
                     isSpinning: false,
-                    // 🎯 Вход в бонус-режим
                     isBonusGame: true,
-                    // 🎯 Остаток фриспинов берём напрямую из ответа бэкенда
                     freeSpinsLeft: bonusResult.freeSpinCount,
                 });
 
-                // Логирование для отладки и UI-уведомлений
                 if (bonusResult.awardedFreeSpins > 0) {
                     console.log(`🎁 Бонус активирован! Начислено фриспинов: ${bonusResult.awardedFreeSpins}, осталось: ${bonusResult.freeSpinCount}`);
                 }
