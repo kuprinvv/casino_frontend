@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { GameState, Symbol } from '@shared/types/game';
+import {GameState, Symbol, SymbolType} from '@shared/types/game';
 import { GAME_CONFIG } from '@shared/config/payouts';
 import { GameAPI, UserAPI } from '@shared/api';
 
@@ -19,17 +19,31 @@ interface GameStore extends GameState {
 }
 
 // Начальные барабаны - пустые, будут получены от бекенда при первом спине
-const createEmptyReels = () => {
-  return Array(GAME_CONFIG.REELS)
-    .fill(null)
-    .map((_, index) => ({
-      symbols: [],
-      position: index,
+const createInitialReels = () => {
+    // Вспомогательная функция для создания символа с уникальным ID
+    const makeSymbol = (type: SymbolType, reelIdx: number, rowIdx: number): Symbol => ({
+        type,
+        id: `init-${reelIdx}-${rowIdx}`, // статичный ID для начальной доски
+    });
+
+    // Статические данные: [барабан][ряд] → SymbolType
+    const staticReelsData: SymbolType[][] = [
+        [SymbolType.SYMBOL_1, SymbolType.SYMBOL_5, SymbolType.SYMBOL_3],
+        [SymbolType.SYMBOL_7, SymbolType.SYMBOL_2, SymbolType.SYMBOL_6],
+        [SymbolType.SYMBOL_4, SymbolType.SYMBOL_8, SymbolType.SYMBOL_1],
+        [SymbolType.SYMBOL_6, SymbolType.SYMBOL_3, SymbolType.SYMBOL_7],
+        [SymbolType.SYMBOL_2, SymbolType.SYMBOL_4, SymbolType.SYMBOL_8],
+    ];
+
+    // Преобразуем в правильный формат Reel[]
+    return staticReelsData.map((types, reelIndex) => ({
+        symbols: types.map((type, rowIndex) => makeSymbol(type, reelIndex, rowIndex)),
+        position: reelIndex,
     }));
 };
 
 const initialState: GameState = {
-  reels: createEmptyReels(),
+  reels: createInitialReels(),
   balance: GAME_CONFIG.DEFAULT_BALANCE,
   bet: GAME_CONFIG.DEFAULT_BET,
   isSpinning: false,
