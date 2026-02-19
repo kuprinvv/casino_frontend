@@ -18,50 +18,18 @@
     overflow: visible;
 }
 
-.line-shadow {
-    stroke: rgba(0, 0, 0, 0.4);
-    stroke-width: 0.12;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
-    filter: blur(0.05);
-    opacity: 0.3;
-}
-
-.winning-line {
-    stroke-width: 0.08;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
+.winning-line-path {
     animation: royalGlow 2s ease-in-out infinite;
-}
-
-.winning-line-inner {
-    stroke-width: 0.04;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    fill: none;
-    opacity: 0.9;
-    animation: lineShimmer 3s ease-in-out infinite;
 }
 
 @keyframes royalGlow {
     0%, 100% {
         filter: url(#royalGlow) brightness(1);
-        stroke-width: 0.08;
-    }
-    50% {
-        filter: url(#royalGlow) brightness(1.2);
-        stroke-width: 0.09;
-    }
-}
-
-@keyframes lineShimmer {
-    0%, 100% {
-        opacity: 0.8;
-    }
-    50% {
         opacity: 1;
+    }
+    50% {
+        filter: url(#royalGlow) brightness(1.3);
+        opacity: 0.95;
     }
 }
 
@@ -76,11 +44,13 @@
 
 .lines-bottom-info {
     position: absolute;
-    bottom: -30px;
+    bottom: -25px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 15;
     animation: slideUp 0.5s ease-out;
+    min-height: auto;
+    line-height: 1;
 }
 
 @keyframes slideDown {
@@ -119,6 +89,7 @@
     border: 2px solid #FFF8DC;
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
 }
 
 .royal-badge::before {
@@ -163,28 +134,33 @@
 
 .win-amount-badge {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
-    padding: 4px 16px;
-    border-radius: 15px;
+    padding: 3px 12px;
+    border-radius: 12px;
     box-shadow:
-            0 3px 15px rgba(30, 60, 114, 0.6),
-            inset 0 1px 3px rgba(255, 255, 255, 0.3),
-            0 0 20px rgba(255, 215, 0, 0.4);
-    border: 2px solid #FFD700;
+            0 2px 10px rgba(30, 60, 114, 0.6),
+            inset 0 1px 2px rgba(255, 255, 255, 0.3),
+            0 0 15px rgba(255, 215, 0, 0.4);
+    border: 1.5px solid #FFD700;
     animation: winPulse 1.5s ease-in-out infinite;
+    display: inline-block;
+    min-width: auto;
+    height: auto;
 }
 
 @keyframes winPulse {
     0%, 100% {
         box-shadow:
-                0 3px 15px rgba(30, 60, 114, 0.6),
-                inset 0 1px 3px rgba(255, 255, 255, 0.3),
-                0 0 20px rgba(255, 215, 0, 0.4);
+                0 2px 10px rgba(30, 60, 114, 0.6),
+                inset 0 1px 2px rgba(255, 255, 255, 0.3),
+                0 0 15px rgba(255, 215, 0, 0.4);
+        transform: scale(1);
     }
     50% {
         box-shadow:
-                0 5px 20px rgba(30, 60, 114, 0.8),
-                inset 0 1px 3px rgba(255, 255, 255, 0.3),
-                0 0 30px rgba(255, 215, 0, 0.6);
+                0 4px 15px rgba(30, 60, 114, 0.8),
+                inset 0 1px 2px rgba(255, 255, 255, 0.3),
+                0 0 25px rgba(255, 215, 0, 0.6);
+        transform: scale(1.05);
     }
 }
 
@@ -195,6 +171,9 @@
     text-shadow:
             2px 2px 4px rgba(0, 0, 0, 0.6),
             0 0 15px rgba(255, 215, 0, 1);
+    white-space: nowrap;
+    line-height: 1;
+    display: block;
 }
 
 @media (max-width: 768px) {
@@ -203,7 +182,7 @@
     }
 
     .lines-bottom-info {
-        bottom: -25px;
+        bottom: -22px;
     }
 
     .royal-badge {
@@ -219,7 +198,7 @@
     }
 
     .win-amount-badge {
-        padding: 3px 12px;
+        padding: 2px 10px;
     }
 
     .win-amount {
@@ -233,7 +212,7 @@
     }
 
     .lines-bottom-info {
-        bottom: -22px;
+        bottom: -20px;
     }
 
     .royal-badge {
@@ -249,7 +228,7 @@
     }
 
     .win-amount-badge {
-        padding: 3px 10px;
+        padding: 2px 8px;
     }
 
     .win-amount {
