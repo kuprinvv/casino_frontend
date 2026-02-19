@@ -1,122 +1,85 @@
 .winning-lines-svg {
-    overflow: visible;
+    /* SVG теперь занимает весь контейнер */
     position: absolute;
-    top: -28px;
-    left: -37px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
     z-index: 4;
+    overflow: visible;
 }
 
 .line-shadow {
     stroke: rgba(0, 0, 0, 0.4);
+    /* Относительная толщина (высота сетки = 3) */
+    stroke-width: 0.25;
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-    filter: blur(6px);
+    filter: blur(0.05); /* Размытие тоже уменьшено под масштаб */
     opacity: 0.5;
-    z-index: 1;
 }
 
 .winning-line {
+    /* Относительная толщина */
+    stroke-width: 0.15;
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-    filter: drop-shadow(0 0 15px rgba(100, 200, 255, 1));
+    /* Анимация свечения */
     animation: line-glow 2s ease-in-out infinite;
     opacity: 1;
-    z-index: 6;
-    visibility: visible;
-    display: block;
 }
 
 .winning-line-glow {
+    stroke-width: 0.1;
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
-    opacity: 1;
-    stroke-dasharray: 20 10;
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-dasharray: 0.5 0.3; /* Пунктир в относительных единицах */
     animation: line-dash 1s linear infinite, line-pulse 2s ease-in-out infinite;
-    filter: drop-shadow(0 0 8px rgba(150, 220, 255, 1));
+    filter: drop-shadow(0 0 0.1px rgba(150, 220, 255, 1));
 }
 
 @keyframes line-glow {
     0%, 100% {
-        stroke-width: 8;
+        stroke-width: 0.15;
         opacity: 1;
-        filter: drop-shadow(0 0 15px rgba(100, 200, 255, 1));
-    }
-    25% {
-        stroke-width: 9;
-        opacity: 0.98;
-        filter: drop-shadow(0 0 20px rgba(100, 200, 255, 1.2));
+        filter: drop-shadow(0 0 0.1px rgba(100, 200, 255, 1));
     }
     50% {
-        stroke-width: 10;
-        opacity: 0.95;
-        filter: drop-shadow(0 0 25px rgba(100, 200, 255, 1.5));
-    }
-    75% {
-        stroke-width: 9;
-        opacity: 0.98;
-        filter: drop-shadow(0 0 20px rgba(100, 200, 255, 1.2));
-    }
-}
-
-@keyframes pulse-ring {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 0.3;
-    }
-    50% {
-        transform: scale(1.1);
-        opacity: 0.5;
+        stroke-width: 0.2;
+        opacity: 0.9;
+        filter: drop-shadow(0 0 0.2px rgba(100, 200, 255, 1.5));
     }
 }
 
 @keyframes line-dash {
-    0% {
-        stroke-dashoffset: 0;
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.8;
-    }
-    100% {
-        stroke-dashoffset: 30;
-        opacity: 1;
-    }
+    0% { stroke-dashoffset: 0; opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { stroke-dashoffset: 1; opacity: 1; }
 }
 
 @keyframes line-pulse {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.85;
-        transform: scale(1.02);
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
 }
 
-.lines-overlay {
+/* Контейнер информации */
+.lines-overlay-info {
     position: absolute;
-    top: -50px;
+    bottom: 20px; /* Отступ снизу контейнера */
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
-    animation: slideDown 0.4s ease;
-    white-space: nowrap;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+    width: 100%;
 }
 
 .lines-counter {
@@ -131,12 +94,8 @@
 }
 
 @keyframes pulse-glow {
-    0%, 100% {
-        box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
-    }
-    50% {
-        box-shadow: 0 6px 20px rgba(255, 215, 0, 0.9);
-    }
+    0%, 100% { box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6); }
+    50% { box-shadow: 0 6px 20px rgba(255, 215, 0, 0.9); }
 }
 
 .lines-label {
@@ -153,10 +112,6 @@
 }
 
 .line-indicator {
-    position: absolute;
-    bottom: -45px;
-    left: 50%;
-    transform: translateX(-50%);
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
     padding: 5px 15px;
     border-radius: 15px;
@@ -164,17 +119,8 @@
     display: flex;
     gap: 12px;
     align-items: center;
-    z-index: 10;
     border: 2px solid rgba(255, 255, 255, 0.3);
     white-space: nowrap;
-}
-
-.line-number {
-    font-size: 11px;
-    font-weight: 600;
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .line-win {
@@ -184,55 +130,9 @@
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
 
-@media (max-width: 768px) {
-    .lines-overlay {
-        top: -50px;
-    }
-    .lines-counter {
-        padding: 8px 16px;
-    }
-    .lines-label {
-        font-size: 12px;
-    }
-    .lines-count {
-        font-size: 20px;
-    }
-    .line-indicator {
-        bottom: -40px;
-        padding: 6px 12px;
-    }
-    .line-number {
-        font-size: 10px;
-    }
-    .line-win {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 901px) {
-    .winning-lines-svg {
-        top: -8px;
-        left: 6px;
-    }
-}
-
-@media (max-width: 900px) and (max-height: 500px) {
-    .winning-lines-svg {
-        top: -6px;
-        left: 18px;
-    }
-    .lines-overlay {
-        top: -7px;
-    }
-    .line-indicator {
-        bottom: 2px;
-        padding: 3px 8px;
-    }
-}
-
-@media (max-width: 480px) {
-    .winning-lines-svg {
-        top: -6px;
-        left: -24px;
-    }
-}
+/*
+   Убраны медиа-запросы для top/left SVG, так как теперь он
+   автоматически подстраивается под размер родителя (width: 100%).
+   Если линии не попадают в центр символов, проверьте padding
+   у родительского контейнера слотов.
+*/

@@ -6,50 +6,24 @@ interface LinesOverlayProps {
     winningLines: WinningLine[];
 }
 
-const REEL_WIDTH = 120;
-const REEL_GAP = 12;
-const SYMBOL_HEIGHT = 100;
-const SYMBOL_GAP = 8;
-const REEL_PADDING = 10;
 const REELS_COUNT = 5;
 const ROWS_COUNT = 3;
 
-const REEL_WIDTH_MOBILE = 75;
-const REEL_GAP_MOBILE = 8;
-const SYMBOL_HEIGHT_MOBILE = 60;
-const SYMBOL_GAP_MOBILE = 4;
-const REEL_PADDING_MOBILE = 5;
-
-const getSymbolCenter = (
-    reelIndex: number,
-    rowIndex: number,
-    useMobileSizes: boolean = false
-): { x: number; y: number } => {
-    const reelWidth = useMobileSizes ? REEL_WIDTH_MOBILE : REEL_WIDTH;
-    const reelGap = useMobileSizes ? REEL_GAP_MOBILE : REEL_GAP;
-    const symbolHeight = useMobileSizes ? SYMBOL_HEIGHT_MOBILE : SYMBOL_HEIGHT;
-    const symbolGap = useMobileSizes ? SYMBOL_GAP_MOBILE : SYMBOL_GAP;
-    const padding = useMobileSizes ? REEL_PADDING_MOBILE : REEL_PADDING;
-
-    const x = reelIndex * (reelWidth + reelGap) + reelWidth / 2;
-    const y = padding + rowIndex * (symbolHeight + symbolGap) + symbolHeight / 2;
-
-    return { x, y };
-};
-
-const generateLinePath = (
-    positions: number[][],
-    useMobileSizes: boolean = false
-): string => {
+// Генерирует путь в относительных координатах (сетка 5x3)
+// Центр первой ячейки: x=0.5, y=0.5
+const generateRelativePath = (positions: number[][]): string => {
     if (!positions || positions.length === 0) return '';
 
     const points = positions
-        .filter(pos => pos && pos.length >= 2 && !isNaN(pos[0]) && !isNaN(pos[1]))
+        .filter(pos => pos && pos.length >= 2)
         .map(([reelIndex, rowIndex]) => {
             if (reelIndex < 0 || reelIndex >= REELS_COUNT || rowIndex < 0 || rowIndex >= ROWS_COUNT) {
                 return null;
             }
-            return getSymbolCenter(reelIndex, rowIndex, useMobileSizes);
+            return {
+                x: reelIndex + 0.5,
+                y: rowIndex + 0.5
+            };
         })
         .filter(point => point !== null) as { x: number; y: number }[];
 
@@ -65,7 +39,6 @@ const generateLinePath = (
 
 export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
     const [currentLineIndex, setCurrentLineIndex] = useState(0);
-    const [useMobileSizes, setUseMobileSizes] = useState(false);
 
     const filteredLines = useMemo(() => {
         return winningLines.filter(line =>
@@ -73,56 +46,27 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         );
     }, [winningLines]);
 
+    // Сброс индекса при новом спине
     useEffect(() => {
-        const checkScreenSize = () => {
-            const isNarrow = window.innerWidth <= 768;
-            const isCompact = window.innerWidth <= 900 && window.innerHeight <= 500;
-            setUseMobileSizes(isNarrow || isCompact);
-        };
+        setCurrentLineIndex(0);
+    }, [winningLines]);
 
-        checkScreenSize();
-        window.addEventListener('resize', checkScreenSize);
-        return () => window.removeEventListener('resize', checkScreenSize);
-    }, []);
-
+    // Анимация переключения линий
     useEffect(() => {
-        if (filteredLines.length === 0) {
-            setCurrentLineIndex(0);
-            return;
-        }
-        if (currentLineIndex >= filteredLines.length) {
-            setCurrentLineIndex(0);
-        }
-    }, [filteredLines, currentLineIndex]);
-
-    useEffect(() => {
-        if (filteredLines.length === 0) return;
+        if (filteredLines.length <= 1) return;
 
         const interval = setInterval(() => {
-            setCurrentLineIndex((prev) => {
-                if (filteredLines.length === 0) return 0;
-                return (prev + 1) % filteredLines.length;
-            });
+            setCurrentLineIndex((prev) => (prev + 1) % filteredLines.length);
         }, 1500);
 
         return () => clearInterval(interval);
     }, [filteredLines.length]);
 
-    const svgDimensions = useMemo(() => {
-        const reelWidth = useMobileSizes ? REEL_WIDTH_MOBILE : REEL_WIDTH;
-        const reelGap = useMobileSizes ? REEL_GAP_MOBILE : REEL_GAP;
-        const symbolHeight = useMobileSizes ? SYMBOL_HEIGHT_MOBILE : SYMBOL_HEIGHT;
-        const symbolGap = useMobileSizes ? SYMBOL_GAP_MOBILE : SYMBOL_GAP;
-        const padding = useMobileSizes ? REEL_PADDING_MOBILE : REEL_PADDING;
-
-        const width = REELS_COUNT * reelWidth + (REELS_COUNT - 1) * reelGap;
-        const height = ROWS_COUNT * symbolHeight + (ROWS_COUNT - 1) * symbolGap + 2 * padding;
-
-        return { width, height };
-    }, [useMobileSizes]);
-
     const currentLine = filteredLines.length > 0 ? filteredLines[currentLineIndex] : null;
-    const linePath = currentLine ? generateLinePath(currentLine.positions, useMobileSizes) : '';
+
+    const linePath = useMemo(() => {
+        return currentLine ? generateRelativePath(currentLine.positions) : '';
+    }, [currentLine]);
 
     if (filteredLines.length === 0) {
         if (winningLines.length === 0) return null;
@@ -136,97 +80,82 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         );
     }
 
-    if (!currentLine || !linePath || linePath.trim() === '' || currentLine.positions.length === 0) {
-        return (
-            <div className="lines-overlay">
-                <div className="lines-counter">
-                    <span className="lines-label">Выигрышных линий:</span>
-                    <span className="lines-count">{winningLines.length}</span>
-                </div>
-            </div>
-        );
-    }
+    if (!currentLine || !linePath) return null;
 
     return (
         <>
+            {/*
+                viewBox="0 0 5 3" задает логическую сетку координат.
+                width/height 100% растягивают SVG на весь контейнер.
+            */}
             <svg
                 className="winning-lines-svg"
-                width={svgDimensions.width}
-                height={svgDimensions.height}
+                viewBox={`0 0 ${REELS_COUNT} ${ROWS_COUNT}`}
+                preserveAspectRatio="none"
             >
                 <defs>
-                    <linearGradient id={`lineGradient-${currentLine.lineIndex}`} x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="#64C8FF" stopOpacity="1" />
-                        <stop offset="30%" stopColor="#7DB8FF" stopOpacity="1" />
-                        <stop offset="50%" stopColor="#9B7FFF" stopOpacity="1" />
-                        <stop offset="70%" stopColor="#D18AFF" stopOpacity="1" />
-                        <stop offset="100%" stopColor="#FF6B9D" stopOpacity="1" />
+                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#64C8FF" />
+                        <stop offset="50%" stopColor="#9B7FFF" />
+                        <stop offset="100%" stopColor="#FF6B9D" />
                     </linearGradient>
-                    <linearGradient id={`lineGlowGradient-${currentLine.lineIndex}`} x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="#B8E6FF" stopOpacity="1" />
-                        <stop offset="30%" stopColor="#C8EDFF" stopOpacity="1" />
-                        <stop offset="50%" stopColor="#C4B5FF" stopOpacity="1" />
-                        <stop offset="70%" stopColor="#E0C5FF" stopOpacity="1" />
-                        <stop offset="100%" stopColor="#FFB8D1" stopOpacity="1" />
-                    </linearGradient>
-                    <radialGradient id={`lineGlowRadial-${currentLine.lineIndex}`}>
-                        <stop offset="0%" stopColor="rgba(100, 200, 255, 0.8)" />
-                        <stop offset="50%" stopColor="rgba(155, 127, 255, 0.5)" />
-                        <stop offset="100%" stopColor="rgba(255, 107, 157, 0.2)" />
-                    </radialGradient>
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="0.05" result="coloredBlur" />
+                        <feMerge>
+                            <feMergeNode in="coloredBlur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
                 </defs>
 
+                {/* Тень линии */}
                 <path
                     d={linePath}
                     className="line-shadow"
-                    strokeWidth={useMobileSizes ? 6 : 10}
+                    fill="none"
                 />
+
+                {/* Основная линия */}
                 <path
                     d={linePath}
                     className="winning-line"
-                    strokeWidth={useMobileSizes ? 6 : 8}
-                    stroke={`url(#lineGradient-${currentLine.lineIndex})`}
+                    stroke="url(#lineGradient)"
                     fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    filter="url(#glow)"
                 />
+
+                {/* Эффект пунктира/бегающей линии */}
                 <path
                     d={linePath}
                     className="winning-line-glow"
-                    strokeWidth={useMobileSizes ? 4 : 5}
-                    stroke={`url(#lineGlowGradient-${currentLine.lineIndex})`}
                     fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
                 />
-                <path
-                    d={linePath}
-                    className="winning-line-glow"
-                    strokeWidth={useMobileSizes ? 3 : 4}
-                    stroke={`url(#lineGlowGradient-${currentLine.lineIndex})`}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    opacity="0.6"
-                    style={{ filter: 'blur(3px)' }}
-                />
+
+                {/* Точки на барабанах (опционально) */}
+                {currentLine.positions.map(([reel, row], idx) => (
+                    <circle
+                        key={idx}
+                        cx={reel + 0.5}
+                        cy={row + 0.5}
+                        r="0.15"
+                        fill="#fff"
+                        stroke="#FF6B9D"
+                        strokeWidth="0.05"
+                    />
+                ))}
             </svg>
 
-            <div className="lines-overlay">
+            <div className="lines-overlay-info">
                 <div className="lines-counter">
-                    <span className="lines-label">Выигрышных линий:</span>
-                    <span className="lines-count">{winningLines.length}</span>
+                    <span className="lines-label">Линия:</span>
+                    <span className="lines-count">{currentLine.lineIndex + 1}</span>
                 </div>
+                {filteredLines.length > 1 && (
+                    <div className="line-indicator">
+                        <span className="line-win">+{currentLine.winAmount}</span>
+                    </div>
+                )}
             </div>
-
-            {filteredLines.length > 1 && (
-                <div className="line-indicator">
-                    <span className="line-number">
-                        {currentLine.lineIndex === -1 ? 'Бонус' : `Линия ${currentLine.lineIndex}`}
-                    </span>
-                    <span className="line-win">+{currentLine.winAmount}</span>
-                </div>
-            )}
         </>
     );
 };

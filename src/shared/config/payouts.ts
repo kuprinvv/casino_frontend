@@ -81,7 +81,7 @@ export const GAME_CONFIG = {
   LINES: 20,
   DEFAULT_BALANCE: 1000,
   DEFAULT_BET: 10,
-  MIN_BET: 1,
+  MIN_BET: 2,
   MAX_BET: 100,
   SPIN_DURATION: 2500, // мс - время до полной остановки всех барабанов
   WILD_REELS: [1, 2, 3], // Индексы барабанов где может выпасть Wild (0-based)
