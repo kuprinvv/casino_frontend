@@ -1,13 +1,13 @@
 import { apiClient } from './client';
-import { SpinRequest, SpinResult, ErrorResponse, BuyBonusRequest, DataResponse } from './types';
+import {SpinRequest, SpinResult, ErrorResponse, BuyBonusRequest, DataResponse, LineWinAPI} from './types';
 import { AxiosError } from 'axios';
 import { Symbol, SymbolType, WinningLine } from '@shared/types/game';
 import { PAYLINES } from '@shared/config/lines';
 
 export class GameAPI {
     /**
-     * Получить данные игры (баланс и остаток фриспинов)
-     * Предполагаемый новый endpoint: GET /line/data
+     * Получить текущие данные игрока (баланс + остаток фриспинов)
+     * Предполагаемый эндпоинт: GET /line/data
      */
     static async getData(): Promise<DataResponse> {
         try {
@@ -19,8 +19,8 @@ export class GameAPI {
     }
 
     /**
-     * Выполнить спин (вращение барабанов)
-     * Согласно Swagger: POST /line/spin
+     * Обычный спин (или фриспин, бэкенд сам решает по состоянию)
+     * POST /line/spin
      */
     static async spin(bet: number): Promise<{
         reels: Symbol[][];
@@ -37,68 +37,97 @@ export class GameAPI {
             const data: SpinRequest = { bet };
             const response = await apiClient.getClient().post<SpinResult>('/line/spin', data);
 
-            // Конвертируем результат API в формат приложения
-            const reels = this.convertBoardToReels(response.data.board);
-            const winAmount = response.data.total_payout;
-            const balance = response.data.balance;
-            const winningLines = this.convertWinningLinesFromAPI(response.data.line_wins);
-
-            // Отладочное логирование
-            console.log('🎰 Spin result from API:', {
-                board: response.data.board,
-                lineWins: response.data.line_wins,
-                winningLines: winningLines,
-                totalPayout: winAmount,
-            });
-
-            // Добавляем scatter выигрыш как специальную линию, если есть
-            if (response.data.scatter_count >= 3 && response.data.scatter_payout > 0) {
-                const scatterPositions: number[][] = [];
-                response.data.board.forEach((reel: string[], reelIndex: number) => {
-                    reel.forEach((symbol: string, rowIndex: number) => {
-                        if (symbol === 'B') { // 'B' = Bonus/Scatter
-                            scatterPositions.push([reelIndex, rowIndex]);
-                        }
-                    });
-                });
-
-                winningLines.push({
-                    lineIndex: -1,
-                    symbols: SymbolType.BONUS,
-                    count: response.data.scatter_count,
-                    multiplier: 0,
-                    winAmount: response.data.scatter_payout,
-                    positions: scatterPositions,
-                });
-            }
-
-            return {
-                reels,
-                winAmount,
-                balance,
-                winningLines,
-                scatterCount: response.data.scatter_count,
-                scatterPayout: response.data.scatter_payout,
-                awardedFreeSpins: response.data.awarded_free_spins,
-                freeSpinCount: response.data.free_spin_count,
-                inFreeSpin: response.data.in_free_spin,
-            };
+            return this.processSpinResponse(response.data);
         } catch (error) {
             throw this.handleError(error);
         }
     }
 
     /**
-     * Купить бонус (фриспины)
-     * Согласно Swagger: POST /line/buy-bonus
+     * Покупка бонусной игры
+     * POST /line/buy-bonus → возвращает результат ПЕРВОГО бонусного спина
      */
-    static async buyBonus(bet: number): Promise<void> {
+    static async buyBonus(bet: number): Promise<{
+        reels: Symbol[][];
+        winAmount: number;
+        balance: number;
+        winningLines: WinningLine[];
+        scatterCount: number;
+        scatterPayout: number;
+        awardedFreeSpins: number;
+        freeSpinCount: number;
+        inFreeSpin: boolean;
+    }> {
         try {
             const data: BuyBonusRequest = { bet };
-            await apiClient.getClient().post('/line/buy-bonus', data);
+            const response = await apiClient.getClient().post<SpinResult>('/line/buy-bonus', data);
+
+            // Обрабатываем точно так же, как обычный спин
+            return this.processSpinResponse(response.data);
         } catch (error) {
             throw this.handleError(error);
         }
+    }
+
+    /**
+     * Общая логика обработки ответа от спина (обычного или бонусного)
+     */
+    private static processSpinResponse(data: SpinResult): {
+        reels: Symbol[][];
+        winAmount: number;
+        balance: number;
+        winningLines: WinningLine[];
+        scatterCount: number;
+        scatterPayout: number;
+        awardedFreeSpins: number;
+        freeSpinCount: number;
+        inFreeSpin: boolean;
+    } {
+        const reels = this.convertBoardToReels(data.board);
+        const winAmount = data.total_payout;
+        const winningLines = this.convertWinningLinesFromAPI(data.line_wins);
+
+        console.log('🎰 Processed spin result:', {
+            board: data.board,
+            totalPayout: winAmount,
+            freeSpinCount: data.free_spin_count,
+            inFreeSpin: data.in_free_spin,
+        });
+
+        // Добавляем scatter как специальную "линию", если есть выплата
+        let scatterCount = data.scatter_count;
+        let scatterPayout = data.scatter_payout;
+        if (scatterCount >= 3 && scatterPayout > 0) {
+            const scatterPositions: number[][] = [];
+            data.board.forEach((reel, reelIndex) => {
+                reel.forEach((symbol, rowIndex) => {
+                    if (symbol === 'B') {
+                        scatterPositions.push([reelIndex, rowIndex]);
+                    }
+                });
+            });
+
+            winningLines.push({
+                lineIndex: -1,
+                symbols: SymbolType.BONUS,
+                count: scatterCount,
+                multiplier: 0,
+                winAmount: scatterPayout,
+                positions: scatterPositions,
+            });
+        }
+
+        return {
+            reels,
+            winAmount,
+            balance: data.balance,
+            winningLines,
+            scatterCount,
+            scatterPayout,
+            awardedFreeSpins: data.awarded_free_spins,
+            freeSpinCount: data.free_spin_count,
+            inFreeSpin: data.in_free_spin || false, // на всякий случай
+        };
     }
 
     private static mapBackendSymbol(backendSymbol: string): SymbolType {
@@ -114,23 +143,19 @@ export class GameAPI {
             'B': SymbolType.BONUS,
             'W': SymbolType.WILD,
         };
-
         return symbolMap[backendSymbol] || SymbolType.SYMBOL_1;
     }
 
     private static convertBoardToReels(board: string[][]): Symbol[][] {
         return board.map((reel, reelIndex) =>
-            reel.map((symbolStr, posIndex) => {
-                const mappedType = this.mapBackendSymbol(symbolStr);
-                return {
-                    type: mappedType,
-                    id: `${mappedType}-${reelIndex}-${posIndex}-${Date.now()}`,
-                };
-            })
+            reel.map((symbolStr, posIndex) => ({
+                type: this.mapBackendSymbol(symbolStr),
+                id: `${symbolStr}-${reelIndex}-${posIndex}-${Date.now()}`,
+            }))
         );
     }
 
-    private static convertWinningLinesFromAPI(apiLines: any[]): WinningLine[] {
+    private static convertWinningLinesFromAPI(apiLines: LineWinAPI[]): WinningLine[] {
         if (!apiLines || apiLines.length === 0) return [];
 
         return apiLines.map((line) => {
@@ -139,21 +164,12 @@ export class GameAPI {
             const positions: number[][] = [];
             if (linePattern && line.count > 0) {
                 const maxCount = Math.min(line.count, linePattern.pattern.length);
-                for (let reelIndex = 0; reelIndex < maxCount; reelIndex++) {
-                    const rowIndex = linePattern.pattern[reelIndex];
-                    if (rowIndex >= 0 && rowIndex <= 2 && reelIndex >= 0 && reelIndex < 5) {
-                        positions.push([reelIndex, rowIndex]);
+                for (let i = 0; i < maxCount; i++) {
+                    const row = linePattern.pattern[i];
+                    if (row >= 0 && row <= 2) {
+                        positions.push([i, row]);
                     }
                 }
-            }
-
-            if (line.line === 3) {
-                console.log('🎯 Line 3 conversion:', {
-                    apiLine: line,
-                    linePattern: linePattern,
-                    positions: positions,
-                    count: line.count
-                });
             }
 
             return {
@@ -162,7 +178,7 @@ export class GameAPI {
                 count: line.count,
                 multiplier: 0,
                 winAmount: line.payout,
-                positions: positions,
+                positions,
             };
         });
     }

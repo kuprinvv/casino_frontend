@@ -6,7 +6,7 @@ import { GameAPI, UserAPI } from '@shared/api';
 interface GameStore extends GameState {
     spin: () => void;
     setBet: (bet: number) => void;
-    buyBonus: () => void;
+    buyBonus: () => Promise<void>;
     reset: () => void;
     updateReels: (reels: Symbol[][]) => void;
     deposit: (amount: number) => Promise<void>;
@@ -54,13 +54,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     useOnlineMode: false,
     isTurbo: false,
 
-    setTurbo: (turbo: boolean) => {
-        set({ isTurbo: turbo });
-    },
+    setTurbo: (turbo: boolean) => set({ isTurbo: turbo }),
 
-    setOnlineMode: (online: boolean) => {
-        set({ useOnlineMode: online });
-    },
+    setOnlineMode: (online: boolean) => set({ useOnlineMode: online }),
 
     syncBalance: async () => {
         const state = get();
@@ -111,7 +107,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             const result = await GameAPI.spin(state.bet);
 
             setTimeout(() => {
-                console.log('🎯 Setting game state with winning lines:', result.winningLines);
+                console.log('🎯 Setting game state from spin:', result.winningLines);
 
                 const currentState = get();
                 const newFreeSpinsLeft = currentState.freeSpinsLeft > 0
@@ -173,24 +169,37 @@ export const useGameStore = create<GameStore>((set, get) => ({
         });
 
         try {
-            await GameAPI.buyBonus(bonusCost);
-            await get().syncBalance();
+            const result = await GameAPI.buyBonus(bonusCost);
 
-            const updatedState = get();
-            if (updatedState.freeSpinsLeft > 0) {
-                set({ isBonusGame: true });
-            }
+            setTimeout(() => {
+                const currentState = get();
+                const newFreeSpinsLeft = result.freeSpinCount;
 
-            set({ isSpinning: false });
+                set({
+                    reels: result.reels.map((symbols, index) => ({
+                        symbols,
+                        position: index,
+                    })),
+                    lastWin: result.winAmount,
+                    totalWin: currentState.totalWin + result.winAmount,
+                    balance: result.balance,
+                    winningLines: result.winningLines,
+                    isSpinning: false,
+                    freeSpinsLeft: newFreeSpinsLeft,
+                    isBonusGame: newFreeSpinsLeft > 0,
+                });
+
+                if (result.scatterCount >= 3) {
+                    console.log(`Бонусные скаттеры: ${result.scatterCount}, выплата: ${result.scatterPayout}`);
+                }
+            }, state.isTurbo ? 100 : GAME_CONFIG.SPIN_DURATION);
         } catch (error) {
             set({ isSpinning: false });
             alert(error instanceof Error ? error.message : 'Ошибка при покупке бонуса');
         }
     },
 
-    reset: () => {
-        set(initialState);
-    },
+    reset: () => set(initialState),
 
     updateReels: (reels: Symbol[][]) => {
         set({
