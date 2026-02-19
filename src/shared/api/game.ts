@@ -1,10 +1,23 @@
 import { apiClient } from './client';
-import { SpinRequest, SpinResult, ErrorResponse, BuyBonusRequest } from './types';
+import { SpinRequest, SpinResult, ErrorResponse, BuyBonusRequest, DataResponse } from './types';
 import { AxiosError } from 'axios';
 import { Symbol, SymbolType, WinningLine } from '@shared/types/game';
 import { PAYLINES } from '@shared/config/lines';
 
 export class GameAPI {
+    /**
+     * Получить данные игры (баланс и остаток фриспинов)
+     * Предполагаемый новый endpoint: GET /line/data
+     */
+    static async getData(): Promise<DataResponse> {
+        try {
+            const response = await apiClient.getClient().get<DataResponse>('/line/data');
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
     /**
      * Выполнить спин (вращение барабанов)
      * Согласно Swagger: POST /line/spin
@@ -40,7 +53,6 @@ export class GameAPI {
 
             // Добавляем scatter выигрыш как специальную линию, если есть
             if (response.data.scatter_count >= 3 && response.data.scatter_payout > 0) {
-                // Находим все позиции scatter символов на барабанах
                 const scatterPositions: number[][] = [];
                 response.data.board.forEach((reel: string[], reelIndex: number) => {
                     reel.forEach((symbol: string, rowIndex: number) => {
@@ -50,9 +62,8 @@ export class GameAPI {
                     });
                 });
 
-                // Добавляем scatter как специальную "линию" с индексом -1
                 winningLines.push({
-                    lineIndex: -1, // Специальный индекс для scatter
+                    lineIndex: -1,
                     symbols: SymbolType.BONUS,
                     count: response.data.scatter_count,
                     multiplier: 0,
@@ -90,9 +101,6 @@ export class GameAPI {
         }
     }
 
-    /**
-     * Маппинг символов бекенда в символы фронтенда
-     */
     private static mapBackendSymbol(backendSymbol: string): SymbolType {
         const symbolMap: Record<string, SymbolType> = {
             'S1': SymbolType.SYMBOL_1,
@@ -107,13 +115,9 @@ export class GameAPI {
             'W': SymbolType.WILD,
         };
 
-        return symbolMap[backendSymbol] || SymbolType.SYMBOL_1; // Fallback
+        return symbolMap[backendSymbol] || SymbolType.SYMBOL_1;
     }
 
-    /**
-     * Конвертировать board (5x3) в формат reels (5 барабанов по 3 символа)
-     * board[reel][position] -> reels[reel][position]
-     */
     private static convertBoardToReels(board: string[][]): Symbol[][] {
         return board.map((reel, reelIndex) =>
             reel.map((symbolStr, posIndex) => {
@@ -126,33 +130,23 @@ export class GameAPI {
         );
     }
 
-    /**
-     * Конвертировать выигрышные линии из формата API в формат приложения
-     */
     private static convertWinningLinesFromAPI(apiLines: any[]): WinningLine[] {
         if (!apiLines || apiLines.length === 0) return [];
 
         return apiLines.map((line) => {
-            // Находим паттерн линии по её индексу
-            // API возвращает line.line как число от 1 до 20
             const linePattern = PAYLINES.find(l => l.id === line.line);
 
-            // Генерируем позиции на основе паттерна и количества символов
             const positions: number[][] = [];
             if (linePattern && line.count > 0) {
-                // Берем только первые N позиций (где N = line.count)
-                // Но убеждаемся, что не выходим за пределы паттерна
                 const maxCount = Math.min(line.count, linePattern.pattern.length);
                 for (let reelIndex = 0; reelIndex < maxCount; reelIndex++) {
                     const rowIndex = linePattern.pattern[reelIndex];
-                    // Проверяем валидность индексов
                     if (rowIndex >= 0 && rowIndex <= 2 && reelIndex >= 0 && reelIndex < 5) {
                         positions.push([reelIndex, rowIndex]);
                     }
                 }
             }
 
-            // Отладочная информация для третьей линии
             if (line.line === 3) {
                 console.log('🎯 Line 3 conversion:', {
                     apiLine: line,
@@ -163,19 +157,16 @@ export class GameAPI {
             }
 
             return {
-                lineIndex: line.line, // API возвращает 1-20
+                lineIndex: line.line,
                 symbols: this.mapBackendSymbol(line.symbol),
                 count: line.count,
-                multiplier: 0, // Бекенд не возвращает multiplier, можно рассчитать как payout/bet
+                multiplier: 0,
                 winAmount: line.payout,
                 positions: positions,
             };
         });
     }
 
-    /**
-     * Обработка ошибок
-     */
     private static handleError(error: unknown): Error {
         if (error instanceof AxiosError) {
             const errorData = error.response?.data as ErrorResponse;

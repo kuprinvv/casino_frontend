@@ -14,6 +14,7 @@ export type {
   LineWinAPI,
   BalanceResponse,
   ErrorResponse,
+  DataResponse
 } from './types';
 
 // Экспорт auth типов

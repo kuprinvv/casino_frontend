@@ -1,4 +1,3 @@
-// API Request types
 export interface DepositRequest {
     amount: number;
 }
@@ -45,6 +44,12 @@ export interface LineWinAPI {
 // Согласно Swagger: GET /pay/balance
 export interface BalanceResponse {
     balance: number; // Текущий баланс пользователя
+}
+
+// Новый тип для получения баланса и фриспинов
+export interface DataResponse {
+    balance: number;
+    free_spin_count: number;
 }
 
 // Error response
