@@ -93,60 +93,46 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                 className="winning-lines-svg"
                 viewBox={`0 0 ${REELS_COUNT} ${ROWS_COUNT}`}
                 preserveAspectRatio="none"
-                style={{ overflow: 'visible' }}
             >
                 <defs>
-                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#FFD700" />
-                        <stop offset="25%" stopColor="#FFA500" />
-                        <stop offset="50%" stopColor="#FFD700" />
-                        <stop offset="75%" stopColor="#FFA500" />
-                        <stop offset="100%" stopColor="#FFD700" />
+                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#64C8FF" stopOpacity="1" />
+                        <stop offset="30%" stopColor="#7DB8FF" stopOpacity="1" />
+                        <stop offset="50%" stopColor="#9B7FFF" stopOpacity="1" />
+                        <stop offset="70%" stopColor="#D18AFF" stopOpacity="1" />
+                        <stop offset="100%" stopColor="#FF6B9D" stopOpacity="1" />
                     </linearGradient>
-
-                    <filter id="royalGlow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="0.03" result="blur" />
-                        <feFlood floodColor="#FFD700" floodOpacity="0.8" result="glowColor" />
-                        <feComposite in="glowColor" in2="blur" operator="in" result="softGlow" />
-                        <feMerge>
-                            <feMergeNode in="softGlow" />
-                            <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                    </filter>
+                    <linearGradient id="lineGlowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#B8E6FF" stopOpacity="1" />
+                        <stop offset="30%" stopColor="#C8EDFF" stopOpacity="1" />
+                        <stop offset="50%" stopColor="#C4B5FF" stopOpacity="1" />
+                        <stop offset="70%" stopColor="#E0C5FF" stopOpacity="1" />
+                        <stop offset="100%" stopColor="#FFB8D1" stopOpacity="1" />
+                    </linearGradient>
                 </defs>
 
-                {/* Тень */}
                 <path
                     d={linePath}
-                    stroke="rgba(0, 0, 0, 0.5)"
-                    strokeWidth="0.1"
+                    className="line-shadow"
+                    strokeWidth="0.15"
+                />
+                <path
+                    d={linePath}
+                    className="winning-line"
+                    strokeWidth="0.12"
+                    stroke="url(#lineGradient)"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    opacity="0.4"
                 />
-
-                {/* Основная линия */}
                 <path
                     d={linePath}
-                    stroke="url(#goldGradient)"
+                    className="winning-line-glow"
                     strokeWidth="0.08"
+                    stroke="url(#lineGlowGradient)"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    filter="url(#royalGlow)"
-                    className="winning-line-path"
-                />
-
-                {/* Блики */}
-                <path
-                    d={linePath}
-                    stroke="#FFF8DC"
-                    strokeWidth="0.04"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    opacity="0.9"
                 />
             </svg>
 
