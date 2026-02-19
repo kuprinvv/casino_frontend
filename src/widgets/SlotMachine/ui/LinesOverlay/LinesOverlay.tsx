@@ -1,3 +1,4 @@
+// LinesOverlay.tsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { WinningLine, SymbolType } from '@shared/types/game';
 import './LinesOverlay.css';
@@ -93,51 +94,35 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                 preserveAspectRatio="none"
                 style={{ overflow: 'visible' }}
             >
-                <defs>
-                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#FFD700" />
-                        <stop offset="25%" stopColor="#FFA500" />
-                        <stop offset="50%" stopColor="#FFD700" />
-                        <stop offset="75%" stopColor="#FFA500" />
-                        <stop offset="100%" stopColor="#FFD700" />
-                    </linearGradient>
-                </defs>
-
                 {/* Тень для контраста */}
                 <path
                     d={linePath}
-                    stroke="rgba(0, 0, 0, 0.6)"
-                    strokeWidth="5"
+                    className="winning-line-shadow"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     vectorEffect="non-scaling-stroke"
-                    style={{ filter: 'drop-shadow(0px 0px 2px rgba(0,0,0,0.5))' }}
                 />
 
-                {/* Основная линия с анимацией */}
+                {/* Основная линия - теперь без SVG градиента */}
                 <path
                     d={linePath}
-                    stroke="url(#goldGradient)"
-                    strokeWidth="3"
+                    className="winning-line-path"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     vectorEffect="non-scaling-stroke"
                     shapeRendering="geometricPrecision"
-                    className="winning-line-path"
                 />
 
                 {/* Белый блик по центру */}
                 <path
                     d={linePath}
-                    stroke="#FFF8DC"
-                    strokeWidth="1"
+                    className="winning-line-highlight"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     vectorEffect="non-scaling-stroke"
-                    opacity="0.9"
                 />
             </svg>
 

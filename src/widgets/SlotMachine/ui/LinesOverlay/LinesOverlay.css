@@ -1,3 +1,4 @@
+/* LinesOverlay.css */
 .lines-overlay-container {
     position: absolute;
     top: 0;
@@ -18,28 +19,46 @@
     overflow: visible;
 }
 
+/* Тень */
+.winning-line-shadow {
+    stroke: rgba(0, 0, 0, 0.6);
+    stroke-width: 5;
+    filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Основная линия - CSS градиент через stroke */
 .winning-line-path {
-    /* Анимация теперь использует CSS drop-shadow вместо SVG filter */
+    stroke: #FFD700;
+    stroke-width: 3;
+    /* CSS-свечение вместо SVG фильтра */
+    filter: drop-shadow(0px 0px 4px rgba(255, 215, 0, 0.8))
+    drop-shadow(0px 0px 8px rgba(255, 165, 0, 0.4));
     animation: royalGlow 2s ease-in-out infinite;
-    /* Начальное состояние свечения */
-    filter: drop-shadow(0px 0px 4px rgba(255, 215, 0, 0.8));
 }
 
 @keyframes royalGlow {
     0%, 100% {
-        /* Яркое свечение */
+        stroke: #FFD700;
         filter: drop-shadow(0px 0px 4px rgba(255, 215, 0, 0.8))
         drop-shadow(0px 0px 8px rgba(255, 165, 0, 0.4));
         opacity: 1;
     }
     50% {
-        /* Усиленное свечение + яркость */
+        stroke: #FFA500;
         filter: drop-shadow(0px 0px 6px rgba(255, 215, 0, 1))
         drop-shadow(0px 0px 12px rgba(255, 165, 0, 0.6));
         opacity: 0.95;
     }
 }
 
+/* Белый блик */
+.winning-line-highlight {
+    stroke: #FFF8DC;
+    stroke-width: 1;
+    opacity: 0.9;
+}
+
+/* Остальные стили без изменений... */
 .lines-top-info {
     position: absolute;
     top: -45px;
