@@ -9,8 +9,6 @@ interface LinesOverlayProps {
 const REELS_COUNT = 5;
 const ROWS_COUNT = 3;
 
-// Генерирует путь в относительных координатах (сетка 5x3)
-// Центр первой ячейки: x=0.5, y=0.5
 const generateRelativePath = (positions: number[][]): string => {
     if (!positions || positions.length === 0) return '';
 
@@ -46,12 +44,10 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
         );
     }, [winningLines]);
 
-    // Сброс индекса при новом спине
     useEffect(() => {
         setCurrentLineIndex(0);
     }, [winningLines]);
 
-    // Анимация переключения линий
     useEffect(() => {
         if (filteredLines.length <= 1) return;
 
@@ -71,10 +67,12 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
     if (filteredLines.length === 0) {
         if (winningLines.length === 0) return null;
         return (
-            <div className="lines-overlay">
-                <div className="lines-counter">
-                    <span className="lines-label">Выигрышных линий:</span>
-                    <span className="lines-count">{winningLines.length}</span>
+            <div className="lines-overlay-container">
+                <div className="lines-top-info">
+                    <div className="royal-badge">
+                        <span className="badge-label">Выигрышных линий:</span>
+                        <span className="badge-count">{winningLines.length}</span>
+                    </div>
                 </div>
             </div>
         );
@@ -83,79 +81,82 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
     if (!currentLine || !linePath) return null;
 
     return (
-        <>
-            {/*
-                viewBox="0 0 5 3" задает логическую сетку координат.
-                width/height 100% растягивают SVG на весь контейнер.
-            */}
+        <div className="lines-overlay-container">
+            <div className="lines-top-info">
+                <div className="royal-badge">
+                    <span className="badge-label">Линия:</span>
+                    <span className="badge-count">{currentLine.lineIndex + 1}</span>
+                </div>
+            </div>
+
             <svg
                 className="winning-lines-svg"
                 viewBox={`0 0 ${REELS_COUNT} ${ROWS_COUNT}`}
                 preserveAspectRatio="none"
+                style={{ overflow: 'visible' }}
             >
                 <defs>
-                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#64C8FF" />
-                        <stop offset="50%" stopColor="#9B7FFF" />
-                        <stop offset="100%" stopColor="#FF6B9D" />
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#FFD700" />
+                        <stop offset="25%" stopColor="#FFA500" />
+                        <stop offset="50%" stopColor="#FFD700" />
+                        <stop offset="75%" stopColor="#FFA500" />
+                        <stop offset="100%" stopColor="#FFD700" />
                     </linearGradient>
-                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="0.05" result="coloredBlur" />
+
+                    <filter id="royalGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="0.03" result="blur" />
+                        <feFlood floodColor="#FFD700" floodOpacity="0.8" result="glowColor" />
+                        <feComposite in="glowColor" in2="blur" operator="in" result="softGlow" />
                         <feMerge>
-                            <feMergeNode in="coloredBlur" />
+                            <feMergeNode in="softGlow" />
                             <feMergeNode in="SourceGraphic" />
                         </feMerge>
                     </filter>
                 </defs>
 
-                {/* Тень линии */}
+                {/* Тень */}
                 <path
                     d={linePath}
-                    className="line-shadow"
+                    stroke="rgba(0, 0, 0, 0.5)"
+                    strokeWidth="0.1"
                     fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    opacity="0.4"
                 />
 
                 {/* Основная линия */}
                 <path
                     d={linePath}
-                    className="winning-line"
-                    stroke="url(#lineGradient)"
+                    stroke="url(#goldGradient)"
+                    strokeWidth="0.08"
                     fill="none"
-                    filter="url(#glow)"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    filter="url(#royalGlow)"
+                    className="winning-line-path"
                 />
 
-                {/* Эффект пунктира/бегающей линии */}
+                {/* Блики */}
                 <path
                     d={linePath}
-                    className="winning-line-glow"
+                    stroke="#FFF8DC"
+                    strokeWidth="0.04"
                     fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    opacity="0.9"
                 />
-
-                {/* Точки на барабанах (опционально) */}
-                {currentLine.positions.map(([reel, row], idx) => (
-                    <circle
-                        key={idx}
-                        cx={reel + 0.5}
-                        cy={row + 0.5}
-                        r="0.15"
-                        fill="#fff"
-                        stroke="#FF6B9D"
-                        strokeWidth="0.05"
-                    />
-                ))}
             </svg>
 
-            <div className="lines-overlay-info">
-                <div className="lines-counter">
-                    <span className="lines-label">Линия:</span>
-                    <span className="lines-count">{currentLine.lineIndex + 1}</span>
-                </div>
+            <div className="lines-bottom-info">
                 {filteredLines.length > 1 && (
-                    <div className="line-indicator">
-                        <span className="line-win">+{currentLine.winAmount}</span>
+                    <div className="win-amount-badge">
+                        <span className="win-amount">+{currentLine.winAmount}</span>
                     </div>
                 )}
             </div>
-        </>
+        </div>
     );
 };
