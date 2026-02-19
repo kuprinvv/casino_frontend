@@ -93,11 +93,15 @@ export class GameAPI {
   }> {
       try {
           const data: BuyBonusRequest = { bet };
-          const response = await apiClient
-              .getClient().post<BonusSpinResponse>('/line/buy-bonus', data);
+
+          // 🎯 Ключевое: используем BonusSpinResponse, а НЕ SpinResult!
+          // SpinResult содержит in_free_spin, которого нет в новом ответе
+          const response = await apiClient.getClient().post<BonusSpinResponse>('/line/buy-bonus', data);
+
           const reels = this.convertBoardToReels(response.data.board);
           const winningLines = this.convertWinningLinesFromAPI(response.data.line_wins);
 
+          // Добавляем scatter-выигрыш если есть
           if (response.data.scatter_count >= 3 && response.data.scatter_payout > 0) {
               const scatterPositions: number[][] = [];
               response.data.board.forEach((reel, reelIndex) => {
