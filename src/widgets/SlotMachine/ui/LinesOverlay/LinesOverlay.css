@@ -60,7 +60,6 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 15;
-    animation: slideUp 0.5s ease-out;
     line-height: 1;
 }
 

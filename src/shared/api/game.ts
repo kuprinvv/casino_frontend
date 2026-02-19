@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { SpinRequest, SpinResult, ErrorResponse, BuyBonusRequest } from './types';
+import {SpinRequest, SpinResult, ErrorResponse, BuyBonusRequest, BonusSpinResponse} from './types';
 import { AxiosError } from 'axios';
 import { Symbol, SymbolType, WinningLine } from '@shared/types/game';
 import { PAYLINES } from '@shared/config/lines';
@@ -81,13 +81,55 @@ export class GameAPI {
    * Купить бонус (фриспины)
    * Согласно Swagger: POST /line/buy-bonus
    */
-  static async buyBonus(amount: number): Promise<void> {
-    try {
-      const data: BuyBonusRequest = { amount };
-      await apiClient.getClient().post('/line/buy-bonus', data);
-    } catch (error) {
-      throw this.handleError(error);
-    }
+  static async buyBonus(bet: number): Promise<{
+      reels: Symbol[][];
+      winAmount: number;
+      balance: number;
+      winningLines: WinningLine[];
+      scatterCount: number;
+      scatterPayout: number;
+      awardedFreeSpins: number;
+      freeSpinCount: number;
+  }> {
+      try {
+          const data: BuyBonusRequest = { bet };
+          const response = await apiClient
+              .getClient().post<BonusSpinResponse>('/line/buy-bonus', data);
+          const reels = this.convertBoardToReels(response.data.board);
+          const winningLines = this.convertWinningLinesFromAPI(response.data.line_wins);
+
+          if (response.data.scatter_count >= 3 && response.data.scatter_payout > 0) {
+              const scatterPositions: number[][] = [];
+              response.data.board.forEach((reel, reelIndex) => {
+                  reel.forEach((symbol, rowIndex) => {
+                      if (symbol === 'B') {
+                          scatterPositions.push([reelIndex, rowIndex]);
+                      }
+                  });
+              });
+              winningLines.push({
+                  lineIndex: -1,
+                  symbols: SymbolType.BONUS,
+                  count: response.data.scatter_count,
+                  multiplier: 0,
+                  winAmount: response.data.scatter_payout,
+                  positions: scatterPositions,
+              });
+          }
+
+          return {
+              reels,
+              winAmount: response.data.total_payout,
+              balance: response.data.balance,
+              winningLines,
+              scatterCount: response.data.scatter_count,
+              scatterPayout: response.data.scatter_payout,
+              awardedFreeSpins: response.data.awarded_free_spins,
+              freeSpinCount: response.data.free_spin_count,
+          };
+      } catch (error) {
+          throw this.handleError(error);
+      }
   }
 
   /**

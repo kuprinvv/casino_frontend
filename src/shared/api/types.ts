@@ -8,7 +8,18 @@ export interface SpinRequest {
 }
 
 export interface BuyBonusRequest {
-  amount: number;
+  bet: number;
+}
+
+export interface BonusSpinResponse {
+    board: string[][];              // [5][3] символы
+    line_wins: LineWinAPI[];        // массив выигрышных линий
+    scatter_count: number;
+    scatter_payout: number;
+    awarded_free_spins: number;     // сколько начислено в этом спине
+    total_payout: number;
+    balance: number;
+    free_spin_count: number;        // сколько осталось после этого спина
 }
 
 // API Response types - соответствуют структуре бекенда согласно Swagger
