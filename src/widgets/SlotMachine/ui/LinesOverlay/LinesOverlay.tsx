@@ -50,11 +50,9 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
 
     useEffect(() => {
         if (filteredLines.length <= 1) return;
-
         const interval = setInterval(() => {
             setCurrentLineIndex((prev) => (prev + 1) % filteredLines.length);
         }, 1500);
-
         return () => clearInterval(interval);
     }, [filteredLines.length]);
 
@@ -103,49 +101,42 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                         <stop offset="75%" stopColor="#FFA500" />
                         <stop offset="100%" stopColor="#FFD700" />
                     </linearGradient>
-
-                    <filter id="royalGlow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="0.03" result="blur" />
-                        <feFlood floodColor="#FFD700" floodOpacity="0.8" result="glowColor" />
-                        <feComposite in="glowColor" in2="blur" operator="in" result="softGlow" />
-                        <feMerge>
-                            <feMergeNode in="softGlow" />
-                            <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                    </filter>
                 </defs>
 
-                {/* Тень */}
+                {/* Тень для контраста */}
                 <path
                     d={linePath}
-                    stroke="rgba(0, 0, 0, 0.5)"
-                    strokeWidth="0.1"
+                    stroke="rgba(0, 0, 0, 0.6)"
+                    strokeWidth="5"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    opacity="0.4"
+                    vectorEffect="non-scaling-stroke"
+                    style={{ filter: 'drop-shadow(0px 0px 2px rgba(0,0,0,0.5))' }}
                 />
 
-                {/* Основная линия */}
+                {/* Основная линия с анимацией */}
                 <path
                     d={linePath}
                     stroke="url(#goldGradient)"
-                    strokeWidth="0.08"
+                    strokeWidth="3"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    filter="url(#royalGlow)"
+                    vectorEffect="non-scaling-stroke"
+                    shapeRendering="geometricPrecision"
                     className="winning-line-path"
                 />
 
-                {/* Блики */}
+                {/* Белый блик по центру */}
                 <path
                     d={linePath}
                     stroke="#FFF8DC"
-                    strokeWidth="0.04"
+                    strokeWidth="1"
                     fill="none"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    vectorEffect="non-scaling-stroke"
                     opacity="0.9"
                 />
             </svg>
