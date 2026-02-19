@@ -97,7 +97,7 @@ export class GameAPI {
           // 🎯 Ключевое: используем BonusSpinResponse, а НЕ SpinResult!
           // SpinResult содержит in_free_spin, которого нет в новом ответе
           const response = await apiClient.getClient().post<BonusSpinResponse>('/line/buy-bonus', data);
-
+          console.log('🎁 BuyBonus RAW response:', JSON.stringify(response.data, null, 2));
           const reels = this.convertBoardToReels(response.data.board);
           const winningLines = this.convertWinningLinesFromAPI(response.data.line_wins);
 
