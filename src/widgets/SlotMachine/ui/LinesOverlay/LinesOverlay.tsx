@@ -92,25 +92,14 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
                 viewBox={`0 0 ${REELS_COUNT} ${ROWS_COUNT}`}
                 preserveAspectRatio="none"
             >
-                {/* 1. Внешнее свечение (Aura) */}
                 <path
                     d={linePath}
                     className="winning-line-aura"
                 />
-
-                {/* 2. Тень для глубины */}
-                <path
-                    d={linePath}
-                    className="winning-line-shadow"
-                />
-
-                {/* 3. Основная золотая линия */}
                 <path
                     d={linePath}
                     className="winning-line-path"
                 />
-
-                {/* 4. Внутренний яркий блик (Core) */}
                 <path
                     d={linePath}
                     className="winning-line-core"
