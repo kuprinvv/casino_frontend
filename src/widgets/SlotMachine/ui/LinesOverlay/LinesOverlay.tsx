@@ -109,7 +109,7 @@ export const LinesOverlay: React.FC<LinesOverlayProps> = ({ winningLines }) => {
             <div className="lines-bottom-info">
                 {filteredLines.length > 1 && (
                     <div className="win-amount-badge">
-                        <span className="win-amount">+{currentLine.winAmount}</span>
+                        <span className="win-amount-count">+{currentLine.winAmount}</span>
                     </div>
                 )}
             </div>
