@@ -93,8 +93,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
     spin: async () => {
         const state = get();
 
-        console.log('🎲 store.spin called, isSpinning:', state.isSpinning);
-
         if (state.isSpinning) return;
 
         if (!state.isBonusGame && state.balance < state.bet) {
@@ -107,7 +105,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const spinDuration = state.isTurbo ? 100 : GAME_CONFIG.SPIN_DURATION;
 
         try {
-            console.log('🎲 Calling GameAPI.spin with bet:', state.bet);
             const result = await GameAPI.spin(state.bet);
 
             setTimeout(() => {
@@ -128,16 +125,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     freeSpinsLeft: newFreeSpinsLeft,
                     isBonusGame: newFreeSpinsLeft > 0,
                 });
-
-                console.log('🎲 Spin completed:', {
-                    winAmount: result.winAmount,
-                    freeSpinsLeft: newFreeSpinsLeft,
-                    isBonusGame: newFreeSpinsLeft > 0,
-                });
             }, spinDuration);
 
         } catch (error) {
-            console.error('❌ store.spin error:', error);
             set({ isSpinning: false });
             alert(error instanceof Error ? error.message : 'Ошибка при спине');
         }
@@ -158,8 +148,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
     buyBonus: async () => {
         const state = get();
 
-        console.log('🎁 store.buyBonus called, isSpinning:', state.isSpinning, 'isBonusGame:', state.isBonusGame);
-
         if (state.isSpinning || state.isBonusGame) return;
 
         const bonusCost = state.bet * 100;
@@ -176,7 +164,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
         });
 
         try {
-            console.log('🎁 Calling GameAPI.buyBonus with bet:', state.bet);
             const bonusResult = await GameAPI.buyBonus(state.bet);
 
             const spinDuration = state.isTurbo ? 100 : GAME_CONFIG.SPIN_DURATION;
@@ -195,14 +182,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     isBonusGame: true,
                     freeSpinsLeft: bonusResult.freeSpinCount,
                 });
-
-                console.log('🎁 Bonus completed:', {
-                    freeSpinsLeft: bonusResult.freeSpinCount,
-                });
             }, spinDuration);
 
         } catch (error) {
-            console.error('❌ store.buyBonus error:', error);
             set({ isSpinning: false });
             alert(error instanceof Error ? error.message : 'Ошибка при покупке бонуса');
         }
