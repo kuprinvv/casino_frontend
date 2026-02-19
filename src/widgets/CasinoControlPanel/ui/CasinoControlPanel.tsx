@@ -241,7 +241,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
                 }
             >
                 <span className="button-label">
-                    {isBonusGame ? `FREE (${freeSpinsLeft + 1})` : <img src="/play.png" alt="play" />}
+                    {isBonusGame ? `FREE (${freeSpinsLeft})` : <img src="/play.png" alt="play" />}
                 </span>
             </button>
 

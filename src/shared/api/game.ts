@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import {SpinRequest, SpinResult, ErrorResponse, BuyBonusRequest, BonusSpinResponse} from './types';
+import {SpinRequest, SpinResult, BuyBonusRequest, BonusSpinResponse} from './types';
 import { AxiosError } from 'axios';
 import { Symbol, SymbolType, WinningLine } from '@shared/types/game';
 import { PAYLINES } from '@shared/config/lines';
@@ -223,11 +223,36 @@ export class GameAPI {
    * Обработка ошибок
    */
   private static handleError(error: unknown): Error {
-    if (error instanceof AxiosError) {
-      const errorData = error.response?.data as ErrorResponse;
-      return new Error(errorData?.error || error.message || 'Произошла ошибка');
-    }
-    return new Error('Неизвестная ошибка');
+      if (error instanceof AxiosError) {
+          const errorData = error.response?.data as any;
+
+          // 🔍 Логируем всё, что пришло от сервера, для дебага
+          console.error('🔥 API Error Details:', {
+              url: error.config?.url,
+              method: error.config?.method,
+              status: error.response?.status,
+              statusText: error.response?.statusText,
+              rawData: errorData,
+              message: error.message,
+          });
+
+          // Пробуем извлечь сообщение об ошибке из разных возможных полей
+          const errorMsg =
+              typeof errorData === 'string'
+                  ? errorData
+                  : errorData?.error
+                  || errorData?.message
+                  || errorData?.msg
+                  || errorData?.details
+                  || error.response?.statusText
+                  || error.message
+                  || 'Произошла ошибка';
+
+          return new Error(errorMsg);
+      }
+
+      console.error('🔥 Unknown error:', error);
+      return new Error(error instanceof Error ? error.message : 'Неизвестная ошибка');
   }
 }
 
