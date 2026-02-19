@@ -170,16 +170,6 @@
     }
 }
 
-@media (max-width: 768px) {
-    .lines-top-info { top: -40px; }
-    .lines-bottom-info { bottom: -12px; }
-    .royal-badge { padding: 5px 16px; }
-    .badge-label { font-size: 11px; }
-    .badge-count { font-size: 18px; }
-    .win-amount-badge { padding: 2px 6px; }
-    .win-amount-count { font-size: 30px; }
-}
-
 @media (max-width: 480px) {
     .lines-top-info { top: -35px; }
     .lines-bottom-info { bottom: -37px; }
