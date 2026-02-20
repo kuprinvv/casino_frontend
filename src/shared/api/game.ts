@@ -84,7 +84,7 @@ export class GameAPI {
     }> {
         try {
             const bonusCost = bet * 100;
-            const data: BuyBonusRequest = { bet: bonusCost };
+            const data: BuyBonusRequest = { amount: bonusCost };
 
             // ✅ Теперь используем BonusSpinResponse для типизации ответа
             const response = await apiClient.getClient().post<BonusSpinResponse>('/line/buy-bonus', data);
