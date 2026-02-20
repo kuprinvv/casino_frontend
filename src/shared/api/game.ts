@@ -79,7 +79,7 @@ export class GameAPI {
     }> {
         try {
             const bonusCost = bet * 100;
-            const data: BuyBonusRequest = { amount: bonusCost };
+            const data: BuyBonusRequest = { bet: bonusCost };
             const response = await apiClient.getClient().post<BonusSpinResponse>('/line/buy-bonus', data);
 
             const reels = this.convertBoardToReels(response.data.board);

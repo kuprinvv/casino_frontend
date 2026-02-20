@@ -187,6 +187,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         });
 
         try {
+
             const result = await GameAPI.buyBonus(state.bet); // ✅ Передаём bet, получаем result
 
             const spinDuration = state.isTurbo ? 100 : GAME_CONFIG.SPIN_DURATION;
