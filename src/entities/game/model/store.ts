@@ -4,7 +4,6 @@ import { GAME_CONFIG } from '@shared/config/payouts';
 import { GameAPI, UserAPI } from '@shared/api';
 
 interface GameStore extends GameState {
-    // Actions
     spin: () => void;
     setBet: (bet: number) => void;
     buyBonus: () => void;
@@ -19,13 +18,11 @@ interface GameStore extends GameState {
 }
 
 const createInitialReels = () => {
-    // Вспомогательная функция для создания символа с уникальным ID
     const makeSymbol = (type: SymbolType, reelIdx: number, rowIdx: number): Symbol => ({
         type,
-        id: `init-${reelIdx}-${rowIdx}`, // статичный ID для начальной доски
+        id: `init-${reelIdx}-${rowIdx}`,
     });
 
-    // Статические данные: [барабан][ряд] → SymbolType
     const staticReelsData: SymbolType[][] = [
         [SymbolType.SYMBOL_1, SymbolType.SYMBOL_5, SymbolType.SYMBOL_3],
         [SymbolType.SYMBOL_7, SymbolType.SYMBOL_2, SymbolType.SYMBOL_6],
@@ -34,7 +31,6 @@ const createInitialReels = () => {
         [SymbolType.SYMBOL_2, SymbolType.SYMBOL_4, SymbolType.SYMBOL_8],
     ];
 
-    // Преобразуем в правильный формат Reel[]
     return staticReelsData.map((types, reelIndex) => ({
         symbols: types.map((type, rowIndex) => makeSymbol(type, reelIndex, rowIndex)),
         position: reelIndex,
@@ -72,9 +68,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         try {
             const balance = await UserAPI.getBalance();
-            set({
-                balance,
-            });
+            set({ balance });
         } catch (error) {
             console.error('Failed to sync balance:', error);
         }
@@ -86,14 +80,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
         if (state.useOnlineMode) {
             try {
                 await UserAPI.deposit(amount);
-                // После депозита синхронизируем баланс
                 await get().syncBalance();
             } catch (error) {
                 alert(error instanceof Error ? error.message : 'Ошибка при пополнении баланса');
                 throw error;
             }
         } else {
-            // Оффлайн режим - просто добавляем к балансу
             set({ balance: state.balance + amount });
         }
     },
@@ -103,7 +95,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         if (state.isSpinning) return;
 
-        // Проверяем баланс
         if (!state.isBonusGame && state.balance < state.bet) {
             alert('Недостаточно средств!');
             return;
@@ -111,19 +102,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
         set({ isSpinning: true, winningLines: [], lastWin: 0 });
 
-        // Определяем длительность спина в зависимости от режима
         const spinDuration = state.isTurbo ? 100 : GAME_CONFIG.SPIN_DURATION;
 
-        // Всегда используем бекенд для генерации матрицы
         try {
-            // Отправляем запрос на спин к API
-            // Бекенд сам определяет, обычный это спин или фриспин
             const result = await GameAPI.spin(state.bet);
 
-            // Имитируем вращение
             setTimeout(() => {
-                console.log('🎯 Setting game state with winning lines:', result.winningLines);
-
                 const currentState = get();
                 const newFreeSpinsLeft = currentState.freeSpinsLeft > 0
                     ? currentState.freeSpinsLeft - 1
@@ -142,11 +126,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     freeSpinsLeft: newFreeSpinsLeft,
                     isBonusGame: newFreeSpinsLeft > 0 || result.inFreeSpin,
                 });
-
-                // Если были скаттеры, можем показать дополнительную информацию
-                if (result.scatterCount >= 3) {
-                    console.log(`Скаттеров: ${result.scatterCount}, выплата: ${result.scatterPayout}`);
-                }
             }, spinDuration);
 
         } catch (error) {
@@ -187,13 +166,22 @@ export const useGameStore = create<GameStore>((set, get) => ({
         });
 
         try {
-
-            const result = await GameAPI.buyBonus(state.bet); // ✅ Передаём bet, получаем result
+            const result = await GameAPI.buyBonus(state.bet);
 
             const spinDuration = state.isTurbo ? 100 : GAME_CONFIG.SPIN_DURATION;
 
             setTimeout(() => {
                 const currentState = get();
+
+                if (result.reels.length === 0) {
+                    set({
+                        isSpinning: false,
+                        isBonusGame: true,
+                        freeSpinsLeft: result.freeSpinCount,
+                    });
+                    setTimeout(() => get().spin(), 500);
+                    return;
+                }
 
                 set({
                     reels: result.reels.map((symbols, index) => ({
@@ -205,8 +193,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     balance: result.balance,
                     winningLines: result.winningLines,
                     isSpinning: false,
-                    freeSpinsLeft: result.freeSpinCount, // ✅ Устанавливаем фриспины
-                    isBonusGame: result.inFreeSpin,       // ✅ Включаем бонус-режим
+                    freeSpinsLeft: result.freeSpinCount,
+                    isBonusGame: result.inFreeSpin,
                 });
             }, spinDuration);
 

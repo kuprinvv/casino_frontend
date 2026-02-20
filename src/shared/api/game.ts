@@ -1,10 +1,14 @@
 import { apiClient } from './client';
-import { SpinRequest, BuyBonusRequest, BonusSpinResponse, LineWinAPI } from './types';
+import { SpinRequest, SpinResult, ErrorResponse, BuyBonusRequest, BonusSpinResponse } from './types';
 import { AxiosError } from 'axios';
 import { Symbol, SymbolType, WinningLine } from '@shared/types/game';
 import { PAYLINES } from '@shared/config/lines';
 
 export class GameAPI {
+    /**
+     * Выполнить спин (вращение барабанов)
+     * Согласно Swagger: POST /line/spin
+     */
     static async spin(bet: number): Promise<{
         reels: Symbol[][];
         winAmount: number;
@@ -18,7 +22,8 @@ export class GameAPI {
     }> {
         try {
             const data: SpinRequest = { bet };
-            const response = await apiClient.getClient().post('/line/spin', data);
+            const response = await apiClient.getClient().post<SpinResult>('/line/spin', data);
+
             const reels = this.convertBoardToReels(response.data.board);
             const winAmount = response.data.total_payout;
             const balance = response.data.balance;
@@ -79,41 +84,62 @@ export class GameAPI {
     }> {
         try {
             const bonusCost = bet * 100;
-            const data: BuyBonusRequest = { amount: bonusCost };
+            const data: BuyBonusRequest = { bet: bonusCost };
+
+            // ✅ Теперь используем BonusSpinResponse для типизации ответа
             const response = await apiClient.getClient().post<BonusSpinResponse>('/line/buy-bonus', data);
 
-            const reels = this.convertBoardToReels(response.data.board);
-            const winAmount = response.data.total_payout;
-            const balance = response.data.balance;
-            const winningLines = this.convertWinningLinesFromAPI(response.data.line_wins);
+            // ✅ Проверяем, вернул ли бэкенд полные данные (board)
+            if (response.data && response.data.board) {
+                const reels = this.convertBoardToReels(response.data.board);
+                const winAmount = response.data.total_payout;
+                const balance = response.data.balance;
+                const winningLines = this.convertWinningLinesFromAPI(response.data.line_wins);
 
-            if (response.data.scatter_count >= 3 && response.data.scatter_payout > 0) {
-                const scatterPositions: number[][] = [];
-                response.data.board.forEach((reel, reelIndex) => {
-                    reel.forEach((symbol, rowIndex) => {
-                        if (symbol === 'B') scatterPositions.push([reelIndex, rowIndex]);
+                if (response.data.scatter_count >= 3 && response.data.scatter_payout > 0) {
+                    const scatterPositions: number[][] = [];
+                    response.data.board.forEach((reel: string[], reelIndex: number) => {
+                        reel.forEach((symbol: string, rowIndex: number) => {
+                            if (symbol === 'B') {
+                                scatterPositions.push([reelIndex, rowIndex]);
+                            }
+                        });
                     });
-                });
-                winningLines.push({
-                    lineIndex: -1,
-                    symbols: SymbolType.BONUS,
-                    count: response.data.scatter_count,
-                    multiplier: 0,
-                    winAmount: response.data.scatter_payout,
-                    positions: scatterPositions,
-                });
+
+                    winningLines.push({
+                        lineIndex: -1,
+                        symbols: SymbolType.BONUS,
+                        count: response.data.scatter_count,
+                        multiplier: 0,
+                        winAmount: response.data.scatter_payout,
+                        positions: scatterPositions,
+                    });
+                }
+
+                return {
+                    reels,
+                    winAmount,
+                    balance,
+                    winningLines,
+                    scatterCount: response.data.scatter_count,
+                    scatterPayout: response.data.scatter_payout,
+                    awardedFreeSpins: response.data.awarded_free_spins,
+                    freeSpinCount: response.data.free_spin_count,
+                    inFreeSpin: response.data.free_spin_count > 0,
+                };
             }
 
+            // ✅ Если бэкенд вернул {"result":"ok"}, возвращаем заглушку для активации режима
             return {
-                reels,
-                winAmount,
-                balance,
-                winningLines,
-                scatterCount: response.data.scatter_count,
-                scatterPayout: response.data.scatter_payout,
-                awardedFreeSpins: response.data.awarded_free_spins,
-                freeSpinCount: response.data.free_spin_count,
-                inFreeSpin: response.data.free_spin_count > 0,
+                reels: [],
+                winAmount: 0,
+                balance: 0,
+                winningLines: [],
+                scatterCount: 0,
+                scatterPayout: 0,
+                awardedFreeSpins: 0,
+                freeSpinCount: 10,
+                inFreeSpin: true,
             };
         } catch (error) {
             throw this.handleError(error);
@@ -148,7 +174,7 @@ export class GameAPI {
         );
     }
 
-    private static convertWinningLinesFromAPI(apiLines: LineWinAPI[]): WinningLine[] {
+    private static convertWinningLinesFromAPI(apiLines: any[]): WinningLine[] {
         if (!apiLines || apiLines.length === 0) return [];
 
         return apiLines.map((line) => {
@@ -178,7 +204,7 @@ export class GameAPI {
 
     private static handleError(error: unknown): Error {
         if (error instanceof AxiosError) {
-            const errorData = error.response?.data as { error?: string };
+            const errorData = error.response?.data as ErrorResponse;
             return new Error(errorData?.error || error.message || 'Произошла ошибка');
         }
         return new Error('Неизвестная ошибка');
