@@ -180,10 +180,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
             return;
         }
 
-        set({ isSpinning: true, winningLines: [], lastWin: 0 });
+        set({
+            isSpinning: true,
+            winningLines: [],
+            lastWin: 0,
+        });
 
         try {
-            const result = await GameAPI.buyBonus(state.bet);
+            const result = await GameAPI.buyBonus(state.bet); // ✅ Передаём bet, получаем result
 
             const spinDuration = state.isTurbo ? 100 : GAME_CONFIG.SPIN_DURATION;
 
@@ -200,8 +204,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
                     balance: result.balance,
                     winningLines: result.winningLines,
                     isSpinning: false,
-                    freeSpinsLeft: result.freeSpinCount,
-                    isBonusGame: result.inFreeSpin,
+                    freeSpinsLeft: result.freeSpinCount, // ✅ Устанавливаем фриспины
+                    isBonusGame: result.inFreeSpin,       // ✅ Включаем бонус-режим
                 });
             }, spinDuration);
 

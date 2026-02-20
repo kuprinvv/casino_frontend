@@ -62,6 +62,10 @@ export class GameAPI {
         }
     }
 
+    /**
+     * Купить бонус (фриспины)
+     * Согласно Swagger: POST /line/buy-bonus
+     */
     static async buyBonus(bet: number): Promise<{
         reels: Symbol[][];
         winAmount: number;
