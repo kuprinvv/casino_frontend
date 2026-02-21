@@ -41,12 +41,16 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
 
     const cooldownRef = useRef(false);
     const prevBonusGameRef = useRef(isBonusGame);
+    // 🔧 Новый ref для отслеживания источника автоспина
+    const autoSpinByBonusRef = useRef(false);
 
-    // Включаем автоспин при начале бонусной игры
+    // 🎯 Управление автоспином при входе/выходе из бонусной игры
     useEffect(() => {
+        // Вход в бонус
         if (isBonusGame && !prevBonusGameRef.current) {
             setIsAutoSpin(true);
             setBonusDelayActive(true);
+            autoSpinByBonusRef.current = true;
 
             const delayTimer = setTimeout(() => {
                 setBonusDelayActive(false);
@@ -55,24 +59,35 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
             return () => clearTimeout(delayTimer);
         }
 
-        // Выключаем автоспин при окончании бонусной игры
+        // Выход из бонуса
         if (!isBonusGame && prevBonusGameRef.current) {
             setIsAutoSpin(false);
+            setBonusDelayActive(false); // ⚠️ Принудительно сбрасываем задержку
+            autoSpinByBonusRef.current = false; // Сбрасываем флаг источника
         }
 
         prevBonusGameRef.current = isBonusGame;
     }, [isBonusGame]);
 
-    // Выключаем автоспин, если кончились фриспины
+    // 🎯 Выключаем автоспин, если кончились фриспины
     useEffect(() => {
         if (isBonusGame && freeSpinsLeft === 0) {
             setIsAutoSpin(false);
+            autoSpinByBonusRef.current = false;
         }
     }, [isBonusGame, freeSpinsLeft]);
 
-    // Логика авто-спина
+    // 🎯 Основная логика авто-спина с защитой от race condition
     useEffect(() => {
         if (!isAutoSpin) return;
+
+        // 🛡️ Safety check: если вышли из бонуса, но флаг ещё не сбросился — выключаем
+        if (!isBonusGame && autoSpinByBonusRef.current) {
+            setIsAutoSpin(false);
+            autoSpinByBonusRef.current = false;
+            return;
+        }
+
         if (isSpinning || isResolving || isCooldown || bonusDelayActive) return;
 
         if (balance < bet && !isBonusGame) {
@@ -85,7 +100,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         onSpin();
     }, [isAutoSpin, isSpinning, isResolving, isCooldown, bonusDelayActive, balance, bet, isBonusGame, onSpin]);
 
-    // Кулдаун между спинами
+    // 🎯 Кулдаун между спинами
     useEffect(() => {
         if (!isSpinning && !isResolving) {
             const cooldownTime = isTurbo ? 1000 : 2500;
@@ -101,7 +116,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         }
     }, [isSpinning, isResolving, isTurbo]);
 
-    // Обработка пробела для спина
+    // 🎯 Обработка пробела для спина
     useEffect(() => {
         const handleKeyPress = (e: KeyboardEvent) => {
             if (cooldownRef.current || isSpinning || isResolving) return;
@@ -130,6 +145,10 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
             if (!next && bonusDelayActive) {
                 setBonusDelayActive(false);
             }
+            // Если пользователь вручную выключает — сбрасываем флаг бонуса
+            if (!next) {
+                autoSpinByBonusRef.current = false;
+            }
             return next;
         });
     };
@@ -142,8 +161,10 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
             return;
         }
 
+        // Ручной спин во время автоспина — выключаем автоспин
         if (isAutoSpin) {
             setIsAutoSpin(false);
+            autoSpinByBonusRef.current = false;
         }
 
         cooldownRef.current = true;
