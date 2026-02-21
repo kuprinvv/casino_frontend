@@ -6,16 +6,10 @@ import { WinAnimation } from './WinAnimation/WinAnimation';
 import './SlotMachine.css';
 
 const SYMBOL_PATHS = [
-  '/1.png',
-  '/2.png',
-  '/3.png',
-  '/4.png',
-  '/6.png',
-  '/7.png',
-  '/8.png',
-  '/9.png',
-  '/bonus.png',
-  '/wild.png',
+  '/1.png', '/2.png', '/3.png', '/4.png',
+  '/6.png', '/7.png', '/8.png', '/9.png',
+  '/bonus.png', '/wild.png', '/wildx2.png',
+  '/wildx3.png', '/wildx4.png', '/wildx5.png',
 ];
 
 export const SlotMachine: React.FC = () => {
