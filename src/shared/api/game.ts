@@ -1,8 +1,8 @@
-import { apiClient } from './client';
-import { SpinRequest, SpinResult, ErrorResponse, BuyBonusRequest, BonusSpinResponse } from './types';
-import { AxiosError } from 'axios';
-import { Symbol, SymbolType, WinningLine } from '@shared/types/game';
-import { PAYLINES } from '@shared/config/lines';
+import {apiClient} from './client';
+import {BonusSpinResponse, BuyBonusRequest, ErrorResponse, SpinRequest, SpinResult} from './types';
+import {AxiosError} from 'axios';
+import {Symbol, SymbolType, WinningLine} from '@shared/types/game';
+import {PAYLINES} from '@shared/config/lines';
 
 export class GameAPI {
     /**
@@ -84,7 +84,7 @@ export class GameAPI {
     }> {
         try {
             const bonusCost = bet * 100;
-            const data: BuyBonusRequest = { amount: bonusCost };
+            const data: BuyBonusRequest = { bet: bonusCost };
 
             // ✅ Теперь используем BonusSpinResponse для типизации ответа
             const response = await apiClient.getClient().post<BonusSpinResponse>('/line/buy-bonus', data);
@@ -158,6 +158,10 @@ export class GameAPI {
             'S8': SymbolType.SYMBOL_8,
             'B': SymbolType.BONUS,
             'W': SymbolType.WILD,
+            'W2': SymbolType.WILD2,
+            'W3': SymbolType.WILD3,
+            'W4': SymbolType.WILD4,
+            'W5': SymbolType.WILD5,
         };
         return symbolMap[backendSymbol] || SymbolType.SYMBOL_1;
     }

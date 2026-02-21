@@ -9,6 +9,10 @@ export enum SymbolType {
   SYMBOL_8 = 'symbol_8', // Самый дорогой
   BONUS = 'bonus',
   WILD = 'wild',
+  WILD2 = 'wild2',
+  WILD3 = 'wild3',
+  WILD4 = 'wild4',
+  WILD5 = 'wild5',
 }
 
 export interface Symbol {
