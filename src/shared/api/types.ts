@@ -8,7 +8,7 @@ export interface SpinRequest {
 }
 
 export interface BuyBonusRequest {
-    bet: number;
+    amount: number;
 }
 
 export interface BonusSpinResponse {
