@@ -34,10 +34,11 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     onBuyBonus,
     minBet = 2,
     maxBet = 100,
-}) => {
+          }) => {
     const [isCooldown, setIsCooldown] = useState(false);
     const [isAutoSpin, setIsAutoSpin] = useState(false);
     const [bonusDelayActive, setBonusDelayActive] = useState(false);
+    const [autoSpinDisabled, setAutoSpinDisabled] = useState(false);
 
     const cooldownRef = useRef(false);
     const prevBonusGameRef = useRef(isBonusGame);
@@ -47,6 +48,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         if (isBonusGame && !prevBonusGameRef.current) {
             setIsAutoSpin(true);
             setBonusDelayActive(true);
+            setAutoSpinDisabled(true);
 
             const delayTimer = setTimeout(() => {
                 setBonusDelayActive(false);
@@ -58,10 +60,12 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
         if (!isBonusGame && prevBonusGameRef.current) {
             justExitedBonusRef.current = true;
             setIsAutoSpin(false);
+            setAutoSpinDisabled(true);
 
             const unlockTimer = setTimeout(() => {
                 justExitedBonusRef.current = false;
-            }, 5000);
+                setAutoSpinDisabled(false);
+            }, 3000);
 
             return () => clearTimeout(unlockTimer);
         }
@@ -128,6 +132,8 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     }, [onSpin, isSpinning, isResolving, balance, bet, isBonusGame]);
 
     const toggleAutoSpin = () => {
+        if (autoSpinDisabled) return;
+
         setIsAutoSpin(prev => {
             const next = !prev;
             if (!next && bonusDelayActive) {
@@ -160,6 +166,7 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
     const canBuyBonus = balance >= bet * 100 && !isBonusGame && !isSpinning && !isResolving;
     const canDecreaseBet = bet > minBet && !isSpinning && !isResolving && !isBonusGame;
     const canIncreaseBet = bet < maxBet && !isSpinning && !isResolving && !isBonusGame;
+    const canAutoSpin = !autoSpinDisabled && !isSpinning && !isResolving;
 
     return (
         <div className="casino-control-panel">
@@ -232,12 +239,12 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
                     isSpinning
                         ? 'Вращение...'
                         : isResolving
-                        ? 'Каскад...'
-                        : isBonusGame
-                        ? `Фриспин (${freeSpinsLeft})`
-                        : isCooldown
-                        ? 'Подождите...'
-                        : 'Крутить'
+                            ? 'Каскад...'
+                            : isBonusGame
+                                ? `Фриспин (${freeSpinsLeft})`
+                                : isCooldown
+                                    ? 'Подождите...'
+                                    : 'Крутить'
                 }
             >
                 <span className="button-label">
@@ -250,12 +257,15 @@ export const CasinoControlPanel: React.FC<CasinoControlPanelProps> = ({
                 className={`casino-button auto-spin-button ${isAutoSpin ? 'active' : ''}`}
                 onClick={toggleAutoSpin}
                 onMouseDown={(e) => e.preventDefault()}
+                disabled={!canAutoSpin}
                 title={
-                    isAutoSpin
-                        ? 'Остановить автопрокрутку'
-                        : balance < bet && !isBonusGame
-                        ? `Недостаточно средств (требуется ${bet})`
-                        : 'Запустить автопрокрутку'
+                    autoSpinDisabled
+                        ? 'Автопрокрутка недоступна после бонусной игры'
+                        : isAutoSpin
+                            ? 'Остановить автопрокрутку'
+                            : balance < bet && !isBonusGame
+                                ? `Недостаточно средств (требуется ${bet})`
+                                : 'Запустить автопрокрутку'
                 }
             >
                 <img src="/auto.png" alt="Авто" />
